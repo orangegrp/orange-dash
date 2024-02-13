@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { getSettings, setSettings } from "./dashapi";
+    import { getSettings, setSettings } from "../newsapi";
     import type { NewsConfig } from "$lib/news";
     import { ProgressRadial, SlideToggle } from "@skeletonlabs/skeleton";
     import { Accordion, AccordionItem } from "@skeletonlabs/skeleton";
@@ -10,7 +10,6 @@
     import literature_icon from "$lib/images/literature-icon.png";
     import news_icon from "$lib/images/news-icon.png";
     import sync_icon from "$lib/images/sync-icon.png";
-
 
     import { getToastStore } from "@skeletonlabs/skeleton";
 
@@ -37,11 +36,9 @@
                 } : undefined
             };
         
-    
             if (api_key)
                 await setSettings(api_key, newData);
-
-        
+    
             toastStore.trigger({
                 message: `Global settings updated`,
                 background: "variant-filled-success",
@@ -104,52 +101,18 @@
         }
     }
 
-    onMount(() => {
-
+    onMount(() => {    
         setTimeout(() => loadContent(), 1000);
     });
 </script>
 
-<div>
+<div class="w-full flex justify-center">
     {#if !_global_settings}
         
-       
-        <section class="card p-6 pr-8 shadow-2xl lg:w-screen w-96 max-w-4xl pb-12">
-            <div class="p-2 space-y-4">
-                <div class="pt-8 placeholder animate-pulse" />
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-full" />
-                </div>
-                <div class="pt-0.5"/>
-                <div class="pt-6 placeholder animate-pulse" />
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-full" />
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-full" />
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-full" />
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-full" />
-                </div>
-                <div class="pt-0.5"/>
-                <div class="grid grid-cols-1 gap-4">
-                    <div class="placeholder animate-pulse w-full" />
-                    <div class="placeholder animate-pulse w-full" />
-                </div>
-            </div>
-        </section>
-
+    <ProgressRadial/>
 
     {:else}
-        <div class="card p-6 pr-12 shadow-2xl max-w-4xl pb-12">
+        <div class="card p-6 pr-12 shadow-2xl pb-12 w-full">
             <h3 class="h3 k-bold mb-4 mt-2">Global settings</h3>
             <SlideToggle
                 bind:checked={slider_enabled}
