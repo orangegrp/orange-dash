@@ -112,6 +112,6 @@
         </AppRailAnchor>
     </AppRail>
 </div>
-<div class="ml-24">
+<div class="ml-24 mr-4">
     <slot />
 </div>

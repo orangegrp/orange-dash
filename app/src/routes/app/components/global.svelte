@@ -5,6 +5,13 @@
     import { ProgressRadial, SlideToggle } from "@skeletonlabs/skeleton";
     import { Accordion, AccordionItem } from "@skeletonlabs/skeleton";
 
+    import ai_icon from "$lib/images/ai-icon.png";
+    import globe_icon from "$lib/images/globe-icon.png";
+    import literature_icon from "$lib/images/literature-icon.png";
+    import news_icon from "$lib/images/news-icon.png";
+    import sync_icon from "$lib/images/sync-icon.png";
+
+
     import { getToastStore } from "@skeletonlabs/skeleton";
 
     const toastStore = getToastStore();
@@ -99,7 +106,7 @@
 
     onMount(() => {
 
-        setTimeout(() => loadContent(), 2000);
+        setTimeout(() => loadContent(), 1000);
     });
 </script>
 
@@ -107,38 +114,43 @@
     {#if !_global_settings}
         
        
-        <section class="card p-6 pr-8 shadow-2xl" style="width: 387px; height: 328px;">
+        <section class="card p-6 pr-8 shadow-2xl lg:w-screen w-96 max-w-4xl pb-12">
             <div class="p-2 space-y-4">
                 <div class="pt-8 placeholder animate-pulse" />
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-32" />
+                    <div class="placeholder animate-pulse w-full" />
                 </div>
                 <div class="pt-0.5"/>
                 <div class="pt-6 placeholder animate-pulse" />
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-32" />
+                    <div class="placeholder animate-pulse w-full" />
                 </div>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-32" />
+                    <div class="placeholder animate-pulse w-full" />
                 </div>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-32" />
+                    <div class="placeholder animate-pulse w-full" />
                 </div>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div class="placeholder animate-pulse" />
-                    <div class="placeholder animate-pulse w-32" />
+                    <div class="placeholder animate-pulse w-full" />
+                </div>
+                <div class="pt-0.5"/>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="placeholder animate-pulse w-full" />
+                    <div class="placeholder animate-pulse w-full" />
                 </div>
             </div>
         </section>
 
 
     {:else}
-        <div class="card p-6 pr-12 shadow-2xl">
-            <h3 class="h4 k-bold mb-2">Global settings</h3>
+        <div class="card p-6 pr-12 shadow-2xl max-w-4xl pb-12">
+            <h3 class="h3 k-bold mb-4 mt-2">Global settings</h3>
             <SlideToggle
                 bind:checked={slider_enabled}
                 name="slider-large"
@@ -146,16 +158,28 @@
                 size="sm"
                 class="mb-4"
             >
-                Enable news module
+            <div>
+                <span>
+                    Enable news module
+                <img src="{news_icon}" alt="news" class="inline h-6"/> 
+                </span>
+            </div>
+
+
             </SlideToggle>
             <Accordion>
-                <AccordionItem>
+                <AccordionItem open>
                     <svelte:fragment slot="summary"
-                        >Global override ({(_global_settings.override
+                        >Global override 
+                        
+                        <span class="code">
+                        {(_global_settings.override
                             ? true
                             : false)
-                            ? "Currently Enabled"
-                            : "Currently Disabled"})</svelte:fragment
+                            ? "Enabled"
+                            : "Disabled"}
+                        </span>
+                            </svelte:fragment
                     >
                     <svelte:fragment slot="content">
                         <ul>
@@ -166,7 +190,13 @@
                                     active="bg-primary-500"
                                     size="sm"
                                 >
-                                    Enable global override
+                                <div>
+                                    <span>
+                                        Enable global override
+                                    <img src="{globe_icon}" alt="globe" class="inline h-6"/> 
+                                    </span>
+                                </div>
+                               
                                 </SlideToggle>
                             </li>
                             <li>
@@ -176,7 +206,13 @@
                                     active="bg-primary-500"
                                     size="sm"
                                 >
-                                    Enable AI summary
+                                <div>
+                                    <span>
+                                        Enable AI summary
+                                    <img src="{ai_icon}" alt="ai" class="inline h-6"/> 
+                                    </span>
+                                </div>
+                                   
                                 </SlideToggle>
                             </li>
                             <li>
@@ -186,17 +222,33 @@
                                     active="bg-primary-500"
                                     size="sm"
                                 >
-                                    Enable Crawler
+                                <div>
+                                    <span>
+                                        Enable Crawler
+                                    <img src="{literature_icon}" alt="literature" class="inline h-6"/> 
+                                    </span>
+                                </div>
                                 </SlideToggle>
                             </li>
                         </ul>
+
+                        <p class="k-sans">
+                            The global override is intended to control the availability of the respected functionality and not necessarily the behaviour.
+                            Configuration of the features is performed at guild level.
+                        </p>
                     </svelte:fragment>
                 </AccordionItem>
             </Accordion>
             
             <button class="btn variant-filled mt-4"
             on:click={() => updateContent()}>
-                Update bot with new configuration
+            <div>
+                <span>
+                    Update bot with new configuration
+                <img src="{sync_icon}" alt="sync" class="inline h-6"/> 
+                </span>
+            </div>
+            
             </button>
         </div>
     {/if}
