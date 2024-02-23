@@ -37,7 +37,7 @@
 	<div class="space-y-10 text-center flex flex-col items-center">
 		<img src={icon} class="h-32" alt="icon" />
 		<div class="flex justify-center space-x-2">
-			<button class="btn variant-filled" on:click={() => checkKey()}>
+			<button class="btn bg-surface-backdrop-token border border-primary-500" on:click={() => checkKey()}>
 				Access the dash
 			</button>
 		</div>

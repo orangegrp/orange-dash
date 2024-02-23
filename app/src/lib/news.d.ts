@@ -36,7 +36,9 @@ type _validCrawlType = {
 type NewsSource = {
     id: string,
     name: string,
+    icon?: string,
     feedType: NewsSourceType,
+    feedIcon?: string,
     feedUrl: string,
     crawl: _validCrawlType[NewsSource["feedType"]],
     crawlOpts?: {
@@ -46,14 +48,14 @@ type NewsSource = {
             stripHtml: boolean,
             xpaths: string[]
         }
-    }
+    } | null,
     aiSummary: boolean,
     aiSummaryOpts?: {
         maxContentLen: number,
         openAi: {
             assistantId: string
         }
-    },
+    } | null,
     reputation?: {
         score: NewsSourceScore,
         authorship: {
@@ -62,7 +64,7 @@ type NewsSource = {
             media: NewsSourceMediaType,
             notes?: string
         }
-    }
+    } | null;
 };
 
 type NewsGuildConfig = {
@@ -71,7 +73,7 @@ type NewsGuildConfig = {
     override?: {
         crawl?: boolean,
         aiSummary?: boolean
-    }
+    } | null;
     sources: NewsSource[]
 };
 
@@ -80,7 +82,7 @@ type NewsConfig = {
     override?: {
         crawl?: boolean,
         aiSummary?: boolean
-    }
+    } | null,
     guilds: {
         [id: string]: NewsGuildConfig
     }

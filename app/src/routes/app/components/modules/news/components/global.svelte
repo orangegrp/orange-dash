@@ -22,11 +22,13 @@
 
     var api_key: string | null = null;
 
-    var _global_settings: Omit<NewsConfig, "guilds"> | undefined = undefined;
+    var _settings: Omit<NewsConfig, "guilds"> | undefined = undefined;
 
     async function updateContent() {
+        api_key = localStorage.getItem("orange-dash-api-key");
+        
         try {
-            _global_settings = undefined;
+            _settings = undefined;
 
             const newData: Omit<NewsConfig, "guilds"> = {
                 enabled: slider_enabled,
@@ -63,13 +65,13 @@
         }
 
         try {
-            _global_settings = (await getSettings(api_key)).data as Omit<NewsConfig, "guilds">;
-            slider_enabled = _global_settings.enabled;
-            slider_override = (_global_settings.override
+            _settings = (await getSettings(api_key)).data as Omit<NewsConfig, "guilds">;
+            slider_enabled = _settings.enabled;
+            slider_override = (_settings.override
                             ? true
                             : false);
-            slider_crawl = _global_settings.override?.crawl ?? false;
-            slider_ai = _global_settings.override?.aiSummary ?? false;
+            slider_crawl = _settings.override?.crawl ?? false;
+            slider_ai = _settings.override?.aiSummary ?? false;
 
 
             toastStore.trigger({
@@ -106,8 +108,8 @@
     });
 </script>
 
-<div class="w-full flex justify-center">
-    {#if !_global_settings}
+<div class="">
+    {#if !_settings}
         
     <ProgressRadial/>
 
@@ -136,7 +138,7 @@
                         >Global override 
                         
                         <span class="code">
-                        {(_global_settings.override
+                        {(_settings.override
                             ? true
                             : false)
                             ? "Enabled"
@@ -203,7 +205,7 @@
                 </AccordionItem>
             </Accordion>
             
-            <button class="btn variant-filled mt-4"
+            <button class="btn bg-surface-backdrop-token mt-4"
             on:click={() => updateContent()}>
             <div>
                 <span>

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import "../app.postcss";
 	import "../app.css";
-	import { AppShell, AppBar, Modal, Toast } from "@skeletonlabs/skeleton";
+	import { AppShell, AppBar, Modal, Toast, Drawer } from "@skeletonlabs/skeleton";
+	import { LightSwitch } from '@skeletonlabs/skeleton';
 
 	// Highlight JS
 	import hljs from "highlight.js/lib/core";
@@ -50,6 +51,7 @@
 				<span class="k-bold text-xl select-none">orange Dash</span>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
+				<LightSwitch class="ml-4 shadow-lg variant-ghost-surface hover:scale-125"/>
 				<a
 					class="btn btn-sm variant-ghost-surface shadow-lg hover:scale-125"
 					href="https://orange.order332.com"
