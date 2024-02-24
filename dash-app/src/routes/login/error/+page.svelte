@@ -4,12 +4,13 @@
     import { Note, Text, Button, Spacer } from "geist-ui-svelte";
 
     const loginErrorMessages: string[] = [
-        "Unknown reason",
-        "Invalid username or password",
-        "TOTP code expired",
-        "Login service not available",
-        "OAuth2 authorization failed",
-        "CAPTCHA"
+        "Unknown reason",                   // 0
+        "Invalid username or password",     // 1
+        "TOTP code expired",                // 2
+        "Login service not available",      // 3
+        "OAuth2 authorization failed",      // 4
+        "CAPTCHA",                          // 5
+        "Accont locked. Contact support",   // 6
     ];
 
     let loginErrorMessage = "Unknown";
@@ -51,7 +52,7 @@
                     <Text slot="label" b>Authentication failed:</Text>
                     {loginErrorMessage}
                 </Note>
-                <Button type="button" width="100%">
+                <Button type="button" width="100%" href="/login">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

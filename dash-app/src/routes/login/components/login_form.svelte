@@ -17,8 +17,8 @@
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[480px] w-full
-    md:max-w-[900px] h-96 px-8 rounded-xl md:rounded-3xl"
+    dark:border-gray-900 py-6 border max-w-[320px] sm:max-w-[480px] w-full
+    md:max-w-[900px] h-96 px-4 sm:px-8 rounded-xl md:rounded-3xl" 
 >
     <form
         action=""
@@ -76,7 +76,14 @@
         <Divider label="Or continue with" />
         <Spacer h={10} />
         <div class="flex place-items-center w-full gap-2">
-            <Button width="100%">
+            <Button
+                width="100%"
+                on:click={async () => {
+                    const oauth2_url =
+                        "https://discord.com/oauth2/authorize?client_id=1210923470620463164&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Flogin%2Foauth2%2Fdiscord&scope=identify+guilds";
+                    window.location.href = oauth2_url;
+                }}
+            >
                 <div class="flex place-items-center gap-2">
                     <Icon
                         dark="https://assets-global.website-files.com/6257adef93867e50d84d30e2/653714c1f22aef3b6921d63d_636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg"

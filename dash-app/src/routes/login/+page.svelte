@@ -5,7 +5,7 @@
 <main
     class="flex w-full items-center login-container-min-height justify-center"
 >
-    <div class="dark:bg-black bg-gray-50 shadow-lg">
+    <div class="dark:bg-black bg-gray-50 shadow-lg rounded-xl md:rounded-3xl">
         <LoginForm />
     </div>
 </main>

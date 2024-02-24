@@ -26,7 +26,7 @@
 >
     <Note {color}>
         <Text slot="label" b>{$page.status}</Text>
-        {$page.error?.message}
+        {@html $page.error?.message}
     </Note>
 </main>
 

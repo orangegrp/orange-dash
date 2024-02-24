@@ -21,7 +21,7 @@
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[480px] w-full h-56 px-8 rounded-xl md:rounded-3xl"
+    dark:border-gray-900 py-6 border max-w-[480px] w-full h-56 px-4 sm:px-8 rounded-xl md:rounded-3xl "
 >
     <form
         action=""

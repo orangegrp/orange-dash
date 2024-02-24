@@ -9,5 +9,7 @@ export async function GET(request) {
         clientUa: request.request.headers.get('user-agent')
     };
 
+    console.log(`Diagnostics request: ${JSON.stringify(data)}`);
+
     return json(data);
 }
