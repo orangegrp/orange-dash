@@ -1,8 +1,7 @@
 import { sequence } from "@sveltejs/kit/hooks";
 import { redirect, type Handle, type MaybePromise, type RequestEvent, type ResolveOptions, type HandleServerError } from "@sveltejs/kit";
 import { getAccessTokenFromCode } from "$lib/auth/oauth2_discord.server";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { getDashUser, getDashUserOauth2, createDashUser, updateDashUser } from "$lib/auth/dash_account.server";
+import { getDashUserOauth2, createDashUser } from "$lib/auth/dash_account.server";
 import type { DashSession } from "$lib/auth/dash";
 import { getSession, newSession } from "$lib/auth/session.server";
 
@@ -24,7 +23,7 @@ async function discordAuthentication({ event }: MiddlewareSequence) {
 
     let user = await getDashUserOauth2(creds.oauth2_id);
 
-    if (!user) {
+    if (!user || user.oauth2_id === "") {
         user = {
             oauth2_id: creds.oauth2_id,
             locked: false,
@@ -45,7 +44,7 @@ async function discordAuthentication({ event }: MiddlewareSequence) {
     event.setHeaders({
         "Refresh": "0; url=/login/redirect"
     });
-    
+
     return redirect(302, "/login/redirect");
 }
 
@@ -61,26 +60,28 @@ async function authentication({ event, resolve }: MiddlewareSequence) {
     return await resolve(event);
 }
 
+function isValidSession(event: MiddlewareSequence["event"]) {
+    const session_id = event.cookies.get("dash_session");
+    return session_id && getSession(session_id);
+}
+
 async function authorization({ event, resolve }: MiddlewareSequence) {
-    if (event.url.pathname.startsWith("/app")) {
-        const session_id = event.cookies.get("dash_session");
-        if (!session_id || !getSession(session_id)) {
-            return redirect(303, "/login");
-        }
+    if (event.url.pathname.startsWith("/app") && !isValidSession(event)) {
+        return redirect(303, "/login");
+    } else if (event.url.pathname.startsWith("/login") && isValidSession(event)) {
+        return redirect(303, "/app");
     }
-    
+
     return await resolve(event);
 }
 
 export const handle: Handle = sequence(authentication, authorization);
 
 export const handleError: HandleServerError = ({ error, event, status, message }) => {
-	const errorId = crypto.randomUUID();
-
+    const errorId = crypto.randomUUID();
     console.error(error, event, status, message);
-
-	return {
+    return {
         status: status,
-		message: `${message} (${errorId})`,
-	};
+        message: `${message} (${errorId})`,
+    };
 }

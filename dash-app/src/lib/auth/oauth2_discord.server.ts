@@ -18,7 +18,17 @@ async function getDiscordUserInformation(token: string, type: string = "Bearer")
             }
         });
 
-        return await response.json() as { oauth2_id: string, guilds: string[] };
+        const userData = await response.json();
+
+        const response2 = await fetch("https://discord.com/api/v10/users/@me/guilds", {
+            headers: {
+                "Authorization": `${type} ${token}`
+            }
+        });
+
+        const guildData = await response2.json();
+
+        return { oauth2_id: userData.id, guilds: guildData.map(g => g.id) } as { oauth2_id: string, guilds: string[] };
     } catch (error) {
         console.error(error);
         return undefined;
@@ -45,9 +55,11 @@ async function getAccessTokenFromCode(redirect_url: string, code: string): Promi
         });
 
         const response_data = await response.json() as Omit<DiscordUserCredentials, "oauth2_id" | "guilds">;
+        const user_data = await getDiscordUserInformation(response_data.access_token, response_data.token_type);
         console.log(response_data);
+        console.log(user_data);
 
-        return { ...response_data, ...await getDiscordUserInformation(response_data.access_token, response_data.token_type) } as DiscordUserCredentials;
+        return { ...response_data, ...user_data } as DiscordUserCredentials;
     } catch (error) {
         console.error(error);
         return null;
