@@ -70,6 +70,10 @@ async function authorization({ event, resolve }: MiddlewareSequence) {
         return redirect(303, "/login");
     } else if (event.url.pathname.startsWith("/login") && isValidSession(event)) {
         return redirect(303, "/app");
+    } else if (event.url.pathname === "/api/diagnostics") {
+        return await resolve(event);
+    } else if (event.url.pathname.startsWith("/api") && !isValidSession(event)) {
+        return new Response("Forbidden", { status: 403 });
     }
 
     return await resolve(event);
