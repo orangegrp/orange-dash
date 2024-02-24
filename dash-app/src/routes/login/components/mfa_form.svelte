@@ -1,0 +1,110 @@
+<script lang="ts">
+    import { Text, Spacer, Checkbox, Button, Key } from "geist-ui-svelte";
+    import Icon from "../../components/Icon.svelte";
+    import { Modal } from "geist-ui-svelte";
+
+    let showForgotOtp: boolean = false;
+    let otp = ["", "", "", "", "", ""];
+
+    function focusNext(event, index) {
+        if (event.target.value.length >= 1) {
+            event.target.nextElementSibling.focus();
+        }
+    }
+
+    function handleBackspace(event, index) {
+        if (event.key === "Backspace" && event.target.value === "") {
+            event.target.previousElementSibling.focus();
+        }
+    }
+</script>
+
+<div
+    class="flex justify-between border-gray-150
+    dark:border-gray-900 py-6 border max-w-[480px] w-full h-56 px-8 rounded-xl md:rounded-3xl"
+>
+    <form
+        action=""
+        on:submit|preventDefault
+        class="flex-grow flex w-full flex-col place-items-start justify-center"
+    >
+        <div class="flex flex-row gap-x-2 mb-2">
+            <Icon
+                dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"
+                light="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-b-icon.svg"
+                width="32"
+                height="32"
+                alt="Logo"
+            />
+            <strong> orange Dash Account </strong>
+        </div>
+
+        <Text type="small" color="secondary" class="mb-2"
+            >One-Time Passcode</Text
+        >
+
+        <div class="otp-container w-full space-x-4">
+            {#each otp as digit, index}
+                <input
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    type="tel"
+                    maxlength="1"
+                    class="otp-input bg-transparent order-3 min-w-0 text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg"
+                    bind:value={otp[index]}
+                    on:keydown={(event) => handleBackspace(event, index)}
+                    on:input={(event) => focusNext(event, index)}
+                />
+            {/each}
+        </div>
+        <Spacer h={15} />
+        <div class="flex place-items-center justify-between w-full">
+            <Checkbox ring color="success">
+                <Text type="small" color="secondary">Remember me</Text>
+            </Checkbox>
+            <Text type="small">
+                <button on:click={() => (showForgotOtp = true)}>No OTP?</button>
+            </Text>
+        </div>
+        <Spacer h={15} />
+        <Button type="submit" width="100%" color="success-light"
+            >Continue</Button
+        >
+    </form>
+</div>
+
+<Modal bind:visible={showForgotOtp} class="sm:w-[640px]">
+    <div
+        class="p-4 flex flex-col place-items-center
+	 justify-center h-full"
+    >
+        <Text type="h6" align="center">Account Recovery</Text>
+        <Text align="center">
+            Please contact a Dash administrator to regain access to your
+            account.
+        </Text>
+        <Spacer h={20} />
+        <Text align="center" color="secondary" type="small">
+            Click anywhere outside this message or press the <Key>Esc</Key> key to
+            dismiss this message.
+        </Text>
+    </div>
+</Modal>
+
+<style>
+    .otp-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .otp-input {
+        width: 36px;
+        height: 36px;
+        text-align: center;
+        outline: none;
+        margin-right: 5px;
+    }
+</style>
