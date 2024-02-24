@@ -1,20 +1,28 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Icon from "../../components/Icon.svelte";
-    import { Note, Text, Button } from "geist-ui-svelte";
+    import { Note, Text, Button, Spacer } from "geist-ui-svelte";
 
     const loginErrorMessages: string[] = [
         "Unknown reason",
         "Invalid username or password",
         "TOTP code expired",
-        "Login service not available"
+        "Login service not available",
+        "OAuth2 authorization failed",
+        "CAPTCHA"
     ];
 
     let loginErrorMessage = "Unknown";
 
     onMount(() => {
         const urlParams = new URLSearchParams(window.location.search);
-        const loginErrorCode: number = urlParams.has("reason") ? Number(urlParams.get("reason")) !== Number.NaN && Number(urlParams.get("reason")) > 0 && Number(urlParams.get("reason")) < 4 ? Number(urlParams.get("reason")) : 0 : 0;
+        const loginErrorCode: number = urlParams.has("reason")
+            ? Number(urlParams.get("reason")) !== Number.NaN &&
+              Number(urlParams.get("reason")) > 0 &&
+              Number(urlParams.get("reason")) < 6
+                ? Number(urlParams.get("reason"))
+                : 0
+            : 0;
 
         loginErrorMessage = loginErrorMessages[loginErrorCode];
     });
@@ -43,7 +51,22 @@
                     <Text slot="label" b>Authentication failed:</Text>
                     {loginErrorMessage}
                 </Note>
-                <Button type="button" width=100%>
+                <Button type="button" width="100%">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-6 h-6"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18"
+                        />
+                    </svg>
+                    <Spacer w={10} />
                     Try again
                 </Button>
             </div>
