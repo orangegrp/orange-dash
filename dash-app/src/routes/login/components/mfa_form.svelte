@@ -67,7 +67,7 @@
                     id="totp_{index}"
                     name="totp_{index}"
                     maxlength="1"
-                    class="otp-input bg-transparent order-3 min-w-0 text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg"
+                    class="text-center otp-input bg-transparent order-3 min-w-0 text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg"
                     bind:value={otp[index]}
                     on:keydown={(event) => handleBackspace(event, index)}
                     on:input={(event) => focusNext(event, index)}

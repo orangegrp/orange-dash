@@ -2,6 +2,7 @@
     import { goto, invalidate } from "$app/navigation";
     import { page } from "$app/stores";
     import type { DashSession, DashUser } from "$lib/auth/dash";
+    import type { Button as GButtonType } from "geist-ui-svelte";
     import {
         Note,
         Text,
@@ -60,6 +61,24 @@
         loginMethods = dashAccount.login_methods;
         oauth2id = dashAccount.oauth2_id;
     });
+
+    let otp = ["", "", "", "", "", ""];
+
+    function focusNext(event, index) {
+        if (index === 5) {
+            passwordInput2 = otp.join("");
+        }
+
+        if (event.target.value.length >= 1) {
+            event.target.nextElementSibling.focus();
+        }
+    }
+
+    function handleBackspace(event, index) {
+        if (event.key === "Backspace" && event.target.value === "") {
+            event.target.previousElementSibling.focus();
+        }
+    }
 </script>
 
 <div class="w-full">
@@ -609,7 +628,13 @@
             Scan the QR code to add a new authenticator app.
         </Text>
         <Spacer h={10} />
-        <img src="data:image/gif;base64,{qrcode}" class="rounded-xl" alt="qrcode" />
+        <img
+            src="data:image/png;base64,{qrcode}"
+            draggable="false"
+            on:dragstart={() => false}
+            class="rounded-2xl select-none pointer-events-none security-image"
+            alt="qrcode"
+        />
         <Spacer h={10} />
         <div>
             <Details label="Can't scan the QR code?" animate>
@@ -629,8 +654,28 @@
         <Text align="center" size="xs" color="secondary">
             Enter the code displayed on your authenticator app to confirm.
         </Text>
-        <Spacer h={10} />
-        <Input type="password" bind:value={passwordInput2} maxlength="6" />
+        <Spacer h={20} />
+        <div
+            class="otp-container space-x-4 flex flex-row text-center justify-center"
+        >
+            {#each otp as digit, index}
+                <input
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    type="tel"
+                    id="totp_{index}"
+                    name="totp_{index}"
+                    maxlength="1"
+                    class="text-center otp-input bg-transparent order-3 w-8 h-8 min-w-2 text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg"
+                    bind:value={otp[index]}
+                    on:keydown={(event) => handleBackspace(event, index)}
+                    on:input={(event) => focusNext(event, index)}
+                />
+            {/each}
+        </div>
         <Spacer h={30} />
         <div class="w-full flex flex-row justify-between gap-x-4">
             <Button
@@ -645,7 +690,7 @@
                         body: JSON.stringify({
                             password: passwordInput1,
                             code: passwordInput2,
-                            secret: otpsecret
+                            secret: otpsecret,
                         }),
                     }).then(async (r) => {
                         passwordInput1 = "";
@@ -676,3 +721,14 @@
         <Spacer h={10} />
     </div>
 </Modal>
+
+<style>
+    .security-image {
+        user-drag: none;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+</style>
