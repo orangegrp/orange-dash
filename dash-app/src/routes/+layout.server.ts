@@ -1,8 +1,14 @@
-import type { LayoutServerLoad } from './$types';
+import type { DashSession } from '$lib/auth/dash';
+import { getSession } from '$lib/auth/session.server';
+import type { LayoutServerLoad, RequestEvent } from './$types';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type Locals = RequestEvent["locals"];
+interface DashLocals extends Locals {
+    session?: DashSession;
+}
+
 export const load: LayoutServerLoad = async (event) => {
     return {
-        //session: await event.locals.
+        session: getSession(event.cookies.get("dash_session")) as DashLocals["session"],
     };
 };

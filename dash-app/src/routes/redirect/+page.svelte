@@ -1,11 +1,19 @@
 <script lang="ts">
     import { Loading, Center } from "geist-ui-svelte";
-    import Icon from "../../components/Icon.svelte";
+    import Icon from "../components/Icon.svelte";
     import { onMount } from "svelte";
 
+    type RedirectTarget = "app" | "login";
+    function isValidRedirectTarget(target: string): target is RedirectTarget {
+        return target === "app" || target === "login";
+    }
+
     onMount(() => {
+        const target = new URLSearchParams(window.location.search).get("target");
+        const validTarget = isValidRedirectTarget(target) ? target : "app";
+
         setTimeout(() => {
-            window.location.href = "/app";
+            window.location.href = "/" + validTarget;
         }, 1000);
     });
 </script>
@@ -38,5 +46,10 @@
 <style>
     .login-container-min-height {
         min-height: calc(85vh - 60px);
+    }
+    main {
+        background-image: radial-gradient(rgb(128, 128, 128, 0.1) 1px, transparent 0);
+        background-size: 10px 10px;
+        background-position: -16px -32px;
     }
 </style>

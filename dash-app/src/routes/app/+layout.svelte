@@ -9,7 +9,6 @@
     import Database from "./database/+page.svelte";
     import DashAccount from "./account/+page.svelte";
     import { writable } from "svelte/store";
-    import { redirect } from "@sveltejs/kit";
 
     let currentPageIndex = writable<number>(-1);
 
@@ -61,7 +60,7 @@
         class="flex place-items-center justify-center sticky top-0 backdrop-blur-lg dark:bg-black/80 bg-gray-50/80"
     >
         <div
-            class="w-full flex-grow px-2 sm:px-8 md:px-24 lg:px-32 border-b dark:border-b-gray-900 border-b-gray-100"
+            class="w-full flex-grow px-4 border-b dark:border-b-gray-900 border-b-gray-100"
         >
             <div id="header-borderless-parent">
                 <Tabs border={true}>
@@ -102,11 +101,13 @@
         </div>
     </div>
 
-    <svelte:component
-        this={[Overview, Deployment, Modules, Database, DashAccount][
-            $currentPageIndex < 0 || $currentPageIndex > 4
-                ? 0
-                : $currentPageIndex
-        ]}
-    />
+    {#key $currentPageIndex}
+        <svelte:component
+            this={[Overview, Deployment, Modules, Database, DashAccount][
+                $currentPageIndex < 0 || $currentPageIndex > 4
+                    ? 0
+                    : $currentPageIndex
+            ]}
+        />
+    {/key}
 </main>

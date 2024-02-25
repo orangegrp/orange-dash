@@ -3,7 +3,7 @@ import { redirect, type Handle, type MaybePromise, type RequestEvent, type Resol
 import { getAccessTokenFromCode } from "$lib/auth/oauth2_discord.server";
 import { getDashUserOauth2, createDashUser } from "$lib/auth/dash_account.server";
 import type { DashSession } from "$lib/auth/dash";
-import { getSession, newSession } from "$lib/auth/session.server";
+import { getSession, newSession, removeSession } from "$lib/auth/session.server";
 
 type MiddlewareSequence = { event: RequestEvent, resolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response> };
 
@@ -34,18 +34,23 @@ async function discordAuthentication({ event }: MiddlewareSequence) {
         await createDashUser(user);
     }
 
+    if (user.locked) {
+        return redirect(302, "/login/error?reason=6");
+    }
+
     const session = {
-        ...user,
+        username: user.username,
+        login_methods: user.login_methods,
+        role: user.role,
+        oauth2_id: creds.oauth2_id,
+        dash_id: user.id,
         guilds: creds.guilds
     } as DashSession
 
     const session_id = newSession(session);
     event.cookies.set("dash_session", session_id, { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
-    event.setHeaders({
-        "Refresh": "0; url=/login/redirect"
-    });
 
-    return redirect(302, "/login/redirect");
+    return redirect(302, "/redirect?target=app");
 }
 
 async function authentication({ event, resolve }: MiddlewareSequence) {
@@ -55,6 +60,10 @@ async function authentication({ event, resolve }: MiddlewareSequence) {
         return await resolve(event);
     } else if (event.url.pathname === "/login/mfa" && event.request.method === "POST") {
         return await resolve(event);
+    } else if (event.url.pathname === "/logout") {
+        removeSession(event.cookies.get("dash_session")!);
+        event.cookies.delete("dash_session", { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
+        return redirect(302, "/redirect?target=login");
     }
 
     return await resolve(event);

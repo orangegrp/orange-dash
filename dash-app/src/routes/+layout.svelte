@@ -29,7 +29,7 @@
 
 <Header noBorder={$page.url.pathname.startsWith("/app") ? true : false}>
 	<div
-		class="flex place-items-center justify-between w-full p-2 px-6 max-w-5xl"
+		class="flex place-items-center justify-between w-full p-2 px-8"
 	>
 		<div class="flex flex-row gap-x-3 select-none">
 			<Icon

@@ -20,7 +20,7 @@
         const loginErrorCode: number = urlParams.has("reason")
             ? Number(urlParams.get("reason")) !== Number.NaN &&
               Number(urlParams.get("reason")) > 0 &&
-              Number(urlParams.get("reason")) < 6
+              Number(urlParams.get("reason")) < 7
                 ? Number(urlParams.get("reason"))
                 : 0
             : 0;
