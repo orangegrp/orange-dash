@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Note, Text } from "geist-ui-svelte";
+    import { Note, Center } from "geist-ui-svelte";
     import { page } from "$app/stores";
 
     let color: "default" | "success" | "warning" | "error" | "secondary" =
@@ -24,10 +24,14 @@
 <main
     class="flex w-full items-center container-min-height justify-center dark:bg-black bg-gray-50"
 >
-    <Note {color}>
-        <Text slot="label" b>{$page.status}</Text>
-        {@html $page.error?.message}
-    </Note>
+    <div class="dark:bg-black bg-gray-50 shadow-lg rounded-xl md:rounded-3xl">
+        <Note {color} label={false}>
+            <Center>
+                {$page.status} -
+                {@html $page.error?.message}
+            </Center>
+        </Note>
+    </div>
 </main>
 
 <style>

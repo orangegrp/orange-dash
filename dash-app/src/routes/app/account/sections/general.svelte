@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { DashSession } from "$lib/auth/dash";
+    import type { DashSession, DashUser } from "$lib/auth/dash";
     import { page } from "$app/stores";
     import { onMount } from "svelte";
 
@@ -16,20 +16,23 @@
     let dashId = "";
     let loginMethods = [];
     let oauth2id = "";
+    let accountType = "";
 
     onMount(() => {
-        const userSession = $page.data.session as DashSession;
+        const dashAccount = $page.data.dash_account as DashUser;
+        console.log(dashAccount);
 
-        userName = userSession.username ? `${userSession.username}` : "";
-        dashId = userSession.dash_id;
-        loginMethods = userSession.login_methods;
-        oauth2id = userSession.oauth2_id;
+        dashId = dashAccount.id;
+        userName = dashAccount.username ? `${dashAccount.username}` : "";
+        loginMethods = dashAccount.login_methods;
+        oauth2id = dashAccount.oauth2_id;
+        accountType = dashAccount.role;
     });
 </script>
 
 <div class="w-full">
     <Card shadow class="p-6">
-        <Text type="h4" class="font-bold">Account Information</Text>
+        <Text type="h4" class="font-normal">Account Information</Text>
         <Spacer h={10} />
 
         <div class="space-y-2">
@@ -41,16 +44,21 @@
                     >
                 </div>
             {/if}
+            {#if accountType}
+                <div>
+                    <Text size="sm" class="dark:text-gray-200 self-center mr-1">
+                        Account Type: <Text blockquote>{accountType}</Text>
+                    </Text>
+                </div>
+            {/if}
             {#if loginMethods}
                 <div>
-                    <Text size="sm" class="self-center mr-1">
+                    <Text size="sm" class="dark:text-gray-200 self-center mr-1">
                         Login methods:
+                        {#each loginMethods as loginMethod}
+                            <Text blockquote class="mr-1">{loginMethod}</Text>
+                        {/each}
                     </Text>
-                    {#each loginMethods as loginMethod}
-                        <Badge size="sm" type="secondary" class="mr-1"
-                            >{loginMethod}</Badge
-                        >
-                    {/each}
                 </div>
             {/if}
             {#if dashId}

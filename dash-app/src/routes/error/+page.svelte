@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import Icon from "../../components/Icon.svelte";
-    import { Note, Text, Button, Spacer } from "geist-ui-svelte";
+    import Icon from "../components/Icon.svelte";
+    import { Note, Text, Button, Spacer, Link, Center } from "geist-ui-svelte";
 
-    const loginErrorMessages: string[] = [
+    const errorMessages: string[] = [
         "Unknown reason",                   // 0
         "Invalid username or password",     // 1
         "TOTP code expired",                // 2
@@ -11,21 +11,25 @@
         "OAuth2 authorization failed",      // 4
         "CAPTCHA",                          // 5
         "Accont locked. Contact support",   // 6
+        "Session terminated",               // 7
+        "Login method not allowed",         // 8
+        "Account data is corrupted",        // 9
+        "Action not allowed"                // 10
     ];
 
-    let loginErrorMessage = "Unknown";
+    let errorMessage = "Unknown";
 
     onMount(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const loginErrorCode: number = urlParams.has("reason")
             ? Number(urlParams.get("reason")) !== Number.NaN &&
               Number(urlParams.get("reason")) > 0 &&
-              Number(urlParams.get("reason")) < 7
+              Number(urlParams.get("reason")) < 11
                 ? Number(urlParams.get("reason"))
                 : 0
             : 0;
 
-        loginErrorMessage = loginErrorMessages[loginErrorCode];
+        errorMessage = errorMessages[loginErrorCode];
     });
 </script>
 
@@ -50,9 +54,9 @@
             <div class="flex flex-col gap-2">
                 <Note color="error">
                     <Text slot="label" b>Authentication failed:</Text>
-                    {loginErrorMessage}
+                    {errorMessage}
                 </Note>
-                <Button type="button" width="100%" href="/login">
+                <Button type="button" width="100%" href="/app">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -70,6 +74,14 @@
                     <Spacer w={10} />
                     Try again
                 </Button>
+                <Center>
+                    <Text size="xs">
+                        Still having problems? Try
+                        <Link to="/logout">
+                            <u>clearing session cookies</u>
+                        </Link>
+                    </Text>
+                </Center>
             </div>
         </div>
     </div>
@@ -78,5 +90,10 @@
 <style>
     .login-container-min-height {
         min-height: calc(85vh - 60px);
+    }
+    main {
+        background-image: radial-gradient(rgb(128, 128, 128, 0.1) 1px, transparent 0);
+        background-size: 10px 10px;
+        background-position: -16px -32px;
     }
 </style>

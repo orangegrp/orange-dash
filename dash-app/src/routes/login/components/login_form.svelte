@@ -11,18 +11,19 @@
     } from "geist-ui-svelte";
     import Icon from "../../components/Icon.svelte";
     import { Modal } from "geist-ui-svelte";
+    import { Turnstile } from 'svelte-turnstile';
 
     let showForgotPassword: boolean = false;
 </script>
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[320px] sm:max-w-[480px] w-full
-    md:max-w-[900px] h-96 px-4 sm:px-8 rounded-xl md:rounded-3xl" 
+    dark:border-gray-900 py-6 border max-w-[335px] sm:max-w-[480px] w-full
+    md:max-w-[900px] h-[28rem] px-4 sm:px-8 rounded-xl md:rounded-3xl" 
 >
     <form
-        action=""
-        on:submit|preventDefault
+        action="/login/password"
+        method="post"
         class="flex-grow w-screen md:w-full flex flex-col place-items-start justify-center"
     >
         <div class="flex flex-row gap-x-2 mb-2">
@@ -35,17 +36,17 @@
             />
             <strong> orange Dash Account </strong>
         </div>
-        <Input type="text" placeholder="Username" width="100%">
-            <Text type="small">Username</Text>
+        <Input type="text" placeholder="Username or ID" id="username" name="username" width="100%">
+            <Text type="small">Username or Account ID</Text>
         </Input>
         <Spacer h={5} />
-        <Input type="password" placeholder="Password" width="100%">
+        <Input type="password" placeholder="Password" id="password" name="password" width="100%">
             <Text type="small" color="secondary">Password</Text>
         </Input>
         <Spacer h={15} />
         <div class="flex place-items-center justify-between w-full">
-            <Checkbox ring color="success">
-                <Text type="small" color="secondary">Remember me</Text>
+            <Checkbox ring color="success" id="remember" name="remember">
+                <Text type="small" color="secondary">Remember me for 7 days</Text>
             </Checkbox>
             <Text type="small">
                 <button on:click={() => (showForgotPassword = true)}
@@ -53,9 +54,14 @@
                 >
             </Text>
         </div>
-        <Spacer h={15} />
+        <Spacer h={30} />
+        <Turnstile siteKey="3x00000000000000000000FF" />
+        <Spacer h={30} />
         <Button type="submit" width="100%" color="success-light"
-            >Continue
+            >
+            <Text size="sm">
+                Continue
+            </Text>
             <Spacer w={10} />
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +98,9 @@
                         height="16"
                         alt="Discord"
                     />
-                    Discord
+                    <Text size="sm">
+                        Discord
+                    </Text>
                 </div>
             </Button>
         </div>

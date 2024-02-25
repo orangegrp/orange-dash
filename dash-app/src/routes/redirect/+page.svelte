@@ -3,9 +3,9 @@
     import Icon from "../components/Icon.svelte";
     import { onMount } from "svelte";
 
-    type RedirectTarget = "app" | "login";
+    type RedirectTarget = "app" | "login" | "error" | "logout";
     function isValidRedirectTarget(target: string): target is RedirectTarget {
-        return target === "app" || target === "login";
+        return target === "app" || target === "login" || target.startsWith("error");
     }
 
     onMount(() => {
@@ -14,7 +14,7 @@
 
         setTimeout(() => {
             window.location.href = "/" + validTarget;
-        }, 1000);
+        }, 1500); // give server time to update
     });
 </script>
 

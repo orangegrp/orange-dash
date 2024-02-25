@@ -14,6 +14,6 @@ type DashUser = Partial<RecordModel> & {
     oauth2_id?: string,
 }
 
-type DashSession = Omit<DashUser, "password" | "salt" | "totp_secret" | "locked" | "created" | "updated"> & { dash_id: string, guilds: string[] };
+type DashSession = Omit<DashUser, "password" | "salt" | "totp_secret" | "locked" | "created" | "updated"> & { dash_id: string, guilds?: string[] };
 
 export type { DashUser, DashRole, DashLoginMethods, DashSession };

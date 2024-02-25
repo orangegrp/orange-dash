@@ -2,30 +2,42 @@
     import { Text, Spacer, Checkbox, Button, Key } from "geist-ui-svelte";
     import Icon from "../../components/Icon.svelte";
     import { Modal } from "geist-ui-svelte";
+    import { Turnstile } from "svelte-turnstile";
 
     let showForgotOtp: boolean = false;
+    let buttonLoading: boolean = false;
+    let mfa_form: HTMLFormElement;
+
     let otp = ["", "", "", "", "", ""];
 
     function focusNext(event, index) {
+        if (index === 5) {
+            buttonLoading = true;
+            mfa_form.submit();
+        }
+
         if (event.target.value.length >= 1) {
             event.target.nextElementSibling.focus();
+            buttonLoading = false;
         }
     }
 
     function handleBackspace(event, index) {
         if (event.key === "Backspace" && event.target.value === "") {
             event.target.previousElementSibling.focus();
+            buttonLoading = false;      
         }
     }
 </script>
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[480px] w-full h-56 px-4 sm:px-8 rounded-xl md:rounded-3xl "
+    dark:border-gray-900 py-6 border max-w-[480px] w-full h-80 px-4 sm:px-8 rounded-xl md:rounded-3xl "
 >
     <form
-        action=""
-        on:submit|preventDefault
+        bind:this={mfa_form}
+        action="/login/mfa"
+        method="post"
         class="flex-grow flex w-full flex-col place-items-start justify-center"
     >
         <div class="flex flex-row gap-x-2 mb-2">
@@ -52,6 +64,8 @@
                     inputmode="numeric"
                     autocomplete="one-time-code"
                     type="tel"
+                    id="totp_{index}"
+                    name="totp_{index}"
                     maxlength="1"
                     class="otp-input bg-transparent order-3 min-w-0 text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg"
                     bind:value={otp[index]}
@@ -62,16 +76,23 @@
         </div>
         <Spacer h={15} />
         <div class="flex place-items-center justify-between w-full">
-            <Checkbox ring color="success">
-                <Text type="small" color="secondary">Remember me</Text>
+            <Checkbox ring color="success" id="remember" name="remember">
+                <Text type="small" color="secondary">Remember me for 7 days</Text>
             </Checkbox>
             <Text type="small">
                 <button on:click={() => (showForgotOtp = true)}>No OTP?</button>
             </Text>
         </div>
         <Spacer h={15} />
-        <Button type="submit" width="100%" color="success-light"
-            >Continue
+        <Turnstile siteKey="3x00000000000000000000FF" />
+        <Spacer h={15} />
+        <Button type="submit" width="100%" color="success-light" loading={buttonLoading}
+            >
+            <Text size="sm">
+                {#if !buttonLoading}
+                    Continue
+                {/if}
+            </Text>
             <Spacer w={10} />
             <svg
                 xmlns="http://www.w3.org/2000/svg"

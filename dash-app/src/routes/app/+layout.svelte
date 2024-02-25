@@ -62,7 +62,7 @@
         <div
             class="w-full flex-grow px-4 border-b dark:border-b-gray-900 border-b-gray-100"
         >
-            <div id="header-borderless-parent">
+            <div id="header-borderless-parent" data-sveltekit-reload>
                 <Tabs border={true}>
                     <TabItem
                         initialSelected={$page.url.pathname === "/app" ||

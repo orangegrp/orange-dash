@@ -1,7 +1,5 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { page } from "$app/stores";
-    import type { DashSession } from "$lib/auth/dash.d.ts";
 
     import { Text, Button, Modal, Spacer } from "geist-ui-svelte";
     import AppHeader from "../../components/AppHeader.svelte";
@@ -31,10 +29,23 @@
             class="flex md:flex-col flex-row justify-start gap-y-1 gap-x-2 overflow-x-auto w-full min-w-fit max-w-[15vw]"
         >
             <Text size="xs" class="display-none md:block ml-2">ACCOUNT</Text>
-            <NavButton active={$currentSectionIndex === 0} btnClicked={() => currentSectionIndex.set(0)}>General</NavButton>
-            <NavButton active={$currentSectionIndex === 1} btnClicked={() => currentSectionIndex.set(1)}>Security</NavButton>
-            <Text size="xs" class="display-none md:block mt-2 ml-2">ADDITIONAL</Text>
-            <NavButton active={$currentSectionIndex === 2} btnClicked={() => currentSectionIndex.set(2)}>Danger Zone</NavButton>
+            <NavButton
+                active={$currentSectionIndex === 0}
+                btnClicked={() => currentSectionIndex.set(0)}>General</NavButton
+            >
+            <NavButton
+                active={$currentSectionIndex === 1}
+                btnClicked={() => currentSectionIndex.set(1)}
+                >Security</NavButton
+            >
+            <Text size="xs" class="display-none md:block mt-2 ml-2"
+                >ADDITIONAL</Text
+            >
+            <NavButton
+                active={$currentSectionIndex === 2}
+                btnClicked={() => currentSectionIndex.set(2)}
+                >Danger Zone</NavButton
+            >
         </div>
     </svelte:fragment>
     <svelte:fragment slot="content">
@@ -48,7 +59,6 @@
             />
         {/key}
     </svelte:fragment>
-
 </AppContent>
 
 <Modal
