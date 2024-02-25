@@ -4,7 +4,7 @@
 	import "../app.css";
 	import { page } from '$app/stores';
 
-	import { Header, LightSwitch, Details, Center, Text } from "geist-ui-svelte";
+	import { Header, LightSwitch, Details, Center, Text, Note } from "geist-ui-svelte";
 	import Icon from "./components/Icon.svelte";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
@@ -26,6 +26,15 @@
 </script>
 
 <ModeWatcher />
+
+<div class="animate-pulse">
+	<Note color="warning" label>
+		<Text slot="label" b>ATTENTION! / ВНИМАНИЕ! / ¡ATENCIÓN!</Text>
+		&nbsp;&nbsp;&nbsp;This is a test instance, all data on this domain will be destroyed periodically!
+		&nbsp;&nbsp;&nbsp;Это тестовый экземпляр, все данные на этом домене будут периодически удаляться!
+		&nbsp;&nbsp;&nbsp;Esta es una instancia de prueba, ¡todos los datos de este dominio se destruirán periódicamente!
+	</Note>
+</div>
 
 <Header noBorder={$page.url.pathname.startsWith("/app") ? true : false}>
 	<div
