@@ -136,24 +136,3 @@
         <Spacer h={10} />
     </div>
 </Modal>
-
-<style>
-    .iframe-container {
-        position: relative;
-        width: 100%;
-        height: 0;
-        padding-top: var(
-            --aspect-ratio,
-            100%
-        ); /* Default to  100% if no aspect ratio is set */
-        overflow: hidden;
-    }
-
-    .iframe-container iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-</style>
