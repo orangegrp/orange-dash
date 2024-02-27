@@ -1,24 +1,20 @@
 <script lang="ts">
-    import { goto, invalidate } from "$app/navigation";
+    import { goto } from "$app/navigation";
     import { page } from "$app/stores";
-    import type { DashSession, DashUser } from "$lib/auth/dash";
-    import type { Button as GButtonType } from "geist-ui-svelte";
+    import type { DashUser } from "$lib/auth/dash";
     import {
         Note,
         Text,
         FieldSet,
         Spacer,
         Button,
-        Modal,
-        Input,
-        Center,
         Card,
-        Badge,
         Snippet,
         Details,
-        Link,
     } from "geist-ui-svelte";
+
     import { onMount } from "svelte";
+    import PasswordDialogue from "../../../components/dialogue/PasswordDialogue.svelte";
 
     // hack workaround
     function changeBackground(elem_id: string) {
@@ -28,22 +24,8 @@
         (target as HTMLElement).classList.remove("dark:bg-gray-999");
     }
 
-    let oldPasswordInput = "";
-    let passwordInput1 = "";
-    let passwordInput2 = "";
-
-    let setPasswordConfirmation = false;
-    let passwordError = 0;
     let changePasswordConfirmation = false;
-
-    let totpAddConfirmationAfterPasswordValidation = false;
-
-    let qrcode = "";
-    let otpurl = "";
-    let otpsecret = "";
-
-    let totpAddConfirmation = false;
-    let totpResetConfirmation = false;
+    let setPasswordConfirmation = false;
 
     let userName = "";
     let dashId = "";
@@ -62,11 +44,15 @@
         oauth2id = dashAccount.oauth2_id;
     });
 
+    let totpAddConfirmation;
+    let totpResetConfirmation;
+
+    /*
     let otp = ["", "", "", "", "", ""];
 
     function focusNext(event, index) {
         if (index === 5) {
-            passwordInput2 = otp.join("");
+            //passwordInput2 = otp.join("");
         }
 
         if (event.target.value.length >= 1) {
@@ -74,11 +60,21 @@
         }
     }
 
+    let totpAddConfirmationAfterPasswordValidation = false;
+
+    let qrcode = "";
+    let otpurl = "";
+    let otpsecret = "";
+
+    let totpAddConfirmation = false;
+    let totpResetConfirmation = false;
+
     function handleBackspace(event, index) {
         if (event.key === "Backspace" && event.target.value === "") {
             event.target.previousElementSibling.focus();
         }
     }
+    */
 </script>
 
 <div class="w-full">
@@ -272,114 +268,106 @@
     </div>
 </div>
 
-<Modal
-    bind:visible={setPasswordConfirmation}
-    class="sm:w-[50vw] md:w-[40vw] lg:w-[25vw] h-fit"
+<PasswordDialogue
+    bind:show={setPasswordConfirmation}
+    mode="set"
+    action={(e, pw) => {
+        fetch(`/api/account/password`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                password: pw,
+            }),
+        }).then(async (r) => {
+            goto((await r.json()).goto);
+        });
+    }}
+/>
+
+<!--
+
+<ActionDialogue
+    bind:show={setPasswordConfirmation}
+    title="Set a Password"
+    message="Your password must be at least 10 characters."
+    actionBtnColor="success"
+    actionButtonText="Set Password"
+    nonaction={() => {
+        passwordInput1 = "";
+        passwordInput2 = "";
+    }}
+    action={() => {
+        if (!checkPasswords()) {
+            setTimeout(() => (setPasswordConfirmation = true), 100);
+            return;
+        }
+
+    }}
 >
-    <div
-        class="p-6 flex flex-col place-items-center
-	 justify-center"
-    >
-        <Text type="h5">Set a Password</Text>
-        <Spacer h={10} />
-        <Text color="secondary">
-            Aim for 16 characters (randomly generated) or about 4 words.
+    <Spacer h={5} />
+    {#if passwordError === 1}
+        <Text color="error" size="xs" align="center">
+            Passwords do not match. Please check the password and try again.
         </Text>
-        <Spacer h={5} />
-        {#if passwordError === 1}
-            <Text color="error" size="xs">
-                Password do not match. Please check the password and try again.
-            </Text>
-        {:else if passwordError === 2}
-            <Text color="error" size="xs">
-                Password cannot be empty. Are you asking to get hacked or what?
-            </Text>
-        {:else if passwordError === 3}
-            <Text color="error" size="xs">
-                Password must be at least 10 characters long.
-            </Text>
-        {:else}
-            <Text color="success" size="xs">
-                Passwords are encrypted in transit and represented using secure
-                hashing algorithms.
-                <a
-                    class="underline text-xs"
-                    href="https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/"
-                >
-                    Learn more.
-                </a>
-            </Text>
+    {:else if passwordError === 2}
+        <Text color="error" size="xs" align="center">
+            Password cannot be empty. Are you asking to get hacked or what?
+        </Text>
+    {:else if passwordError === 3}
+        <Text color="error" size="xs" align="center">
+            Password must be at least 10 characters long.
+        </Text>
+    {:else if passwordError === 4}
+        <Text color="error" size="xs" align="center">
+            Password is not secure enough. Use a more complex password.
+        </Text>
+    {:else}
+        <Text color="success" size="xs" align="center">
+            Passwords are encrypted in transit and represented using secure
+            hashing algorithms.
+            <a
+                class="underline text-xs"
+                href="https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/"
+            >
+                Learn more.
+            </a>
+        </Text>
+    {/if}
+    <Spacer h={5} />
+    <div class="w-full">
+        <Input
+            bind:value={passwordInput1}
+            type="password"
+            width="100%"
+            placeholder="New Password"
+            size="base"
+        >
+            New Password
+        </Input>
+        {#if passwordInput1.length > 0}
+            <div class="w-full flex justify-end mt-1">
+                <Text size="xs" color={passwordScore > 3 ? "success" : "error"}>
+                    {passwordScore > 3
+                        ? "Nice one. Your password is secure"
+                        : "Weak password. Keep typing"}
+                </Text>
+            </div>
         {/if}
         <Spacer h={5} />
-        <div class="w-full">
-            <Input
-                bind:value={passwordInput1}
-                type="password"
-                width="100%"
-                size="base">New Password</Input
-            >
-            <Spacer h={5} />
-            <Input
-                bind:value={passwordInput2}
-                type="password"
-                width="100%"
-                size="base">Confirm Password</Input
-            >
-        </div>
-        <Spacer h={20} />
-        <div class="w-full flex flex-row justify-between gap-x-4">
-            <Button
-                width="100%"
-                color="success"
-                on:click={() => {
-                    if (passwordInput1 !== passwordInput2) {
-                        setPasswordConfirmation = false;
-                        passwordError = 1;
-                        setTimeout(() => (setPasswordConfirmation = true), 100);
-                        return;
-                    }
-                    if (passwordInput1 === "") {
-                        setPasswordConfirmation = false;
-                        passwordError = 2;
-                        setTimeout(() => (setPasswordConfirmation = true), 100);
-                        return;
-                    } else if (passwordInput1.length < 10) {
-                        setPasswordConfirmation = false;
-                        passwordError = 3;
-                        setTimeout(() => (setPasswordConfirmation = true), 100);
-                        return;
-                    } else {
-                        // password ok
-                        fetch(`/api/account/password`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                password: passwordInput1,
-                            }),
-                        }).then(async (r) => {
-                            goto((await r.json()).goto);
-                        });
-                    }
-                }}>Set Password</Button
-            >
-            <Button
-                width="100%"
-                on:click={() => {
-                    setPasswordConfirmation = false;
-                    passwordError = 0;
-                    passwordInput1 = "";
-                    passwordInput2 = "";
-                }}
-            >
-                Cancel
-            </Button>
-        </div>
-        <Spacer h={10} />
+        <Input
+            bind:value={passwordInput2}
+            type="password"
+            width="100%"
+            placeholder="Confirm Password"
+            size="base">Confirm Password</Input
+        >
     </div>
-</Modal>
+</ActionDialogue>
+-->
 
+<!--
 <Modal
     bind:visible={changePasswordConfirmation}
     class="sm:w-[50vw] md:w-[40vw] lg:w-[25vw] h-fit"
@@ -721,6 +709,8 @@
         <Spacer h={10} />
     </div>
 </Modal>
+
+-->
 
 <style>
     .security-image {

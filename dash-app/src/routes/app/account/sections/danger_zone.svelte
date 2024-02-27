@@ -8,10 +8,10 @@
         FieldSet,
         Spacer,
         Button,
-        Modal,
         Input,
     } from "geist-ui-svelte";
     import { onMount } from "svelte";
+    import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
 
     // hack workaround
     function changeBackground(elem_id: string) {
@@ -21,18 +21,18 @@
         (target as HTMLElement).classList.remove("dark:bg-gray-999");
     }
 
-    let deleteConfirmation = false;
+    let showLockConfirmation = false;
+    let showDeleteConfirmation = false;
     let deleteConfirmationInput = "";
-    let lockConfirmation = false;
 
-    let dashId = "";
+    let userId = "";
 
     onMount(() => {
         changeBackground("delete-action-card");
         changeBackground("lock-action-card");
 
         const dashAccount = $page.data.dash_account as DashUser;
-        dashId = dashAccount.id;
+        userId = dashAccount.id;
     });
 </script>
 
@@ -57,7 +57,7 @@
                 <Button
                     color="secondary-light"
                     size="sm"
-                    on:click={() => (lockConfirmation = true)}
+                    on:click={() => (showLockConfirmation = true)}
                     >Lock Account</Button
                 >
             </div>
@@ -78,7 +78,7 @@
                 <Button
                     color="error-light"
                     size="sm"
-                    on:click={() => (deleteConfirmation = true)}
+                    on:click={() => (showDeleteConfirmation = true)}
                     >Delete Account</Button
                 >
             </div>
@@ -86,84 +86,44 @@
     </div>
 </div>
 
-<Modal
-    bind:visible={lockConfirmation}
-    class="sm:w-[50vw] md:w-[40vw] lg:w-[25vw] h-fit"
->
-    <div
-        class="p-6 flex flex-col place-items-center
-	 justify-center"
-    >
-        <Text type="h5">Lock Account</Text>
-        <Spacer h={10} />
-        <Text align="center" color="warning">
-            Your account will be <Text b>completely unusable</Text> after you lock
-            it. You will be signed out of Dash from all devices.
-        </Text>
-        <Spacer h={20} />
-        <div class="w-full flex flex-row justify-between gap-x-4">
-            <Button
-                width="100%"
-                color="warning"
-                on:click={() => {
-                    lockConfirmation = false;
-                    fetch(`/api/account/lock`, {
-                        method: "POST",
-                    }).then(async (r) => goto((await r.json()).goto));
-                }}
-            >
-                Lock Account</Button
-            >
-            <Button width="100%" on:click={() => (lockConfirmation = false)}>
-                Cancel
-            </Button>
-        </div>
-        <Spacer h={10} />
-    </div>
-</Modal>
+<ActionDialogue
+    bind:show={showLockConfirmation}
+    title="Lock Account"
+    message="Your account will be completely unusable after you lock it. You will be signed out of Dash from all devices."
+    txtColor="warning"
+    actionBtnColor="warning"
+    actionButtonText="Lock Account"
+    action={() => {
+        fetch(`/api/account/lock`, {
+            method: "POST",
+        }).then(async (r) => goto((await r.json()).goto));
+    }}
+/>
 
-<Modal
-    bind:visible={deleteConfirmation}
-    class="sm:w-[50vw] md:w-[40vw] lg:w-[25vw] h-fit"
+<ActionDialogue
+    bind:show={showDeleteConfirmation}
+    title="Delete Account"
+    actionBtnColor="error"
+    actionButtonText="Delete Account"
+    action={() => {
+        if (deleteConfirmationInput === userId) {
+            fetch(`/api/account/delete`, {
+                method: "POST",
+            }).then(async (r) => goto((await r.json()).goto));
+        } else {
+            setTimeout(() => (showDeleteConfirmation = true), 100);
+        }
+    }}
 >
-    <div
-        class="p-6 flex flex-col place-items-center
-	 justify-center"
-    >
-        <Text type="h5">Delete Account</Text>
-        <Spacer h={10} />
-        <Text color="error">
-            Type <Text b blockquote class="select-none">{dashId}</Text> to delete
-            your account.
-        </Text>
-        <Spacer h={10} />
-        <Input
-            placeholder={dashId}
-            bind:value={deleteConfirmationInput}
-            width="100%"
-            size="base"
-        />
-        <Spacer h={20} />
-        <div class="w-full flex flex-row justify-between gap-x-4">
-            <Button
-                width="100%"
-                color="error"
-                on:click={() => {
-                    if (deleteConfirmationInput === dashId) {
-                        deleteConfirmation = false;
-                        fetch(`/api/account/delete`, {
-                            method: "POST",
-                        }).then(async (r) => goto((await r.json()).goto));
-                    } else {
-                        deleteConfirmation = false;
-                        setTimeout(() => (deleteConfirmation = true), 100);
-                    }
-                }}>Delete</Button
-            >
-            <Button width="100%" on:click={() => (deleteConfirmation = false)}>
-                Cancel
-            </Button>
-        </div>
-        <Spacer h={10} />
-    </div>
-</Modal>
+    <Text color="error" align="center">
+        Type <Text b blockquote class="select-none">{userId}</Text> to delete your
+        account.
+    </Text>
+    <Spacer h={10} />
+    <Input
+        placeholder={userId}
+        bind:value={deleteConfirmationInput}
+        width="100%"
+        size="base"
+    />
+</ActionDialogue>

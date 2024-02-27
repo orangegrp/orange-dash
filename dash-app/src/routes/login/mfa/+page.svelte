@@ -1,5 +1,5 @@
 <script lang="ts">
-    import MFAForm from "../components/mfa_form.svelte";
+    import MFAForm from "../../components/MFAForm.svelte";
 </script>
 
 <main

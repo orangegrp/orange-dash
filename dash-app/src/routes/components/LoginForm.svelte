@@ -9,7 +9,7 @@
         Center,
         Key,
     } from "geist-ui-svelte";
-    import Icon from "../../components/Icon.svelte";
+    import Icon from "./Icon.svelte";
     import { Modal } from "geist-ui-svelte";
     import { Turnstile } from 'svelte-turnstile';
 

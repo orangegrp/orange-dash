@@ -1,32 +1,25 @@
 <script lang="ts">
-    import type { DashSession, DashUser } from "$lib/auth/dash";
+    import type { DashUser } from "$lib/auth/dash";
     import { page } from "$app/stores";
     import { onMount } from "svelte";
 
-    import {
-        Card,
-        Text,
-        Spacer,
-        Snippet,
-        Badge,
-        Details,
-    } from "geist-ui-svelte";
+    import { Card, Text, Spacer, Snippet, Details } from "geist-ui-svelte";
 
+    let userId = "";
     let userName = "";
-    let dashId = "";
     let loginMethods = [];
-    let oauth2id = "";
+    let OAuth2_Id = "";
     let accountType = "";
 
     onMount(() => {
         const dashAccount = $page.data.dash_account as DashUser;
         console.log(dashAccount);
 
-        dashId = dashAccount.id;
+        userId = dashAccount.id;
         userName = dashAccount.username ? `${dashAccount.username}` : "";
         loginMethods = dashAccount.login_methods;
-        oauth2id = dashAccount.oauth2_id;
-        accountType = dashAccount.role;
+        OAuth2_Id = dashAccount.oauth2_id;
+        accountType = dashAccount.account_type;
     });
 </script>
 
@@ -61,16 +54,16 @@
                     </Text>
                 </div>
             {/if}
-            {#if dashId}
+            {#if userId}
                 <div>
                     <Text size="sm" class="self-center">Dash Account ID:</Text>
-                    <Snippet type="lite" text={dashId} symbol="" />
+                    <Snippet type="lite" text={userId} symbol="" />
                 </div>
             {/if}
-            {#if oauth2id}
+            {#if OAuth2_Id}
                 <div>
                     <Text size="sm" class="self-center">OAuth2 Client ID:</Text>
-                    <Snippet type="lite" text={oauth2id} symbol="" />
+                    <Snippet type="lite" text={OAuth2_Id} symbol="" />
                 </div>
             {/if}
         </div>

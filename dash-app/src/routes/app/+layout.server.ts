@@ -18,11 +18,11 @@ function omit<T extends object, K extends keyof T>(obj: T, ...keys: K[]): Omit<T
     return result;
 }
 
-export const load = async ({ parent }) => {
+export const load = async (event) => {
     if (!pb)
         await initDb();
 
-    const { session } = await parent();
+    const { session } = await event.parent();
     const dash_account = await getDashUser(session.dash_id);
 
     if (!dash_account || dash_account.locked) {

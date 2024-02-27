@@ -39,6 +39,8 @@
 		"mode-watcher": "^0.2.1",
 		"otpauth": "^9.2.2",
 		"pocketbase": "^0.21.1",
-		"qrcode": "^1.5.3"
+		"qrcode": "^1.5.3",
+		"svelte-password-strength-bar": "^0.1.5",
+		"zxcvbn": "^4.4.2"
 	}
 }

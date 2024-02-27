@@ -1,5 +1,5 @@
 <script lang="ts">
-    import LoginForm from "./components/login_form.svelte";
+    import LoginForm from "../components/LoginForm.svelte";
 </script>
 
 <main
