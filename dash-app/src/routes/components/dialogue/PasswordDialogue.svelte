@@ -69,7 +69,7 @@
             return;
         }
         password = passwordInput1;
-        action(e, passwordInput1);
+        action(e, passwordInput1, oldPassword);
     }}
 >
     <Spacer h={5} />
@@ -109,13 +109,13 @@
                 </Text>
             {:else}
                 <Text color="success" size="xs" align="center">
-                    Passwords are encrypted in transit and represented using
-                    secure hashing algorithms.
+                    Passwords are encrypted in transit and are represented using
+                    a secure hashing &amp; salting algorithm
                     <a
                         class="underline text-xs"
-                        href="https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/"
+                        href="https://en.wikipedia.org/wiki/SHA-2"
                     >
-                        Learn more.
+                        SHA-256.
                     </a>
                 </Text>
             {/if}

@@ -16,7 +16,7 @@ async function decryptTotpSecret(dash_id: string, password: string, totp_encrypt
     try {
         const dash_account = await getDashUser(dash_id);
         const key = Buffer.from(crypto.createHash("sha1").update(`${dash_id + password + dash_account.salt}`).digest("hex")).subarray(0, 32);
-        const decrypted = decrypt(key, Buffer.from(totp_encrypted, "hex"), null);
+        const decrypted = decrypt(key, Buffer.from(totp_encrypted, "hex"));
     
         return decrypted.toString("utf-8");
     } catch {
@@ -28,7 +28,7 @@ async function encryptTotpSecret(dash_id: string, password: string, totp_secret:
     try {
         const dash_account = await getDashUser(dash_id);
         const key = Buffer.from(crypto.createHash("sha1").update(`${dash_id + password + dash_account.salt}`).digest("hex")).subarray(0, 32);
-        const encrypted = encrypt(key, Buffer.from(totp_secret, "utf-8"), null);
+        const encrypted = encrypt(key, Buffer.from(totp_secret, "utf-8"));
     
         return encrypted.toString("hex");
     } catch {
@@ -39,22 +39,22 @@ async function encryptTotpSecret(dash_id: string, password: string, totp_secret:
 async function calculatePasswordHash(dash_id: string, password: string): Promise<string> {
     try {
         const dash_account = await getDashUser(dash_id);
-        return crypto.createHash('sha256').update(dash_id + password + dash_account.salt).digest('hex');
+        return crypto.createHash("sha256").update(dash_id + password + dash_account.salt).digest("hex");
     } catch {
         return undefined;
     }
 }
 
 function generateRandomSalt(length) {
-    return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length);
+    return crypto.randomBytes(Math.ceil(length / 2)).toString("hex").slice(0, length);
 }
 
 async function initDb() {
     pb = new pocketbase(POCKETBASE_SERVER);
 
-    pb.collection('users').authWithPassword(POCKETBASE_USER, POCKETBASE_PASSWORD).then(() => {
+    pb.collection("users").authWithPassword(POCKETBASE_USER, POCKETBASE_PASSWORD).then(() => {
         setInterval(() => {
-            pb.collection('users').authRefresh().then(() => { }).catch(() => { });
+            pb.collection("users").authRefresh().then(() => { }).catch(() => { });
         }, 60 * 60 * 1000);
     }).catch(() => {
         setTimeout(initDb, 5000);

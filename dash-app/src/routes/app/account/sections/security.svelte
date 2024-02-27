@@ -15,6 +15,7 @@
 
     import { onMount } from "svelte";
     import PasswordDialogue from "../../../components/dialogue/PasswordDialogue.svelte";
+    import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
 
     // hack workaround
     function changeBackground(elem_id: string) {
@@ -24,8 +25,9 @@
         (target as HTMLElement).classList.remove("dark:bg-gray-999");
     }
 
+    let setPasswordPrompt = false;
     let changePasswordConfirmation = false;
-    let setPasswordConfirmation = false;
+    let changePasswordPrompt = false;
 
     let userName = "";
     let dashId = "";
@@ -206,7 +208,7 @@
                     <Button
                         color="success-light"
                         size="sm"
-                        on:click={() => (setPasswordConfirmation = true)}
+                        on:click={() => (setPasswordPrompt = true)}
                         >Add Password</Button
                     >
                 {/if}
@@ -269,7 +271,7 @@
 </div>
 
 <PasswordDialogue
-    bind:show={setPasswordConfirmation}
+    bind:show={setPasswordPrompt}
     mode="set"
     action={(e, pw) => {
         fetch(`/api/account/password`, {
@@ -286,211 +288,47 @@
     }}
 />
 
-<!--
-
 <ActionDialogue
-    bind:show={setPasswordConfirmation}
-    title="Set a Password"
-    message="Your password must be at least 10 characters."
-    actionBtnColor="success"
-    actionButtonText="Set Password"
-    nonaction={() => {
-        passwordInput1 = "";
-        passwordInput2 = "";
-    }}
-    action={() => {
-        if (!checkPasswords()) {
-            setTimeout(() => (setPasswordConfirmation = true), 100);
-            return;
-        }
-
-    }}
+    bind:show={changePasswordConfirmation}
+    title="Change Password"
+    message="Changing your password will reset any multi-factor authentication steps you have configured."
+    txtColor="warning"
+    actionBtnColor="warning"
+    actionButtonText="I understand"
+    action={() => (changePasswordPrompt = true)}
 >
     <Spacer h={5} />
-    {#if passwordError === 1}
-        <Text color="error" size="xs" align="center">
-            Passwords do not match. Please check the password and try again.
-        </Text>
-    {:else if passwordError === 2}
-        <Text color="error" size="xs" align="center">
-            Password cannot be empty. Are you asking to get hacked or what?
-        </Text>
-    {:else if passwordError === 3}
-        <Text color="error" size="xs" align="center">
-            Password must be at least 10 characters long.
-        </Text>
-    {:else if passwordError === 4}
-        <Text color="error" size="xs" align="center">
-            Password is not secure enough. Use a more complex password.
-        </Text>
-    {:else}
-        <Text color="success" size="xs" align="center">
-            Passwords are encrypted in transit and represented using secure
-            hashing algorithms.
-            <a
-                class="underline text-xs"
-                href="https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/"
-            >
-                Learn more.
-            </a>
-        </Text>
-    {/if}
-    <Spacer h={5} />
-    <div class="w-full">
-        <Input
-            bind:value={passwordInput1}
-            type="password"
-            width="100%"
-            placeholder="New Password"
-            size="base"
-        >
-            New Password
-        </Input>
-        {#if passwordInput1.length > 0}
-            <div class="w-full flex justify-end mt-1">
-                <Text size="xs" color={passwordScore > 3 ? "success" : "error"}>
-                    {passwordScore > 3
-                        ? "Nice one. Your password is secure"
-                        : "Weak password. Keep typing"}
-                </Text>
-            </div>
-        {/if}
-        <Spacer h={5} />
-        <Input
-            bind:value={passwordInput2}
-            type="password"
-            width="100%"
-            placeholder="Confirm Password"
-            size="base">Confirm Password</Input
-        >
-    </div>
+    <Text color="secondary" size="xs" align="center">
+        Multi-factor authentication secret data is securely encrypted using
+        AES-256-GCM with a key derived from your password in memory. This
+        password is never stored on our servers.
+    </Text>
 </ActionDialogue>
--->
+
+<PasswordDialogue
+    bind:show={changePasswordPrompt}
+    mode="change"
+    action={(e, pw, oldpw) => {
+        fetch(`/api/account/password`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                old_password: oldpw,
+                password: pw,
+            }),
+        }).then(async (r) => {
+            goto((await r.json()).goto);
+        });
+    }}
+/>
 
 <!--
-<Modal
-    bind:visible={changePasswordConfirmation}
-    class="sm:w-[50vw] md:w-[40vw] lg:w-[25vw] h-fit"
->
-    <div
-        class="p-6 flex flex-col place-items-center
-	 justify-center"
-    >
-        <Text type="h5">Change Password</Text>
-        <Text color="secondary" size="xs">
-            You will need to reconfigure MFA afterwards
-        </Text>
-        <Spacer h={10} />
-        {#if passwordError === 1}
-            <Text color="error" size="xs">
-                Password do not match. Please check the password and try again.
-            </Text>
-        {:else if passwordError === 2}
-            <Text color="error" size="xs">
-                Password cannot be empty. Are you asking to get hacked or what?
-            </Text>
-        {:else if passwordError === 3}
-            <Text color="error" size="xs">
-                Password must be at least 10 characters long.
-            </Text>
-        {:else}
-            <Text color="success" size="xs">
-                Passwords are encrypted in transit and represented using secure
-                hashing algorithms.
-                <a
-                    class="underline text-xs"
-                    href="https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/"
-                >
-                    Learn more.
-                </a>
-            </Text>
-        {/if}
-        <Spacer h={5} />
-        <div class="w-full">
-            <Input
-                bind:value={oldPasswordInput}
-                type="password"
-                width="100%"
-                size="base">Old Password</Input
-            >
-            <Spacer h={5} />
-            <Input
-                bind:value={passwordInput1}
-                type="password"
-                width="100%"
-                size="base">New Password</Input
-            >
-            <Spacer h={5} />
-            <Input
-                bind:value={passwordInput2}
-                type="password"
-                width="100%"
-                size="base">Confirm Password</Input
-            >
-        </div>
-        <Spacer h={20} />
-        <div class="w-full flex flex-row justify-between gap-x-4">
-            <Button
-                width="100%"
-                color="secondary"
-                on:click={() => {
-                    if (passwordInput1 !== passwordInput2) {
-                        changePasswordConfirmation = false;
-                        passwordError = 1;
-                        setTimeout(
-                            () => (changePasswordConfirmation = true),
-                            100,
-                        );
-                        return;
-                    }
-                    if (passwordInput1 === "") {
-                        changePasswordConfirmation = false;
-                        passwordError = 2;
-                        setTimeout(
-                            () => (changePasswordConfirmation = true),
-                            100,
-                        );
-                        return;
-                    } else if (passwordInput1.length < 10) {
-                        changePasswordConfirmation = false;
-                        passwordError = 3;
-                        setTimeout(
-                            () => (changePasswordConfirmation = true),
-                            100,
-                        );
-                        return;
-                    } else {
-                        // password ok
-                        fetch(`/api/account/password`, {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                old_password: oldPasswordInput,
-                                password: passwordInput1,
-                            }),
-                        }).then(async (r) => {
-                            goto((await r.json()).goto);
-                        });
-                    }
-                }}>Change Password</Button
-            >
-            <Button
-                width="100%"
-                on:click={() => {
-                    changePasswordConfirmation = false;
-                    passwordError = 0;
-                    passwordInput1 = "";
-                    passwordInput2 = "";
-                }}
-            >
-                Cancel
-            </Button>
-        </div>
-        <Spacer h={10} />
-    </div>
-</Modal>
+
+
+
+
 
 <Modal
     bind:visible={totpResetConfirmation}

@@ -25,7 +25,7 @@
 	});
 </script>
 
-<ModeWatcher />
+<ModeWatcher defaultMode="dark" />
 
 <div class="animate-pulse">
 	<Note color="warning" label>
