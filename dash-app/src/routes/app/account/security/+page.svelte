@@ -75,7 +75,7 @@
         one. You will need to sign in again after making changes.
     </Note>
 
-    <Card shadow class="p-6 mt-4">
+    <Card class="p-6 mt-4 dark:shadow-gray-985 shadow-2xl">
         <Text
             type="h4"
             class="font-normal flex flex-row place-items-center gap-x-2"
@@ -130,7 +130,7 @@
         {/if}
     </Card>
 
-    <div class="mt-4" id="password-action-card">
+    <div class="mt-4 dark:shadow-gray-985 shadow-2xl" id="password-action-card">
         <FieldSet color="transparent">
             <div class="p-2">
                 <Text
@@ -206,7 +206,7 @@
         </FieldSet>
     </div>
 
-    <div class="mt-4" id="totp-action-card">
+    <div class="mt-4 dark:shadow-gray-985 shadow-2xl" id="totp-action-card">
         <FieldSet color="transparent">
             <div class="p-2">
                 <Text

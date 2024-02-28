@@ -51,7 +51,7 @@
         Actions on this page could result in permanent data loss which is irreversible.
     </Note>
 
-    <div class="mt-4" id="lock-action-card">
+    <div class="mt-4 dark:shadow-gray-985 shadow-2xl" id="lock-action-card">
         <FieldSet color="transparent">
             <div class="p-2">
                 <Text type="h4" class="font-normal">Lock Account</Text>
@@ -73,7 +73,7 @@
         </FieldSet>
     </div>
 
-    <div class="mt-4" id="delete-action-card">
+    <div class="mt-4 dark:shadow-gray-985 shadow-2xl" id="delete-action-card">
         <FieldSet color="error">
             <div class="p-2">
                 <Text type="h4" class="font-normal">Delete Account</Text>

@@ -26,7 +26,7 @@
 </script>
 
 <div class="w-full">
-    <Card shadow class="p-6">
+    <Card class="p-6 dark:shadow-gray-985 shadow-2xl">
         <Text type="h4" class="font-normal">Account Information</Text>
         <Spacer h={10} />
 

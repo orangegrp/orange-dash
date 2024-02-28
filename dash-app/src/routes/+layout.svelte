@@ -27,15 +27,6 @@
 
 <ModeWatcher defaultMode="dark" />
 
-<div class="animate-pulse">
-	<Note color="warning" label>
-		<Text slot="label" b>ATTENTION! / ВНИМАНИЕ! / ¡ATENCIÓN!</Text>
-		&nbsp;&nbsp;&nbsp;This is a test instance, all data on this domain will be destroyed periodically!
-		&nbsp;&nbsp;&nbsp;Это тестовый экземпляр, все данные на этом домене будут периодически удаляться!
-		&nbsp;&nbsp;&nbsp;Esta es una instancia de prueba, ¡todos los datos de este dominio se destruirán periódicamente!
-	</Note>
-</div>
-
 <Header noBorder={$page.url.pathname.startsWith("/app") ? true : false}>
 	<div
 		class="flex place-items-center justify-between w-full p-2 px-8"
