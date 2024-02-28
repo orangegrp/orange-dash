@@ -1,5 +1,5 @@
 import { sequence } from "@sveltejs/kit/hooks";
-import { redirect, type Handle, type MaybePromise, type RequestEvent, type ResolveOptions, type HandleServerError } from "@sveltejs/kit";
+import { redirect, type Handle, type MaybePromise, type RequestEvent, type ResolveOptions, type HandleServerError, json } from "@sveltejs/kit";
 import { getAccessTokenFromCode } from "$lib/auth/oauth2_discord.server";
 import { getDashUserOauth2, createDashUser, getDashUser, getDashUserUsername, calculatePasswordHash, decryptTotpSecret } from "$lib/auth/dash_account.server";
 import type { DashSession } from "$lib/auth/dash";
@@ -58,7 +58,7 @@ async function totpAuthentication({ event }: MiddlewareSequence) {
 
     const full_token = totp_0 + totp_1 + totp_2 + totp_3 + totp_4 + totp_5;
     const totp_value = await decryptTotpSecret(dash_id, password, user.totp_secret);
-    
+
     console.log(totp_value);
 
     if (!totp_value) {
@@ -113,7 +113,7 @@ async function passwordAuthentication({ event }: MiddlewareSequence) {
     const username = body.get("username");
     const password = body.get("password");
     const remember = body.get("remember");
-   
+
     let user = await getDashUser(username as string);
 
     if (!user) {
@@ -241,10 +241,10 @@ async function authorization({ event, resolve }: MiddlewareSequence) {
         return redirect(303, "/app");
     } else if (event.url.pathname === "/login/mfa" && !event.cookies.get("dash_totp")) {
         return redirect(303, "/login");
-    }else if (event.url.pathname === "/api/diagnostics") {
+    } else if (event.url.pathname === "/api/diagnostics") {
         return await resolve(event);
     } else if (event.url.pathname.startsWith("/api") && !isValidSession(event)) {
-        return new Response("Forbidden", { status: 403 });
+        return json({ success: false, reason: "Invalid session" }, { status: 403 });
     }
 
     return await resolve(event);

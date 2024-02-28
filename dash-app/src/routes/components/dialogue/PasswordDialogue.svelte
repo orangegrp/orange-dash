@@ -70,6 +70,11 @@
         }
         password = passwordInput1;
         action(e, passwordInput1, oldPassword);
+        
+        password = "";
+        oldPassword = "";
+        passwordInput1 = "";
+        passwordInput2 = "";
     }}
 >
     <Spacer h={5} />

@@ -5,7 +5,7 @@
 
     type RedirectTarget = "app" | "login" | "error" | "logout";
     function isValidRedirectTarget(target: string): target is RedirectTarget {
-        return target === "app" || target === "login" || target.startsWith("error");
+        return target === "app" || target === "login" || target.startsWith("error") || target === "logout";
     }
 
     onMount(() => {

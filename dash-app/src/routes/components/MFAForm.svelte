@@ -1,38 +1,18 @@
 <script lang="ts">
     import { Text, Spacer, Checkbox, Button, Key } from "geist-ui-svelte";
-    import Icon from "../../components/Icon.svelte";
+    import Icon from "./Icon.svelte";
     import { Modal } from "geist-ui-svelte";
     import { Turnstile } from "svelte-turnstile";
+    import OtpInput from "./OTPInput.svelte";
 
     let showForgotOtp: boolean = false;
     let buttonLoading: boolean = false;
     let mfa_form: HTMLFormElement;
-
-    let otp = ["", "", "", "", "", ""];
-
-    function focusNext(event, index) {
-        if (index === 5) {
-            buttonLoading = true;
-            mfa_form.submit();
-        }
-
-        if (event.target.value.length >= 1) {
-            event.target.nextElementSibling.focus();
-            buttonLoading = false;
-        }
-    }
-
-    function handleBackspace(event, index) {
-        if (event.key === "Backspace" && event.target.value === "") {
-            event.target.previousElementSibling.focus();
-            buttonLoading = false;      
-        }
-    }
 </script>
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[480px] w-full h-80 px-4 sm:px-8 rounded-xl md:rounded-3xl "
+    dark:border-gray-900 py-6 border max-w-[480px] w-full h-fit px-4 sm:px-8 rounded-xl md:rounded-3xl"
 >
     <form
         bind:this={mfa_form}
@@ -55,39 +35,32 @@
             >One-Time Passcode</Text
         >
 
-        <div class="otp-container w-full space-x-4">
-            {#each otp as digit, index}
-                <input
-                    autocapitalize="off"
-                    autocorrect="off"
-                    spellcheck="false"
-                    inputmode="numeric"
-                    autocomplete="one-time-code"
-                    type="tel"
-                    id="totp_{index}"
-                    name="totp_{index}"
-                    maxlength="1"
-                    class="text-center otp-input bg-transparent order-3 min-w-0 text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg"
-                    bind:value={otp[index]}
-                    on:keydown={(event) => handleBackspace(event, index)}
-                    on:input={(event) => focusNext(event, index)}
-                />
-            {/each}
+        <div class="otp-container w-full space-x-2 h-10">
+            <OtpInput bind:mfa_form={mfa_form} bind:buttonLoading={buttonLoading} />
         </div>
+
         <Spacer h={15} />
         <div class="flex place-items-center justify-between w-full">
             <Checkbox ring color="success" id="remember" name="remember">
-                <Text type="small" color="secondary">Remember me for 7 days</Text>
+                <Text type="small" color="secondary"
+                    >Remember me for 7 days</Text
+                >
             </Checkbox>
             <Text type="small">
-                <button on:click={() => (showForgotOtp = true)}>No OTP?</button>
+                <button type="button" on:click={() => (showForgotOtp = true)}
+                    >No OTP?</button
+                >
             </Text>
         </div>
         <Spacer h={15} />
-        <Turnstile siteKey="3x00000000000000000000FF" />
+        <Turnstile siteKey="1x00000000000000000000AA" />
         <Spacer h={15} />
-        <Button type="submit" width="100%" color="success-light" loading={buttonLoading}
-            >
+        <Button
+            type="submit"
+            width="100%"
+            color="success-light"
+            loading={buttonLoading}
+        >
             <Text size="sm">
                 {#if !buttonLoading}
                     Continue
@@ -134,13 +107,5 @@
     .otp-container {
         display: flex;
         justify-content: space-between;
-    }
-
-    .otp-input {
-        width: 36px;
-        height: 36px;
-        text-align: center;
-        outline: none;
-        margin-right: 5px;
     }
 </style>

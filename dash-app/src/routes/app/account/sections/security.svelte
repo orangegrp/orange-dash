@@ -15,7 +15,10 @@
 
     import { onMount } from "svelte";
     import PasswordDialogue from "../../../components/dialogue/PasswordDialogue.svelte";
+    import MessageDialogue from "../../../components/dialogue/MessageDialogue.svelte";
     import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
+    import OtpInput from "../../../components/OTPInput.svelte";
+    import { writable } from "svelte/store";
 
     // hack workaround
     function changeBackground(elem_id: string) {
@@ -25,14 +28,30 @@
         (target as HTMLElement).classList.remove("dark:bg-gray-999");
     }
 
-    let setPasswordPrompt = false;
-    let changePasswordConfirmation = false;
-    let changePasswordPrompt = false;
+    let showMessage = false;
+    let messageTitle = "";
+    let messageContent = "";
 
+    let setPasswordPrompt = false;
+    let changePasswordPrompt = false;
+    let verifyPasswordPrompt = false;
+    let verifyPasswordReason: "clear-totp" | "set-totp";
+
+    let totpSetupPrompt = false;
+    let totpClearPrompt = false;
+    let verifiedPassword = "";
+
+    let otp_secret = "";
+    let otp_qr = "";
+    let otp_algo = "";
+    let otp_url = "";
+    let otp_response_value = ["", "", "", "", "", ""];
+
+    let sessionId = "";
+    let userId = "";
     let userName = "";
-    let dashId = "";
     let loginMethods = [];
-    let oauth2id = "";
+    let OAuth2_Id = "";
 
     onMount(() => {
         changeBackground("password-action-card");
@@ -40,43 +59,12 @@
 
         const dashAccount = $page.data.dash_account as DashUser;
 
-        dashId = dashAccount.id;
+        userId = dashAccount.id;
         userName = dashAccount.username ? `${dashAccount.username}` : "";
         loginMethods = dashAccount.login_methods;
-        oauth2id = dashAccount.oauth2_id;
+        OAuth2_Id = dashAccount.oauth2_id;
+        sessionId = $page.data.session_id;
     });
-
-    let totpAddConfirmation;
-    let totpResetConfirmation;
-
-    /*
-    let otp = ["", "", "", "", "", ""];
-
-    function focusNext(event, index) {
-        if (index === 5) {
-            //passwordInput2 = otp.join("");
-        }
-
-        if (event.target.value.length >= 1) {
-            event.target.nextElementSibling.focus();
-        }
-    }
-
-    let totpAddConfirmationAfterPasswordValidation = false;
-
-    let qrcode = "";
-    let otpurl = "";
-    let otpsecret = "";
-
-    let totpAddConfirmation = false;
-    let totpResetConfirmation = false;
-
-    function handleBackspace(event, index) {
-        if (event.key === "Backspace" && event.target.value === "") {
-            event.target.previousElementSibling.focus();
-        }
-    }
-    */
 </script>
 
 <div class="w-full">
@@ -101,7 +89,7 @@
                     : "Unavailable"}</Text
             >
         </Text>
-        {#if !loginMethods.includes("OAuth2") && oauth2id}
+        {#if !loginMethods.includes("OAuth2") && OAuth2_Id}
             <Spacer h={8} />
             <Note label={false} color="default">
                 <Text size="sm">
@@ -112,16 +100,16 @@
             <Spacer h={10} />
         {/if}
         <Text size="sm" class="dark:text-gray-200">
-            {#if oauth2id}
+            {#if OAuth2_Id}
                 Your Dash account is linked to your Discord account.
             {:else}
                 Your Dash account is not linked to a Discord account.
             {/if}
         </Text>
-        {#if oauth2id}
+        {#if OAuth2_Id}
             <Spacer h={10} />
             <Text size="sm" class="self-center">OAuth2 Client ID:</Text>
-            <Snippet type="lite" text={oauth2id} symbol="" />
+            <Snippet type="lite" text={OAuth2_Id} symbol="" />
             <Spacer h={15} />
             <Details label="Link to a different account" animate>
                 <Text size="xs">
@@ -201,7 +189,7 @@
                     <Button
                         color="secondary-light"
                         size="sm"
-                        on:click={() => (changePasswordConfirmation = true)}
+                        on:click={() => (changePasswordPrompt = true)}
                         >Change Password</Button
                     >
                 {:else}
@@ -247,16 +235,20 @@
                         <Button
                             color="success-light"
                             size="sm"
-                            on:click={() => (totpAddConfirmation = true)}
-                            >Add Authenticator</Button
+                            on:click={() => {
+                                verifyPasswordReason = "set-totp";
+                                verifyPasswordPrompt = true;
+                            }}>Add Authenticator</Button
                         >
                     {/if}
                     {#if loginMethods.includes("TOTP")}
                         <Button
                             color="secondary-light"
                             size="sm"
-                            on:click={() => (totpResetConfirmation = true)}
-                            >Reset MFA</Button
+                            on:click={() => {
+                                verifyPasswordReason = "clear-totp";
+                                verifyPasswordPrompt = true;
+                            }}>Reset MFA</Button
                         >
                     {/if}
                     {#if !loginMethods.includes("Password") && !loginMethods.includes("TOTP")}
@@ -270,6 +262,13 @@
     </div>
 </div>
 
+<MessageDialogue
+    bind:show={showMessage}
+    title={messageTitle}
+    message={messageContent}
+    buttonText="OK"
+/>
+
 <PasswordDialogue
     bind:show={setPasswordPrompt}
     mode="set"
@@ -277,33 +276,29 @@
         fetch(`/api/account/password`, {
             method: "POST",
             headers: {
+                "X-Dash-SessionId": sessionId,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 password: pw,
             }),
         }).then(async (r) => {
-            goto((await r.json()).goto);
+            const res = await r.json();
+            if (r.status === 200) {
+                messageTitle = "Password Added";
+                messageContent =
+                    "Your Dash account is now protect with a password. You will be logged out for security reasons.";
+                showMessage = true;
+                setTimeout(() => goto(res.goto), 3000);
+            } else {
+                messageTitle = "Password Set Failed";
+                messageContent =
+                    "Failed to set password. Reason: " + res.reason;
+                showMessage = true;
+            }
         });
     }}
 />
-
-<ActionDialogue
-    bind:show={changePasswordConfirmation}
-    title="Change Password"
-    message="Changing your password will reset any multi-factor authentication steps you have configured."
-    txtColor="warning"
-    actionBtnColor="warning"
-    actionButtonText="I understand"
-    action={() => (changePasswordPrompt = true)}
->
-    <Spacer h={5} />
-    <Text color="secondary" size="xs" align="center">
-        Multi-factor authentication secret data is securely encrypted using
-        AES-256-GCM with a key derived from your password in memory. This
-        password is never stored on our servers.
-    </Text>
-</ActionDialogue>
 
 <PasswordDialogue
     bind:show={changePasswordPrompt}
@@ -312,243 +307,191 @@
         fetch(`/api/account/password`, {
             method: "PUT",
             headers: {
+                "X-Dash-SessionId": sessionId,
+                "X-Dash-OldPw": oldpw,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                old_password: oldpw,
                 password: pw,
             }),
         }).then(async (r) => {
-            goto((await r.json()).goto);
+            const res = await r.json();
+            if (r.status === 200) {
+                messageTitle = "Password Updated";
+                messageContent =
+                    "Your Dash account password has been updated. You will be logged out for security reasons.";
+                showMessage = true;
+                setTimeout(() => goto(res.goto), 3000);
+            } else {
+                messageTitle = "Password Change Failed";
+                messageContent =
+                    "Failed to change password. Reason: " + res.reason;
+                showMessage = true;
+            }
         });
     }}
 />
 
-<!--
-
-
-
-
-
-<Modal
-    bind:visible={totpResetConfirmation}
-    class="sm:w-[50vw] md:w-[40vw] lg:w-[25vw] xl:w-[20w] h-fit"
->
-    <div
-        class="p-6 flex flex-col place-items-center
-	 justify-center"
-    >
-        <Text type="h5">Reset MFA</Text>
-        <Spacer h={10} />
-        <Text align="center" color="secondary">
-            Existing authenticators will be invalidated. You may be logged out
-            on other sessions.
-        </Text>
-        <Spacer h={20} />
-        <div class="w-full flex flex-row justify-between gap-x-4">
-            <Button
-                width="100%"
-                color="error"
-                on:click={() => {
-                    fetch(`/api/account/mfa/reset`, {
-                        method: "POST",
-                    }).then(async (r) => {
-                        let result = await r.json();
-                        if (result.success) {
-                            totpResetConfirmation = false;
-                            window.location.href = window.location.href;
-                        } else {
-                            goto(result.goto);
-                        }
-                    });
-                }}
-            >
-                Reset MFA
-            </Button>
-            <Button
-                width="100%"
-                on:click={() => (totpResetConfirmation = false)}
-            >
-                Cancel
-            </Button>
-        </div>
-        <Spacer h={10} />
-    </div>
-</Modal>
-
-<Modal
-    bind:visible={totpAddConfirmation}
-    class="sm:w-[50vw] md:w-[40vw] lg:w-[25vw] h-fit"
->
-    <div
-        class="p-6 flex flex-col place-items-center
- justify-center"
-    >
-        <Text type="h5">Verify Password</Text>
-        <Spacer h={10} />
-        <Text align="center" color="secondary">
-            Please enter your Dash account password to continue.
-        </Text>
-        <Spacer h={10} />
-        <Input type="password" bind:value={passwordInput1} width="100%" />
-        <Spacer h={30} />
-        <div class="w-full flex flex-row justify-between gap-x-4">
-            <Button
-                width="100%"
-                color="success"
-                on:click={() => {
+<PasswordDialogue
+    bind:show={verifyPasswordPrompt}
+    mode="confirm"
+    action={(e, pw) => {
+        fetch(`/api/account/password`, {
+            method: "GET",
+            headers: {
+                "X-Dash-SessionId": sessionId,
+                "X-Dash-Pw": pw,
+                "Content-Type": "application/json",
+            },
+        }).then(async (r) => {
+            const res = await r.json();
+            if (r.status === 200) {
+                if (verifyPasswordReason === "set-totp") {
                     fetch(`/api/account/mfa`, {
-                        method: "POST",
+                        method: "GET",
                         headers: {
+                            "X-Dash-SessionId": sessionId,
+                            "X-Dash-Pw": pw,
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({
-                            password: passwordInput1,
-                        }),
                     }).then(async (r) => {
-                        let result = await r.json();
-                        if (result.success) {
-                            totpAddConfirmation = false;
-                            console.log(result);
-                            otpsecret = result.secret;
-                            qrcode = result.qrcode;
-                            otpurl = result.url;
-                            setTimeout(
-                                () =>
-                                    (totpAddConfirmationAfterPasswordValidation = true),
-                                100,
-                            );
+                        const res = await r.json();
+                        if (r.status === 200) {
+                            otp_secret = res.secret;
+                            otp_qr = res.qr;
+                            otp_algo = res.algorithm;
+                            otp_url = res.url;
+                            verifiedPassword = pw;
+                            totpSetupPrompt = true;
                         } else {
-                            goto(result.goto);
+                            messageTitle = "MFA Setup Failed";
+                            messageContent =
+                                "Failed to setup MFA. Reason: " + res.reason;
+                            showMessage = true;
                         }
                     });
-                }}
-            >
-                Confirm
-            </Button>
-            <Button
-                width="100%"
-                on:click={() => {
-                    passwordInput1 = "";
-                    totpAddConfirmation = false;
-                }}
-            >
-                Cancel
-            </Button>
-        </div>
-        <Spacer h={10} />
-    </div>
-</Modal>
+                } else if (verifyPasswordReason === "clear-totp") {
+                    verifiedPassword = pw;
+                    totpClearPrompt = true;
+                } else {
+                    messageTitle = "Password Verified";
+                    messageContent =
+                        "Thanks for verifying your password. You may continue your action.";
+                    showMessage = true;
+                }
+            } else if (r.status === 403) {
+                messageTitle = "Incorrect Password";
+                messageContent =
+                    "The password you entered was incorrect. Please try again.";
+                showMessage = true;
+            } else {
+                messageTitle = "Password Check Failed";
+                messageContent =
+                    "Failed to check password. Reason: " + res.reason;
+                showMessage = true;
+                //throw `Password check failed: ${await r.text()}`;
+            }
+        });
+    }}
+/>
 
-<Modal
-    bind:visible={totpAddConfirmationAfterPasswordValidation}
-    class="sm:w-[50vw] min-w-fit md:w-[40vw] lg:w-[25vw] h-fit"
+<ActionDialogue
+    bind:show={totpClearPrompt}
+    title="Remove MFA"
+    message="Are you sure you want to remove MFA?"
+    actionBtnColor="error"
+    actionButtonText="Remove MFA"
+    action={() => {
+        fetch(`/api/account/mfa`, {
+            method: "DELETE",
+            headers: {
+                "X-Dash-SessionId": sessionId,
+                "X-Dash-Pw": verifiedPassword,
+                "Content-Type": "application/json",
+            },
+        }).then(async (r) => {
+            const res = await r.json();
+            if (r.status === 200) {
+                messageTitle = "Removed MFA";
+                messageContent = "Your multi-factor authentication settings were reset.";
+                showMessage = true;
+                setTimeout(() => location.reload(), 3000);
+            } else {
+                messageTitle = "MFA Setup Failed";
+                messageContent = "Failed to remove MFA. Reason: " + res.reason;
+                showMessage = true;
+            }
+        });
+    }}
+/>
+
+<ActionDialogue
+    bind:show={totpSetupPrompt}
+    title="Add Authenticator"
+    message="Scan the QR code to add a new authenticator app."
+    action={() => {
+        fetch(`/api/account/mfa`, {
+            method: "POST",
+            headers: {
+                "X-Dash-SessionId": sessionId,
+                "X-Dash-Pw": verifiedPassword,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                code: otp_response_value.join(""),
+                secret: otp_secret,
+            }),
+        }).then(async (r) => {
+            const res = await r.json();
+            if (r.status === 200) {
+                messageTitle = "Authenticator Added";
+                messageContent =
+                    "You can use your authenticator app as a second step to securely log into your Dash account.";
+                showMessage = true;
+                setTimeout(() => location.reload(), 3000);
+            } else {
+                messageTitle = "MFA Setup Failed";
+                messageContent = "Failed to setup MFA. Reason: " + res.reason;
+                showMessage = true;
+            }
+        });
+    }}
+    actionBtnColor="success"
+    actionButtonText="Add Authenticator"
 >
-    <div
-        class="p-6 flex flex-col place-items-center
- justify-center"
-    >
-        <Text type="h5">Add Authenticator</Text>
-        <Spacer h={10} />
-        <Text align="center" color="secondary">
-            Scan the QR code to add a new authenticator app.
-        </Text>
-        <Spacer h={10} />
-        <img
-            src="data:image/png;base64,{qrcode}"
-            draggable="false"
-            on:dragstart={() => false}
-            class="rounded-2xl select-none pointer-events-none security-image"
-            alt="qrcode"
-        />
-        <Spacer h={10} />
-        <div>
-            <Details label="Can't scan the QR code?" animate>
-                <div class="text-xs flex flex-col gap-y-2">
-                    <div class="flex flex-col">
-                        <Text size="xs">Secret:</Text>
-                        <Text size="xs" blockquote>{otpsecret}</Text>
-                    </div>
-                    <div class="flex flex-col">
-                        <Text size="xs">Algorithm:</Text>
-                        <Text size="xs" blockquote>SHA1</Text>
-                    </div>
+    <Spacer h={10} />
+    <img
+        src="data:image/png;base64,{otp_qr}"
+        draggable="false"
+        on:dragstart={() => false}
+        class="rounded-2xl select-none pointer-events-none security-image"
+        alt="OTP QR"
+    />
+    <Spacer h={10} />
+    <div>
+        <Details label="Can't scan the QR code?" animate>
+            <div class="text-xs flex flex-col gap-y-2">
+                <div class="flex flex-col">
+                    <Text size="xs">Secret:</Text>
+                    <Text size="xs" blockquote>{otp_secret}</Text>
                 </div>
-            </Details>
-        </div>
-        <Spacer h={20} />
-        <Text align="center" size="xs" color="secondary">
-            Enter the code displayed on your authenticator app to confirm.
-        </Text>
-        <Spacer h={20} />
-        <div
-            class="otp-container space-x-4 flex flex-row text-center justify-center"
-        >
-            {#each otp as digit, index}
-                <input
-                    autocapitalize="off"
-                    autocorrect="off"
-                    spellcheck="false"
-                    inputmode="numeric"
-                    autocomplete="one-time-code"
-                    type="tel"
-                    id="totp_{index}"
-                    name="totp_{index}"
-                    maxlength="1"
-                    class="text-center otp-input bg-transparent order-3 w-8 h-8 min-w-2 text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg"
-                    bind:value={otp[index]}
-                    on:keydown={(event) => handleBackspace(event, index)}
-                    on:input={(event) => focusNext(event, index)}
-                />
-            {/each}
-        </div>
-        <Spacer h={30} />
-        <div class="w-full flex flex-row justify-between gap-x-4">
-            <Button
-                width="100%"
-                color="success"
-                on:click={() => {
-                    fetch(`/api/account/mfa`, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            password: passwordInput1,
-                            code: passwordInput2,
-                            secret: otpsecret,
-                        }),
-                    }).then(async (r) => {
-                        passwordInput1 = "";
-                        passwordInput2 = "";
-                        let result = await r.json();
-                        if (result.success) {
-                            totpAddConfirmation = false;
-                            totpAddConfirmationAfterPasswordValidation = false;
-                        } else {
-                            goto(result.goto);
-                        }
-                    });
-                }}
-            >
-                Add Authenticator
-            </Button>
-            <Button
-                width="100%"
-                on:click={() => {
-                    passwordInput1 = "";
-                    passwordInput2 = "";
-                    totpAddConfirmationAfterPasswordValidation = false;
-                }}
-            >
-                Cancel
-            </Button>
-        </div>
-        <Spacer h={10} />
+                <div class="flex flex-col">
+                    <Text size="xs">Algorithm:</Text>
+                    <Text size="xs" blockquote>{otp_algo}</Text>
+                </div>
+            </div>
+        </Details>
     </div>
-</Modal>
-
--->
+    <Spacer h={20} />
+    <Text align="center" size="xs" color="secondary">
+        Enter the code displayed on your authenticator app to confirm.
+    </Text>
+    <Spacer h={20} />
+    <div class="flex justify-between min-w-fit w-[75%] space-x-2 h-10">
+        <OtpInput bind:otp={otp_response_value} />
+    </div>
+    <Spacer h={20} />
+</ActionDialogue>
 
 <style>
     .security-image {

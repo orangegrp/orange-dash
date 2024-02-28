@@ -19,6 +19,9 @@ function newSession(session_data: DashSession): string {
 }
 
 function getSession(session_id: string) {
+    if (session_id === undefined)
+        return undefined;
+    
     return SESSION_MAP.get(session_id);
 }
 

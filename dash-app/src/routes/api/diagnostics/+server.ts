@@ -1,7 +1,5 @@
-import { json } from '@sveltejs/kit';
-
+import { success } from '../apilib.js';
 export async function GET(request) {
-
     const data = {
         requestId: crypto.randomUUID(),
         clientIp: request.getClientAddress(),
@@ -11,5 +9,5 @@ export async function GET(request) {
 
     console.log(`Diagnostics request: ${JSON.stringify(data)}`);
 
-    return json(data);
+    return success(data);
 }

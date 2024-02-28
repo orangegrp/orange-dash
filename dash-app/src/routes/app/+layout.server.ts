@@ -22,7 +22,7 @@ export const load = async (event) => {
     if (!pb)
         await initDb();
 
-    const { session } = await event.parent();
+    const { session, session_id } = await event.parent();
     const dash_account = await getDashUser(session.dash_id);
 
     if (!dash_account || dash_account.locked) {
@@ -31,5 +31,5 @@ export const load = async (event) => {
         throw redirect(303, `/redirect?target=error${encodeURIComponent("?reason=7")}`);
     }
 
-    return { session, dash_account: omit(dash_account, "collectionId", "collectionName", "created", "updated", "password", "salt", "totp_secret")};
+    return { session_id: session_id, dash_account: omit(dash_account, "collectionId", "collectionName", "created", "updated", "password", "salt", "totp_secret") };
 }

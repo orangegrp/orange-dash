@@ -49,13 +49,13 @@
                 <Text type="small" color="secondary">Remember me for 7 days</Text>
             </Checkbox>
             <Text type="small">
-                <button on:click={() => (showForgotPassword = true)}
+                <button type="button" on:click={() => (showForgotPassword = true)}
                     >Forgot password?</button
                 >
             </Text>
         </div>
         <Spacer h={30} />
-        <Turnstile siteKey="3x00000000000000000000FF" />
+        <Turnstile siteKey="1x00000000000000000000AA" />
         <Spacer h={30} />
         <Button type="submit" width="100%" color="success-light"
             >

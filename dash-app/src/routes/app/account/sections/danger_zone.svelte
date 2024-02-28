@@ -12,6 +12,7 @@
     } from "geist-ui-svelte";
     import { onMount } from "svelte";
     import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
+    import MessageDialogue from "../../../components/dialogue/MessageDialogue.svelte";
 
     // hack workaround
     function changeBackground(elem_id: string) {
@@ -21,10 +22,15 @@
         (target as HTMLElement).classList.remove("dark:bg-gray-999");
     }
 
+    let showMessage = false;
+    let messageTitle = "";
+    let messageContent = "";
+
     let showLockConfirmation = false;
     let showDeleteConfirmation = false;
     let deleteConfirmationInput = "";
 
+    let sessionId = "";
     let userId = "";
 
     onMount(() => {
@@ -33,6 +39,7 @@
 
         const dashAccount = $page.data.dash_account as DashUser;
         userId = dashAccount.id;
+        sessionId = $page.data.session_id;
     });
 </script>
 
@@ -86,6 +93,13 @@
     </div>
 </div>
 
+<MessageDialogue
+    bind:show={showMessage}
+    title={messageTitle}
+    message={messageContent}
+    buttonText="OK"
+/>
+
 <ActionDialogue
     bind:show={showLockConfirmation}
     title="Lock Account"
@@ -96,7 +110,21 @@
     action={() => {
         fetch(`/api/account/lock`, {
             method: "POST",
-        }).then(async (r) => goto((await r.json()).goto));
+            headers: {
+                "X-Dash-SessionId": sessionId,
+            },
+        }).then(async (r) => {
+            const res = await r.json();
+            if (r.status === 200) {
+                goto(res.goto);
+            } else {
+                messageTitle = "Lock Account Failed";
+                messageContent =
+                    "Failed to lock account. Reason: " + res.reason;
+                showMessage = true;
+                //throw `Failed to lock account: ${await r.text()}`;
+            }
+        });
     }}
 />
 
@@ -109,7 +137,21 @@
         if (deleteConfirmationInput === userId) {
             fetch(`/api/account/delete`, {
                 method: "POST",
-            }).then(async (r) => goto((await r.json()).goto));
+                headers: {
+                    "X-Dash-SessionId": sessionId,
+                },
+            }).then(async (r) => {
+                const res = await r.json();
+                if (r.status === 200) {
+                    goto(res.goto);
+                } else {
+                    messageTitle = "Delete Account Failed";
+                    messageContent =
+                        "Failed to delete account. Reason: " + res.reason;
+                    showMessage = true;
+                    //throw `Failed to delete account: ${await r.text()}`;
+                }
+            });
         } else {
             setTimeout(() => (showDeleteConfirmation = true), 100);
         }
