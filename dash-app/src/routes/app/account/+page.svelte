@@ -6,18 +6,29 @@
     import AppContent from "../../components/AppContent.svelte";
     import NavButton from "../../components/NavButton.svelte";
     import { writable } from "svelte/store";
+    import { page } from "$app/stores";
 
-    import General from "./sections/general.svelte";
-    import Security from "./sections/security.svelte";
-    import DangerZone from "./sections/danger_zone.svelte";
+    import General from "./general/+page.svelte";
+    import Security from "./security/+page.svelte";
+    import DangerZone from "./danger-zone/+page.svelte";
     import ActionDialogue from "../../components/dialogue/ActionDialogue.svelte";
 
     let showLogoutConfirmation = false;
     let currentSectionIndex = writable<number>(0);
 
-    onMount(() => {
-        window.history.replaceState({}, "", "/app/account");
-    });
+    switch ($page.url.pathname) {
+        case "/app/account/danger-zone":
+            $currentSectionIndex = 2;
+            break;
+        case "/app/account/security":
+            $currentSectionIndex = 1;
+            break;
+        case "/app/account/general":
+        case "/app/account":
+        default:
+            $currentSectionIndex = 0;
+            break;
+    }
 </script>
 
 <AppHeader Title="Dash Account">

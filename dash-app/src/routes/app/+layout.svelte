@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { Tabs, TabItem, Spacer } from "geist-ui-svelte";
+    import { Tabs, TabItem } from "geist-ui-svelte";
     import { page } from "$app/stores";
 
     import Overview from "./overview/+page.svelte";
@@ -22,6 +22,9 @@
         case "/app/database":
             $currentPageIndex = 3;
             break;
+        case "/app/account/general":
+        case "/app/account/security":
+        case "/app/account/danger-zone":
         case "/app/account":
             $currentPageIndex = 4;
             break;
@@ -65,33 +68,31 @@
             <div id="header-borderless-parent" data-sveltekit-reload>
                 <Tabs border={true}>
                     <TabItem
-                        initialSelected={$page.url.pathname === "/app" ||
-                            $page.url.pathname === "/app/overview"}
+                        initialSelected={$currentPageIndex == 0}
                         on:clicked={() => ($currentPageIndex = 0)}
                     >
                         Overview</TabItem
                     >
                     <TabItem
-                        initialSelected={$page.url.pathname ===
-                            "/app/deployment"}
+                        initialSelected={$currentPageIndex == 1}
                         on:clicked={() => ($currentPageIndex = 1)}
                     >
                         Deployment</TabItem
                     >
                     <TabItem
-                        initialSelected={$page.url.pathname === "/app/modules"}
+                        initialSelected={$currentPageIndex == 2}
                         on:clicked={() => ($currentPageIndex = 2)}
                     >
                         Modules</TabItem
                     >
                     <TabItem
-                        initialSelected={$page.url.pathname === "/app/database"}
+                        initialSelected={$currentPageIndex == 3}
                         on:clicked={() => ($currentPageIndex = 3)}
                     >
                         Database</TabItem
                     >
                     <TabItem
-                        initialSelected={$page.url.pathname === "/app/account"}
+                        initialSelected={$currentPageIndex == 4}
                         on:clicked={() => ($currentPageIndex = 4)}
                     >
                         Dash&nbsp;Account</TabItem

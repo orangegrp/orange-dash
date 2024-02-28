@@ -54,6 +54,8 @@
     let OAuth2_Id = "";
 
     onMount(() => {
+        window.history.replaceState({}, "", "/app/account/security");
+
         changeBackground("password-action-card");
         changeBackground("totp-action-card");
 

@@ -12,6 +12,8 @@
     let accountType = "";
 
     onMount(() => {
+        window.history.replaceState({}, "", "/app/account/general");
+
         const dashAccount = $page.data.dash_account as DashUser;
         console.log(dashAccount);
 

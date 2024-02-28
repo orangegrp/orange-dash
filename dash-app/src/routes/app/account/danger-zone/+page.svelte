@@ -34,6 +34,8 @@
     let userId = "";
 
     onMount(() => {
+        window.history.replaceState({}, "", "/app/account/danger-zone");
+
         changeBackground("delete-action-card");
         changeBackground("lock-action-card");
 
