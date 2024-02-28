@@ -289,7 +289,7 @@
             if (r.status === 200) {
                 messageTitle = "Password Added";
                 messageContent =
-                    "Your Dash account is now protect with a password. You will be logged out for security reasons.";
+                    "Your Dash account is now protected with a password. You will be logged out for security reasons.";
                 showMessage = true;
                 setTimeout(() => goto(res.goto), 3000);
             } else {
