@@ -3,9 +3,9 @@ import { pb, initDb, getDashUser } from "$lib/auth/dash_account.server.js";
 import { removeSession, getSessionKeysForId } from "$lib/auth/session.server.js";
 
 // nodejs hack support for eventsource package
-import EventSource from "eventsource";
+// import EventSource from "eventsource";
 
-globalThis.EventSource = EventSource;
+//globalThis.EventSource = EventSource;
 
 async function terminateAllSessions(dash_id: string) {
     const allSessions = getSessionKeysForId(dash_id);

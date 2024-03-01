@@ -64,6 +64,7 @@
 
 <style>
 	body {
-		font-family: "circular std";
+		font-family: "Inter";
+		/* font-family: "circular std"; */
 	}
 </style>

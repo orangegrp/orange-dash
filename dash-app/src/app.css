@@ -1,4 +1,6 @@
-@import url("https://fonts.cdnfonts.com/css/circular-std");
+/* @import url("https://fonts.cdnfonts.com/css/circular-std"); */
+
+@import url("$lib/fonts/Inter/inter.css");
 
 @tailwind base;
 @tailwind components;
