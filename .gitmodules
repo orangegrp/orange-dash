@@ -1,0 +1,3 @@
+[submodule "dash-app/local_modules/orange-common-lib"]
+	path = dash-app/local_modules/orange-common-lib
+	url = https://github.com/orangegrp/orange-common-lib.git
