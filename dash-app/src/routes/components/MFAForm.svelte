@@ -28,7 +28,7 @@
                 height="32"
                 alt="Logo"
             />
-            <strong> orange Dash Account </strong>
+            <strong translate="no"> orange Dash Account </strong>
         </div>
 
         <Text type="small" color="secondary" class="mb-2"
@@ -85,20 +85,15 @@
     </form>
 </div>
 
-<Modal bind:visible={showForgotOtp} class="sm:w-[640px]">
+<Modal bind:visible={showForgotOtp} class="sm:w-[640px] h-fit">
     <div
         class="p-4 flex flex-col place-items-center
-	 justify-center h-full"
+	 justify-center h-fit"
     >
         <Text type="h6" align="center">Account Recovery</Text>
         <Text align="center">
             Please contact a Dash administrator to regain access to your
             account.
-        </Text>
-        <Spacer h={20} />
-        <Text align="center" color="secondary" type="small">
-            Click anywhere outside this message or press the <Key>Esc</Key> key to
-            dismiss this message.
         </Text>
     </div>
 </Modal>

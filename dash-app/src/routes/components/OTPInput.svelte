@@ -69,4 +69,8 @@
         outline: none;
         margin-right: 5px;
     }
+    .otp-input:focus {
+        border: solid 1px #f66322;
+        box-shadow: 0px 0px 0px 3px #f6632244;
+    }
 </style>

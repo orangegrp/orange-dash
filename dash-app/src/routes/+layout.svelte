@@ -39,7 +39,7 @@
 				height="48"
 				alt="Logo"
 			/>
-			<strong>Dash</strong>
+			<strong translate="no">Dash</strong>
 		</div>
 
 		<LightSwitch />
@@ -64,7 +64,6 @@
 
 <style>
 	body {
-		font-family: "Inter";
-		/* font-family: "circular std"; */
+		font-family: "Circular Std", "Inter", sans-serif;
 	}
 </style>

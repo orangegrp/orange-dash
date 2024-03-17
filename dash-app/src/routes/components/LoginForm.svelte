@@ -34,7 +34,7 @@
                 height="32"
                 alt="Logo"
             />
-            <strong> orange Dash Account </strong>
+            <strong translate="no"> orange Dash Account </strong>
         </div>
         <Input type="text" placeholder="Username or ID" id="username" name="username" width="100%">
             <Text type="small">Username or Account ID</Text>
@@ -90,7 +90,7 @@
                     window.location.href = oauth2_url;
                 }}
             >
-                <div class="flex place-items-center gap-2">
+                <div class="flex place-items-center gap-2" translate="no">
                     <Icon
                         dark="https://assets-global.website-files.com/6257adef93867e50d84d30e2/653714c1f22aef3b6921d63d_636e0a6ca814282eca7172c6_icon_clyde_white_RGB.svg"
                         light="https://assets-global.website-files.com/6257adef93867e50d84d30e2/653714c17467993e7b389c83_636e0a6918e57475a843f59f_icon_clyde_black_RGB.svg"
@@ -132,20 +132,15 @@
     </div>
 </div>
 
-<Modal bind:visible={showForgotPassword} class="sm:w-[640px]">
+<Modal bind:visible={showForgotPassword} class="sm:w-[640px] h-fit">
     <div
         class="p-4 flex flex-col place-items-center
-	 justify-center h-full"
+	 justify-center h-fit"
     >
         <Text type="h6" align="center">Account Recovery</Text>
         <Text align="center">
             Please contact a Dash administrator to regain access to your
             account.
-        </Text>
-        <Spacer h={20} />
-        <Text align="center" color="secondary" type="small">
-            Click anywhere outside this message or press the <Key>Esc</Key> key to
-            dismiss this message.
         </Text>
     </div>
 </Modal>
