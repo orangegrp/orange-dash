@@ -11,7 +11,7 @@
     } from "geist-ui-svelte";
     import Icon from "./Icon.svelte";
     import { Modal } from "geist-ui-svelte";
-    import { Turnstile } from 'svelte-turnstile';
+    import { Turnstile } from "svelte-turnstile";
 
     let showForgotPassword: boolean = false;
 </script>
@@ -19,7 +19,7 @@
 <div
     class="flex justify-between border-gray-150
     dark:border-gray-900 py-6 border max-w-[335px] sm:max-w-[480px] w-full
-    md:max-w-[900px] h-[28rem] px-4 sm:px-8 rounded-xl md:rounded-3xl" 
+    md:max-w-[900px] h-[28rem] px-4 sm:px-8 rounded-xl md:rounded-3xl"
 >
     <form
         action="/login/password"
@@ -36,20 +36,36 @@
             />
             <strong translate="no"> orange Dash Account </strong>
         </div>
-        <Input type="text" placeholder="Username or ID" id="username" name="username" width="100%">
+        <Input
+            type="text"
+            placeholder="Username or ID"
+            id="username"
+            name="username"
+            width="100%"
+        >
             <Text type="small">Username or Account ID</Text>
         </Input>
         <Spacer h={5} />
-        <Input type="password" placeholder="Password" id="password" name="password" width="100%">
+        <Input
+            type="password"
+            placeholder="Password"
+            id="password"
+            name="password"
+            width="100%"
+        >
             <Text type="small" color="secondary">Password</Text>
         </Input>
         <Spacer h={15} />
         <div class="flex place-items-center justify-between w-full">
             <Checkbox ring color="success" id="remember" name="remember">
-                <Text type="small" color="secondary">Remember me for 7 days</Text>
+                <Text type="small" color="secondary"
+                    >Remember me for 7 days</Text
+                >
             </Checkbox>
             <Text type="small">
-                <button type="button" on:click={() => (showForgotPassword = true)}
+                <button
+                    type="button"
+                    on:click={() => (showForgotPassword = true)}
                     >Forgot password?</button
                 >
             </Text>
@@ -57,11 +73,8 @@
         <Spacer h={30} />
         <Turnstile siteKey="1x00000000000000000000AA" />
         <Spacer h={30} />
-        <Button type="submit" width="100%" color="success-light"
-            >
-            <Text size="sm">
-                Continue
-            </Text>
+        <Button type="submit" width="100%" color="success-light">
+            <Text size="sm">Continue</Text>
             <Spacer w={10} />
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -98,9 +111,7 @@
                         height="16"
                         alt="Discord"
                     />
-                    <Text size="sm">
-                        Discord
-                    </Text>
+                    <Text size="sm">Discord</Text>
                 </div>
             </Button>
         </div>

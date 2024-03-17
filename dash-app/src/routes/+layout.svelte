@@ -2,35 +2,92 @@
 	import "geist-ui-svelte/styles/geist-ui-svelte.css";
 	import { ModeWatcher } from "mode-watcher";
 	import "../app.css";
-	import { page } from '$app/stores';
+	import { page } from "$app/stores";
 
-	import { Header, LightSwitch, Details, Center, Text, Note } from "geist-ui-svelte";
+	import {
+		Header,
+		LightSwitch,
+		Details,
+		Center,
+		Text,
+		Note,
+	} from "geist-ui-svelte";
 	import Icon from "./components/Icon.svelte";
-    import { onMount } from "svelte";
-    import { writable } from "svelte/store";
+	import { onMount } from "svelte";
+	import { writable } from "svelte/store";
 
 	let diagnosticString = writable<string[]>([]);
 
 	onMount(async () => {
 		const diagnosticData = await (await fetch("/api/diagnostics")).json();
-		
+
 		const newDiagnostics = [
 			`Request ID: &nbsp; <code>${diagnosticData.requestId}</code>`,
 			`Your IP Address: &nbsp; <code>${diagnosticData.clientIp}</code>`,
 			`Platform: &nbsp; <code>${diagnosticData.clientPlatform}</code>`,
-			`User Agent: &nbsp; <code>${diagnosticData.clientUa}</code>`
+			`User Agent: &nbsp; <code>${diagnosticData.clientUa}</code>`,
 		];
 
 		diagnosticString.set([...$diagnosticString, ...newDiagnostics]);
+
+		const dev_message =
+			"========================================\nSTOP AND READ THIS BEFORE YOU CONTINUE !!!\n========================================\n\n" +
+			"If anyone asked you to open your browser's DevTools, they are probably trying to steal your session cookie and " +
+			"hijack your Dash account. Only continue if you know what you're doing and are doing it off of your own " +
+			"accord.\n\nTHE DEVTOOLS WINDOW MAY CONTAIN SENSITIVE LOGIN CREDENTIALS, IT IS ADVISED THAT YOU TURN OFF ANY " +
+			"SCREEN CAPTURE OR SHARING SOFTWARE BEFORE YOU PROCEED. FOR YOUR SECURITY, DO NOT SHARE THESE WITH ANYONE.";
+
+		// https://jsbin.com/cateqeyono/edit?html,output
+		console.log(
+			Object.defineProperties(new Error(), {
+				toString: {
+					value() {
+						console.clear();
+						console.log(
+							`%c${dev_message}`,
+							"background: red; color: yellow; font-size: x-large",
+						);
+						setInterval(
+							() =>
+								console.log(
+									`%c${dev_message}`,
+									"background: red; color: yellow; font-size: x-large",
+								),
+							3000,
+						);
+
+						new Error().stack.includes("toString@") &&
+							alert(dev_message);
+					},
+				},
+				message: {
+					get() {
+						console.clear();
+						console.log(
+							`%c${dev_message}`,
+							"background: red; color: yellow; font-size: x-large",
+						);
+						setInterval(
+							() =>
+								console.log(
+									`%c${dev_message}`,
+									"background: red; color: yellow; font-size: x-large",
+								),
+							3000,
+						);
+
+						alert(dev_message);
+					},
+				},
+			}),
+		);
 	});
 </script>
 
 <ModeWatcher defaultMode="dark" />
 
 <Header noBorder={$page.url.pathname.startsWith("/app") ? true : false}>
-	<div
-		class="flex place-items-center justify-between w-full p-2 px-8"
-	>
+	<div class="flex place-items-center justify-between w-full p-2 px-8">
 		<div class="flex flex-row gap-x-3 select-none">
 			<Icon
 				dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"

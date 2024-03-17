@@ -137,7 +137,7 @@ async function passwordAuthentication({ event }: MiddlewareSequence) {
 
 
     if (hashed !== user.password) {
-        return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=2")}`);
+        return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=1")}`);
     }
 
     if (user.login_methods.includes("TOTP")) {
@@ -222,6 +222,7 @@ async function authentication({ event, resolve }: MiddlewareSequence) {
         return await totpAuthentication({ event, resolve });
     } else if (event.url.pathname === "/logout") {
         removeSession(event.cookies.get("dash_session")!);
+        event.cookies.delete("dash_totp", { path: "/login/mfa", secure: false, httpOnly: true, sameSite: "strict", maxAge: 300 });
         event.cookies.delete("dash_session", { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
         return redirect(302, "/redirect?target=login");
     }
