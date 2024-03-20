@@ -1,6 +1,6 @@
 import * as OTPAuth from "otpauth";
-import QRCode from "qrcode";
 import crypto from "node:crypto";
+import { generateQRCode } from "$lib";
 
 function generateTotpSecret() {
     return OTPAuth.Secret.fromHex(crypto.randomBytes(16).toString("hex"));
@@ -35,8 +35,7 @@ function generateTotpUrl(totp: OTPAuth.TOTP) {
 
 async function generateTotpQrCodeUrl(totp: OTPAuth.TOTP) {
     const url = generateTotpUrl(totp);
-    const image = await QRCode.toBuffer(url, { errorCorrectionLevel: "M" });
-    return image.toString("base64");
+    return generateQRCode(url);
 }
 
 export { generateTotpSecret, getTotpSecret, generateTotpToken, validateTotpToken,  generateTotpUrl, generateTotpQrCodeUrl, newTotp };

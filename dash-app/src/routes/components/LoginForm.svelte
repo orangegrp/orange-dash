@@ -8,18 +8,37 @@
         Divider,
         Center,
         Key,
+        Badge,
     } from "geist-ui-svelte";
     import Icon from "./Icon.svelte";
     import { Modal } from "geist-ui-svelte";
     import { Turnstile } from "svelte-turnstile";
+    import { mode } from "mode-watcher";
+    import { onMount } from "svelte";
+    import Spinner from "./Spinner.svelte";
+    import TextInput from "./TextInput.svelte";
 
     let showForgotPassword: boolean = false;
+    let qrLoginImage: string = "";
+
+    onMount(() => {
+        setTimeout(async () => {
+            fetch("/login/qrcode").then(async (res) => {
+                if (res.status === 200) {
+                    qrLoginImage = (await res.json()).qrcode;
+                }
+            });
+        }, 1000);
+    });
 </script>
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[335px] sm:max-w-[480px] w-full
-    md:max-w-[900px] h-[28rem] px-4 sm:px-8 rounded-xl md:rounded-3xl"
+    dark:border-gray-900 py-6 border max-w-[435px] sm:max-w-[720px] w-full
+    md:max-w-[1200px] h-[28rem] px-4 sm:px-8 rounded-xl md:rounded-3xl {$mode ===
+    'light'
+        ? 'card-border-light'
+        : 'card-border-black'}"
 >
     <form
         action="/login/password"
@@ -36,25 +55,26 @@
             />
             <strong translate="no"> orange Dash Account </strong>
         </div>
-        <Input
+        <Spacer h={10} />
+        <TextInput
+            class="w-full"
             type="text"
             placeholder="Username or ID"
             id="username"
             name="username"
-            width="100%"
         >
             <Text type="small">Username or Account ID</Text>
-        </Input>
-        <Spacer h={5} />
-        <Input
+        </TextInput>
+        <Spacer h={10} />
+        <TextInput
+            class="w-full"
             type="password"
             placeholder="Password"
             id="password"
             name="password"
-            width="100%"
         >
             <Text type="small" color="secondary">Password</Text>
-        </Input>
+        </TextInput>
         <Spacer h={15} />
         <div class="flex place-items-center justify-between w-full">
             <Checkbox ring color="success" id="remember" name="remember">
@@ -117,28 +137,35 @@
         </div>
     </form>
     <div class="md:flex w-full flex-grow hidden">
-        <Spacer w={75} />
+        <Spacer w={50} />
         <Divider vertical width="1px" />
-        <Spacer w={75} />
-        <Center class="flex-grow w-full flex flex-col gap-2">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-8 h-8"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+        <Spacer w={50} />
+        <Center class="flex-grow w-full flex flex-col gap-1">
+            {#if qrLoginImage.length < 1}
+                <Spacer h={35} />
+                <Spinner />
+                <Spacer h={70} />
+            {:else}
+                <img
+                    src="data:image/png;base64,{qrLoginImage}"
+                    draggable="false"
+                    on:dragstart={() => false}
+                    class="rounded-2xl select-none pointer-events-none security-image"
+                    alt="Login with QR Code"
+                    style={$mode === "dark" ? "filter:invert(100%);" : ""}
                 />
-            </svg>
-
-            <Text type="h1" align="center" size="sm"
-                >Authentication required in order to continue</Text
-            >
+            {/if}
+            <Text
+                type="h2"
+                align="center"
+                size="lg"
+                class="flex flex-row place-items-center gap-2"
+                >Login using your phone
+                <Badge size="xs" type="error" ghost>Beta</Badge>
+            </Text>
+            <Text type="h3" color="secondary" align="center" size="sm">
+                Use the orange Dash app on your phone to scan this QR code.
+            </Text>
         </Center>
     </div>
 </div>
@@ -155,3 +182,14 @@
         </Text>
     </div>
 </Modal>
+
+<style>
+    .security-image {
+        user-drag: none;
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+</style>

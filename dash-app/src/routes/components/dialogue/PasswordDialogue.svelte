@@ -1,7 +1,8 @@
 <script lang="ts">
     import ActionDialogue from "./ActionDialogue.svelte";
     import z from "zxcvbn";
-    import { Text, Spacer, Input } from "geist-ui-svelte";
+    import { Text, Spacer } from "geist-ui-svelte";
+    import TextInput from "../TextInput.svelte";
 
     export let show: boolean = false;
     export let mode: "confirm" | "set" | "change" = "confirm";
@@ -70,26 +71,25 @@
         }
         password = passwordInput1;
         action(e, passwordInput1, oldPassword);
-        
+
         password = "";
         oldPassword = "";
         passwordInput1 = "";
         passwordInput2 = "";
     }}
 >
-    <Spacer h={5} />
+    <Spacer h={10} />
 
     {#if mode === "confirm"}
         <div class="w-full">
-            <Input
+            <TextInput
                 bind:value={passwordInput1}
                 type="password"
-                width="100%"
+                class="w-full"
                 placeholder="Confirm Password"
-                size="base"
             >
                 Confirm Password
-            </Input>
+            </TextInput>
             <Spacer h={5} />
         </div>
     {:else}
@@ -125,28 +125,25 @@
                 </Text>
             {/if}
         </p>
-        <Spacer h={5} />
+        <Spacer h={15} />
         <div class="w-full">
             {#if mode === "change"}
-                <Input
+                <TextInput
                     bind:value={oldPassword}
                     type="password"
-                    width="100%"
-                    placeholder="Old Password"
-                    size="base">Old Password</Input
+                    class="w-full"
+                    placeholder="Old Password">Old Password</TextInput
                 >
-                <Spacer h={5} />
+                <Spacer h={10} />
             {/if}
-
-            <Input
+            <TextInput
                 bind:value={passwordInput1}
                 type="password"
-                width="100%"
+                class="w-full"
                 placeholder="New Password"
-                size="base"
             >
                 New Password
-            </Input>
+            </TextInput>
             {#if passwordInput1.length > 0}
                 <div class="w-full flex justify-end mt-1">
                     <Text
@@ -159,13 +156,12 @@
                     </Text>
                 </div>
             {/if}
-            <Spacer h={5} />
-            <Input
+            <Spacer h={10} />
+            <TextInput
                 bind:value={passwordInput2}
                 type="password"
-                width="100%"
-                placeholder="Confirm Password"
-                size="base">Confirm Password</Input
+                class="w-full"
+                placeholder="Confirm Password">Confirm Password</TextInput
             >
         </div>
     {/if}

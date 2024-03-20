@@ -6,11 +6,12 @@ import type { DashSession } from "$lib/auth/dash";
 import { getSession, newSession, removeSession } from "$lib/auth/session.server";
 import { validateCaptcha } from "$lib/auth/captcha";
 import { getTotpSecret, newTotp, validateTotpToken } from "$lib/auth/totp";
-
+import { success } from "./routes/api/apilib";
+import { generateQRCode } from "$lib";
 
 type MiddlewareSequence = { event: RequestEvent, resolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response> };
-
 const TOTP_MAP: Map<string, { dash_id: string, password: string }> = new Map();
+const QR_MAP: Map<string, { dash_id?: string, ip: string }> = new Map();
 
 async function totpAuthentication({ event }: MiddlewareSequence) {
     const body = await event.request.formData();
@@ -216,6 +217,11 @@ async function discordAuthentication({ event }: MiddlewareSequence) {
 async function authentication({ event, resolve }: MiddlewareSequence) {
     if (event.url.pathname === "/login/oauth2/discord") {
         return await discordAuthentication({ event, resolve });
+    } else if (event.url.pathname === "/login/qrcode" && event.request.method === "GET") {
+        event.getClientAddress()
+        let qr_login_session = crypto.randomUUID();
+        QR_MAP.set(qr_login_session, { ip: event.getClientAddress() });
+        return success({ qrcode: await generateQRCode(qr_login_session) });
     } else if (event.url.pathname === "/login/password" && event.request.method === "POST") {
         return await passwordAuthentication({ event, resolve });
     } else if (event.url.pathname === "/login/mfa" && event.request.method === "POST") {

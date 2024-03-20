@@ -56,7 +56,7 @@
         >
             {#if title}
                 <Text type="h5">{title}</Text>
-                <Spacer h={10} />
+                <Spacer h={5} />
             {/if}
             {#if message}
                 <Text align="center" color={txtColor}>

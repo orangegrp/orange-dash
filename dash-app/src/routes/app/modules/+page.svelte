@@ -66,4 +66,11 @@
             {/if}
         </div>
     </svelte:fragment>
+
+    <svelte:fragment slot="content">
+        <div>
+
+        </div>
+    </svelte:fragment>
 </AppContent>
+

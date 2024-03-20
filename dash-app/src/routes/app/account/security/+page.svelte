@@ -11,6 +11,8 @@
         Card,
         Snippet,
         Details,
+        Toggle,
+        Center,
     } from "geist-ui-svelte";
 
     import { onMount } from "svelte";
@@ -18,6 +20,8 @@
     import MessageDialogue from "../../../components/dialogue/MessageDialogue.svelte";
     import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
     import OtpInput from "../../../components/OTPInput.svelte";
+    import { mode } from "mode-watcher";
+
     import { writable } from "svelte/store";
 
     // hack workaround
@@ -40,6 +44,7 @@
     let totpSetupPrompt = false;
     let totpClearPrompt = false;
     let verifiedPassword = "";
+    let invertAllowed = true;
 
     let otp_secret = "";
     let otp_qr = "";
@@ -415,7 +420,8 @@
             const res = await r.json();
             if (r.status === 200) {
                 messageTitle = "Removed MFA";
-                messageContent = "Your multi-factor authentication settings were reset.";
+                messageContent =
+                    "Your multi-factor authentication settings were reset.";
                 showMessage = true;
                 setTimeout(() => location.reload(), 3000);
             } else {
@@ -468,8 +474,19 @@
         on:dragstart={() => false}
         class="rounded-2xl select-none pointer-events-none security-image"
         alt="OTP QR"
+        style={$mode === "dark" && invertAllowed ? "filter:invert(100%);" : ""}
     />
     <Spacer h={10} />
+    {#if !invertAllowed}
+        <Spacer h={10} />
+    {/if}
+    <Center>
+        <div class="flex flex-row gap-x-2">
+            <Text size="xs">Use Themed QR Code</Text>
+            <Toggle color="secondary" bind:checked={invertAllowed} />
+        </div>
+    </Center>
+    <Spacer h={20} />
     <div>
         <Details label="Can't scan the QR code?" animate>
             <div class="text-xs flex flex-col gap-y-2">

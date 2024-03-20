@@ -13,6 +13,7 @@
     import { onMount } from "svelte";
     import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
     import MessageDialogue from "../../../components/dialogue/MessageDialogue.svelte";
+    import TextInput from "../../../components/TextInput.svelte";
 
     // hack workaround
     function changeBackground(elem_id: string) {
@@ -136,6 +137,7 @@
     actionBtnColor="error"
     actionButtonText="Delete Account"
     action={() => {
+        console.log(deleteConfirmationInput);
         if (deleteConfirmationInput === userId) {
             fetch(`/api/account/delete`, {
                 method: "POST",
@@ -164,10 +166,9 @@
         account.
     </Text>
     <Spacer h={10} />
-    <Input
+    <TextInput
         placeholder={userId}
         bind:value={deleteConfirmationInput}
-        width="100%"
-        size="base"
+        class="w-full"
     />
 </ActionDialogue>

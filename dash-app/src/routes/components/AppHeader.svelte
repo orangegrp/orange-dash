@@ -6,13 +6,18 @@
 </script>
 
 <header
-    class="{$mode === "light" ? "header-light" : "header-dark"} py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48 flex flex-row justify-between"
+    class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48 flex flex-row justify-between"
 >
     <Text type="h3" class="font-light">{Title}</Text>
     <slot />
 </header>
 
 <style>
+    /*
+
+    {$mode === "light" ? "header-light" : "header-dark"}
+
+
     .header-dark {
         --color-bg-0: black;
         --color-bg-1: #ff84005d;
@@ -32,4 +37,5 @@
             var(--color-bg-0) 150%
         );
     }
+    */
 </style>

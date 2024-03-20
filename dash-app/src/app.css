@@ -9,3 +9,38 @@
 .display-none {
     display: none;
 }
+
+:root {
+    --bg-gray-0: #ffffff;
+    --bg-gray-50: #f9f9f9;
+    --bg-gray-100: #f2f2f2;
+    --bg-gray-200: #d9d9d9;
+    --bg-gray-300: #bfbfbf;
+    --bg-gray-400: #a6a6a6;
+    --bg-gray-500: #8c8c8c;
+    --bg-gray-600: #737373;
+    --bg-gray-700: #595959;
+    --bg-gray-800: #404040;
+    --bg-gray-900: #262626;
+    --bg-gray-925: #1d1d1d;
+    --bg-gray-950: #141414;
+    --bg-gray-975: #0b0b0b;
+    --bg-gray-985: #030303;
+    --bg-gray-999: #000000;
+}
+
+
+.card-border-dark {
+    background: linear-gradient(var(--bg-gray-975), var(--bg-gray-975)) padding-box, radial-gradient(circle, var(--bg-gray-700) 0%, var(--bg-gray-900) 100%) border-box !important;
+    border: 1px solid transparent !important;
+}
+
+.card-border-black {
+    background: linear-gradient(black, black) padding-box, radial-gradient(circle, var(--bg-gray-600) 10%, var(--bg-gray-950) 100%) border-box !important;
+    border: 1px solid transparent !important;
+}
+
+.card-border-light {
+    background: linear-gradient(var(--bg-gray-50), var(--bg-gray-50)) padding-box, radial-gradient(circle, var(--bg-gray-600) 0%, var(--bg-gray-300) 100%) border-box !important;
+    border: 1px solid transparent !important;
+}

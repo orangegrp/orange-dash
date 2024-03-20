@@ -2,7 +2,6 @@
     import type { DashUser } from "$lib/auth/dash";
     import { page } from "$app/stores";
     import { onMount } from "svelte";
-
     import { Card, Text, Spacer, Snippet, Details } from "geist-ui-svelte";
 
     let userId = "";
@@ -26,7 +25,7 @@
 </script>
 
 <div class="w-full">
-    <Card class="p-6 dark:shadow-gray-985 shadow-2xl">
+    <Card class="p-6 dark:shadow-gray-985 shadow-2xl ">
         <Text type="h4" class="font-normal">Account Information</Text>
         <Spacer h={10} />
 

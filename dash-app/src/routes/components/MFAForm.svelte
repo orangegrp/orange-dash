@@ -3,6 +3,7 @@
     import Icon from "./Icon.svelte";
     import { Modal } from "geist-ui-svelte";
     import { Turnstile } from "svelte-turnstile";
+    import { mode } from "mode-watcher";
     import OtpInput from "./OTPInput.svelte";
 
     let showForgotOtp: boolean = false;
@@ -12,7 +13,10 @@
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[480px] w-full h-fit px-4 sm:px-8 rounded-xl md:rounded-3xl"
+    dark:border-gray-900 py-6 border max-w-[480px] w-full h-fit px-4 sm:px-8 rounded-xl md:rounded-3xl {$mode ===
+        'light'
+            ? 'card-border-light'
+            : 'card-border-black'}"
 >
     <form
         bind:this={mfa_form}
