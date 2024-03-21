@@ -45,6 +45,7 @@
     {inputmode}
     {placeholder}
     {autocomplete}
+    {value}
     bind:this={inputElement}
 />
 

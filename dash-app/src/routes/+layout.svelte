@@ -87,7 +87,7 @@
 <ModeWatcher defaultMode="dark" />
 
 <Header noBorder={$page.url.pathname.startsWith("/app") ? true : false}>
-	<div class="flex place-items-center justify-between w-full p-2 px-8">
+	<div class="flex place-items-center justify-between w-full py-0 px-4 md:py-2 sm:px-8">
 		<div class="flex flex-row gap-x-3 select-none">
 			<Icon
 				dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"

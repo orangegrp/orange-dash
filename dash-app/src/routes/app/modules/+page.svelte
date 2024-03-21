@@ -5,7 +5,8 @@
     import { page } from "$app/stores";
     import MessageDialogue from "../../components/dialogue/MessageDialogue.svelte";
     import NavButton from "../../components/NavButton.svelte";
-    import { Text } from "geist-ui-svelte";
+    import { FieldSet, Text, Button, Input } from "geist-ui-svelte";
+    import TextInput from "../../components/TextInput.svelte";
     import { writable } from "svelte/store";
 
     let currentModuleIndex = writable<number>(0);
@@ -16,6 +17,34 @@
     let messageContent = "";
 
     let moduleInfo;
+
+    function changeBackground(elem_id: string) {
+        const parent = document.getElementById(elem_id);
+        if (parent === null) return;
+        const target = parent.childNodes[0].childNodes[0];
+        if (target === null) return;
+        (target as HTMLElement).classList.add("dark:bg-gray-975/100");
+        (target as HTMLElement).classList.remove("dark:bg-gray-999");
+    }
+
+    $: {
+        if (
+            moduleInfo &&
+            moduleInfo.data[$currentModuleIndex] &&
+            moduleInfo.data[$currentModuleIndex].values
+        ) {
+            setTimeout(() => {
+                for (
+                    let i = 0;
+                    i < moduleInfo.data[$currentModuleIndex].values.length;
+                    i++
+                ) {
+                    console.log(`itemcard-${i}`);
+                    changeBackground(`itemcard-${i}`);
+                }
+            }, 0);
+        }
+    }
 
     onMount(() => {
         window.history.replaceState({}, "", "/app/modules");
@@ -43,6 +72,8 @@
     });
 </script>
 
+<!-- svelte-ignore non-top-level-reactive-declaration -->
+<!-- svelte-ignore non-top-level-reactive-declaration -->
 <MessageDialogue
     bind:show={showMessage}
     title={messageTitle}
@@ -60,17 +91,117 @@
             <Text size="xs" class="display-none md:block ml-2">MODULES</Text>
 
             {#if moduleInfo !== undefined}
-                {#each moduleInfo.data as moduleItem}
-                    <NavButton>{moduleItem.displayName}</NavButton>
+                {#each moduleInfo.data as moduleItem, index}
+                    <NavButton
+                        active={$currentModuleIndex === index}
+                        btnClicked={() => currentModuleIndex.set(index)}
+                        >{moduleItem.displayName}</NavButton
+                    >
                 {/each}
             {/if}
         </div>
     </svelte:fragment>
 
     <svelte:fragment slot="content">
-        <div>
-
-        </div>
+        {#if moduleInfo !== undefined}
+            <div class="flex flex-col gap-2">
+                <Text type="h3" class="font-light"
+                    >{moduleInfo.data[$currentModuleIndex].displayName}</Text
+                >
+                <div id="module-parameters">
+                    {#each moduleInfo.data[$currentModuleIndex].values as moduleValue, index}
+                        <div
+                            class="mt-4 dark:shadow-gray-985 shadow-2xl w-full"
+                            id={`itemcard-${index}`}
+                        >
+                            <FieldSet color="transparent">
+                                <div
+                                    class="p-2 max-w-full min-w-full md:min-w-[500px]"
+                                    slot="default"
+                                >
+                                    <Text
+                                        type="h4"
+                                        class="font-normal flex flex-row place-items-center gap-x-2"
+                                    >
+                                        {moduleValue.displayName}
+                                        <Text
+                                            size="xs"
+                                            blockquote
+                                            color="secondary"
+                                        >
+                                            {#if moduleValue.type === 0}
+                                                string
+                                            {:else if moduleValue.type === 1}
+                                                number
+                                            {:else if moduleValue.type === 2}
+                                                integer
+                                            {:else if moduleValue.type === 3}
+                                                user
+                                            {:else if moduleValue.type === 4}
+                                                channel
+                                            {:else if moduleValue.type === 5}
+                                                member
+                                            {:else if moduleValue.type === 6}
+                                                object
+                                            {/if}
+                                        </Text>
+                                    </Text>
+                                    <Text size="sm" class="dark:text-gray-200">
+                                        {moduleValue.description}
+                                    </Text>
+                                    <div class="my-2">
+                                        {#if moduleValue.type === 0}
+                                            <TextInput
+                                                type="text"
+                                                value={moduleValue.value}
+                                            />
+                                        {:else if moduleValue.type === 1}
+                                            <TextInput
+                                                type="number"
+                                                value={moduleValue.value}
+                                            />
+                                        {:else if moduleValue.type === 2}
+                                            <TextInput
+                                                type="number"
+                                                value={moduleValue.value}
+                                            />
+                                        {:else if moduleValue.type === 3}
+                                            <TextInput
+                                                type="text"
+                                                value={moduleValue.value}
+                                            />
+                                        {:else if moduleValue.type === 4}
+                                            <TextInput
+                                                type="text"
+                                                value={moduleValue.value}
+                                            />
+                                        {:else if moduleValue.type === 5}
+                                            <TextInput
+                                                type="text"
+                                                value={moduleValue.value}
+                                            />
+                                        {:else if moduleValue.type === 6}
+                                            <TextInput
+                                                type="text"
+                                                value={moduleValue.value}
+                                            />
+                                        {/if}
+                                    </div>
+                                </div>
+                                <div slot="footer">
+                                    <div class="flex justify-end">
+                                        <Button
+                                            color="secondary-light"
+                                            size="sm"
+                                            on:click={() => {}}>Save</Button
+                                        >
+                                    </div>
+                                </div>
+                            </FieldSet>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+        {/if}
     </svelte:fragment>
 </AppContent>
-

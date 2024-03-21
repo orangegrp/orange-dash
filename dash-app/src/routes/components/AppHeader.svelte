@@ -6,7 +6,7 @@
 </script>
 
 <header
-    class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48 flex flex-row justify-between"
+    class="py-8 px-4 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48 flex flex-row justify-between"
 >
     <Text type="h3" class="font-light">{Title}</Text>
     <slot />

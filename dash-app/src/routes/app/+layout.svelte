@@ -63,7 +63,7 @@
         class="flex place-items-center justify-center sticky top-0 backdrop-blur-lg dark:bg-black/80 bg-gray-50/80" 
     >
         <div
-            class="w-full flex-grow px-4 border-b dark:border-b-gray-900 border-b-gray-100"
+            class="w-full flex-grow px-2 md:px-5 border-b dark:border-b-gray-900 border-b-gray-100"
         >
             <div id="header-borderless-parent" data-sveltekit-reload>
                 <Tabs border={true}>
