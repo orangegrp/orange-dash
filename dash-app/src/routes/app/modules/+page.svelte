@@ -5,7 +5,14 @@
     import { page } from "$app/stores";
     import MessageDialogue from "../../components/dialogue/MessageDialogue.svelte";
     import NavButton from "../../components/NavButton.svelte";
-    import { FieldSet, Text, Button, Input } from "geist-ui-svelte";
+    import {
+        FieldSet,
+        Text,
+        Button,
+        Input,
+        Select,
+        Option,
+    } from "geist-ui-svelte";
     import TextInput from "../../components/TextInput.svelte";
     import { writable } from "svelte/store";
 
@@ -18,15 +25,7 @@
 
     let moduleInfo;
 
-    function changeBackground(elem_id: string) {
-        const parent = document.getElementById(elem_id);
-        if (parent === null) return;
-        const target = parent.childNodes[0].childNodes[0];
-        if (target === null) return;
-        (target as HTMLElement).classList.add("dark:bg-gray-975/100");
-        (target as HTMLElement).classList.remove("dark:bg-gray-999");
-    }
-
+    /**
     $: {
         if (
             moduleInfo &&
@@ -45,6 +44,7 @@
             }, 0);
         }
     }
+    */
 
     onMount(() => {
         window.history.replaceState({}, "", "/app/modules");
@@ -111,10 +111,10 @@
                 <div id="module-parameters">
                     {#each moduleInfo.data[$currentModuleIndex].values as moduleValue, index}
                         <div
-                            class="mt-4 dark:shadow-gray-985 shadow-2xl w-full"
+                            class="mt-4 shadow-2xl w-full"
                             id={`itemcard-${index}`}
                         >
-                            <FieldSet color="transparent">
+                            <FieldSet>
                                 <div
                                     class="p-2 max-w-full min-w-full md:min-w-[500px]"
                                     slot="default"

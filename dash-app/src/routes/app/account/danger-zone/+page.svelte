@@ -37,8 +37,8 @@
     onMount(() => {
         window.history.replaceState({}, "", "/app/account/danger-zone");
 
-        changeBackground("delete-action-card");
-        changeBackground("lock-action-card");
+        //changeBackground("delete-action-card");
+        //changeBackground("lock-action-card");
 
         const dashAccount = $page.data.dash_account as DashUser;
         userId = dashAccount.id;
@@ -52,8 +52,8 @@
         Actions on this page could result in permanent data loss which is irreversible.
     </Note>
 
-    <div class="mt-4 dark:shadow-gray-985 shadow-2xl" id="lock-action-card">
-        <FieldSet color="transparent">
+    <div class="mt-4 shadow-2xl" id="lock-action-card">
+        <FieldSet>
             <div class="p-2">
                 <Text type="h4" class="font-normal">Lock Account</Text>
                 <Text size="sm" class="dark:text-gray-200"
@@ -74,7 +74,7 @@
         </FieldSet>
     </div>
 
-    <div class="mt-4 dark:shadow-gray-985 shadow-2xl" id="delete-action-card">
+    <div class="mt-4 shadow-2xl" id="delete-action-card">
         <FieldSet color="error">
             <div class="p-2">
                 <Text type="h4" class="font-normal">Delete Account</Text>

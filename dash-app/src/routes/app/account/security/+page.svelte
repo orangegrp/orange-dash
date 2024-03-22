@@ -61,8 +61,8 @@
     onMount(() => {
         window.history.replaceState({}, "", "/app/account/security");
 
-        changeBackground("password-action-card");
-        changeBackground("totp-action-card");
+        //changeBackground("password-action-card");
+        //changeBackground("totp-action-card");
 
         const dashAccount = $page.data.dash_account as DashUser;
 
@@ -80,7 +80,7 @@
         one. You will need to sign in again after making changes.
     </Note>
 
-    <Card class="p-6 mt-4 dark:shadow-gray-985 shadow-2xl">
+    <Card class="p-6 mt-4 shadow-2xl">
         <Text
             type="h4"
             class="font-normal flex flex-row place-items-center gap-x-2"
@@ -135,8 +135,8 @@
         {/if}
     </Card>
 
-    <div class="mt-4 dark:shadow-gray-985 shadow-2xl" id="password-action-card">
-        <FieldSet color="transparent">
+    <div class="mt-4" id="password-action-card">
+        <FieldSet>
             <div class="p-2">
                 <Text
                     type="h4"
@@ -211,8 +211,8 @@
         </FieldSet>
     </div>
 
-    <div class="mt-4 dark:shadow-gray-985 shadow-2xl" id="totp-action-card">
-        <FieldSet color="transparent">
+    <div class="mt-4" id="totp-action-card">
+        <FieldSet>
             <div class="p-2">
                 <Text
                     type="h4"

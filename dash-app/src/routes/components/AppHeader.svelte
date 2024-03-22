@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Text } from "geist-ui-svelte";
-    import { mode } from "mode-watcher";
 
     export let Title: string;
 </script>

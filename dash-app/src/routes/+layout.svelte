@@ -18,7 +18,18 @@
 
 	let diagnosticString = writable<string[]>([]);
 
+	function changeBackground(elem_id: string) {
+        const parent = document.getElementById(elem_id);
+        const target = parent.childNodes[0];
+        (target as HTMLElement).classList.add("dark:bg-gray-975/80");
+		(target as HTMLElement).classList.add("backdrop-blur-lg");
+        (target as HTMLElement).classList.remove("dark:bg-gray-999");
+    }
+
 	onMount(async () => {
+		if ($page.url.pathname.startsWith("/app"))
+			changeBackground("header-parent");
+
 		const diagnosticData = await (await fetch("/api/diagnostics")).json();
 
 		const newDiagnostics = [
@@ -86,24 +97,28 @@
 
 <ModeWatcher defaultMode="dark" />
 
-<Header noBorder={$page.url.pathname.startsWith("/app") ? true : false}>
-	<div class="flex place-items-center justify-between w-full py-0 px-4 md:py-2 sm:px-8">
-		<div class="flex flex-row gap-x-3 select-none">
-			<Icon
-				dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"
-				light="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-b-icon.svg"
-				width="48"
-				height="48"
-				alt="Logo"
-			/>
-			<strong translate="no">Dash</strong>
-		</div>
-
-		<LightSwitch />
-	</div>
-</Header>
-
 <body class="dark:bg-black bg-gray-50 mb-4">
+	<div id="header-parent">
+		<Header
+			noBorder={$page.url.pathname.startsWith("/app") ? true : false}
+			transparent={true}
+		>
+			<div
+				class="flex place-items-center justify-between w-full py-0 px-4 md:py-2 sm:px-8"
+			>
+				<div class="flex flex-row gap-x-3 select-none">
+					<Icon
+						dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"
+						light="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-b-icon.svg"
+						width="48"
+						height="48"
+						alt="Logo"
+					/>
+					<strong translate="no">Dash</strong>
+				</div>
+			</div>
+		</Header>
+	</div>
 	<slot />
 </body>
 
