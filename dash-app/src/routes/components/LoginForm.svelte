@@ -34,7 +34,7 @@
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[435px] sm:max-w-[720px] w-full
+    dark:border-gray-900 py-6 border max-w-[350px] sm:max-w-[480px] w-full
     md:max-w-[1200px] h-[28rem] px-4 sm:px-8 rounded-xl md:rounded-3xl {$mode ===
     'light'
         ? 'card-border-light'

@@ -12,11 +12,18 @@
         Input,
         Select,
         Option,
+        Table,
+        Spacer,
+        Note,
+        ToolTip,
     } from "geist-ui-svelte";
     import TextInput from "../../components/TextInput.svelte";
     import { writable } from "svelte/store";
+    import ProcessDialogue from "../../components/dialogue/ProcessDialogue.svelte";
+    import Spinner from "../../components/Spinner.svelte";
 
     let currentModuleIndex = writable<number>(0);
+    let showProcessMessage = false;
 
     let sessionId = "";
     let showMessage = false;
@@ -45,6 +52,15 @@
         }
     }
     */
+
+    function getArrayData(raw_data) {
+        const array = [];
+        for (let i = 0; i < raw_data.length; i++) {
+            const elem = raw_data[i];
+            array.push({ value: elem });
+        }
+        return array;
+    }
 
     onMount(() => {
         window.history.replaceState({}, "", "/app/modules");
@@ -81,6 +97,11 @@
     buttonText="OK"
 />
 
+<ProcessDialogue show={showProcessMessage} message="Processing request">
+    <Spacer h={10} />
+    <Spinner />
+</ProcessDialogue>
+
 <AppHeader Title="Modules"></AppHeader>
 
 <AppContent class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48">
@@ -110,95 +131,198 @@
                 >
                 <div id="module-parameters">
                     {#each moduleInfo.data[$currentModuleIndex].values as moduleValue, index}
-                        <div
-                            class="mt-4 shadow-2xl w-full"
-                            id={`itemcard-${index}`}
-                        >
-                            <FieldSet>
-                                <div
-                                    class="p-2 max-w-full min-w-full md:min-w-[500px]"
-                                    slot="default"
-                                >
-                                    <Text
-                                        type="h4"
-                                        class="font-normal flex flex-row place-items-center gap-x-2"
+                        {#if moduleValue.uiVisibility !== "hidden"}
+                            <div
+                                class="mt-4 shadow-2xl w-full"
+                                id={`itemcard-${index}`}
+                            >
+                                <FieldSet>
+                                    <div
+                                        class="p-2 max-w-full min-w-full md:min-w-[500px]"
+                                        slot="default"
                                     >
-                                        {moduleValue.displayName}
                                         <Text
-                                            size="xs"
-                                            blockquote
-                                            color="secondary"
+                                            type="h4"
+                                            class="font-normal flex flex-row place-items-center gap-x-2"
                                         >
-                                            {#if moduleValue.type === 0}
-                                                string
-                                            {:else if moduleValue.type === 1}
-                                                number
-                                            {:else if moduleValue.type === 2}
-                                                integer
-                                            {:else if moduleValue.type === 3}
-                                                user
-                                            {:else if moduleValue.type === 4}
-                                                channel
-                                            {:else if moduleValue.type === 5}
-                                                member
-                                            {:else if moduleValue.type === 6}
-                                                object
-                                            {/if}
+                                            {moduleValue.displayName}
+                                            <Text
+                                                size="xs"
+                                                blockquote
+                                                color="secondary"
+                                            >
+                                                {#if moduleValue.type === 0}
+                                                    string
+                                                {:else if moduleValue.type === 1}
+                                                    number
+                                                {:else if moduleValue.type === 2}
+                                                    integer
+                                                {:else if moduleValue.type === 3}
+                                                    user
+                                                {:else if moduleValue.type === 4}
+                                                    channel
+                                                {:else if moduleValue.type === 5}
+                                                    member
+                                                {:else if moduleValue.type === 6}
+                                                    object
+                                                {/if}
+                                            </Text>
                                         </Text>
-                                    </Text>
-                                    <Text size="sm" class="dark:text-gray-200">
-                                        {moduleValue.description}
-                                    </Text>
-                                    <div class="my-2">
-                                        {#if moduleValue.type === 0}
-                                            <TextInput
-                                                type="text"
-                                                value={moduleValue.value}
-                                            />
-                                        {:else if moduleValue.type === 1}
-                                            <TextInput
-                                                type="number"
-                                                value={moduleValue.value}
-                                            />
-                                        {:else if moduleValue.type === 2}
-                                            <TextInput
-                                                type="number"
-                                                value={moduleValue.value}
-                                            />
-                                        {:else if moduleValue.type === 3}
-                                            <TextInput
-                                                type="text"
-                                                value={moduleValue.value}
-                                            />
-                                        {:else if moduleValue.type === 4}
-                                            <TextInput
-                                                type="text"
-                                                value={moduleValue.value}
-                                            />
-                                        {:else if moduleValue.type === 5}
-                                            <TextInput
-                                                type="text"
-                                                value={moduleValue.value}
-                                            />
-                                        {:else if moduleValue.type === 6}
-                                            <TextInput
-                                                type="text"
-                                                value={moduleValue.value}
-                                            />
-                                        {/if}
-                                    </div>
-                                </div>
-                                <div slot="footer">
-                                    <div class="flex justify-end">
-                                        <Button
-                                            color="secondary-light"
+                                        <Text
                                             size="sm"
-                                            on:click={() => {}}>Save</Button
+                                            class="dark:text-gray-200"
                                         >
+                                            {moduleValue.description}
+                                        </Text>
+                                        <div class="my-2">
+                                            {#if moduleValue.array}
+                                                <Table
+                                                    animate
+                                                    data={getArrayData(
+                                                        moduleValue.value,
+                                                    )}
+                                                    columns={[
+                                                        {
+                                                            label: moduleValue.name,
+                                                            property: "value",
+                                                        },
+                                                    ]}
+                                                />
+                                                <Spacer h={20} />
+                                                <div
+                                                    class="flex flex-row gap-x-2"
+                                                >
+                                                    <Button color="error-light">
+                                                        Remove item
+                                                    </Button>
+                                                    <Button
+                                                        color="success-light"
+                                                    >
+                                                        Add a new item
+                                                    </Button>
+                                                </div>
+                                            {:else}
+                                                {#if moduleValue.type === 0}
+                                                    <TextInput
+                                                        type="text"
+                                                        disabled={moduleValue.uiVisibility ===
+                                                            "readonly"}
+                                                        value={moduleValue.value}
+                                                    />
+                                                {:else if moduleValue.type === 1}
+                                                    <TextInput
+                                                        type="number"
+                                                        disabled={moduleValue.uiVisibility ===
+                                                            "readonly"}
+                                                        value={moduleValue.value}
+                                                    />
+                                                {:else if moduleValue.type === 2}
+                                                    <TextInput
+                                                        type="number"
+                                                        disabled={moduleValue.uiVisibility ===
+                                                            "readonly"}
+                                                        value={moduleValue.value}
+                                                    />
+                                                {:else if moduleValue.type === 3}
+                                                    <TextInput
+                                                        type="text"
+                                                        disabled={moduleValue.uiVisibility ===
+                                                            "readonly"}
+                                                        value={moduleValue.value}
+                                                    />
+                                                {:else if moduleValue.type === 4}
+                                                    <TextInput
+                                                        type="text"
+                                                        disabled={moduleValue.uiVisibility ===
+                                                            "readonly"}
+                                                        value={moduleValue.value}
+                                                    />
+                                                {:else if moduleValue.type === 5}
+                                                    <TextInput
+                                                        type="text"
+                                                        disabled={moduleValue.uiVisibility ===
+                                                            "readonly"}
+                                                        value={moduleValue.value}
+                                                    />
+                                                {:else if moduleValue.type === 6}
+                                                    <TextInput
+                                                        type="text"
+                                                        disabled={moduleValue.uiVisibility ===
+                                                            "readonly"}
+                                                        value={moduleValue.value}
+                                                    />
+                                                {/if}
+                                                
+                                                {#if (moduleValue.minValue !== undefined && moduleValue.minValue > moduleValue.value) || (moduleValue.maxValue !== undefined && moduleValue.maxValue < moduleValue.value)}
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="1.5"
+                                                        stroke="orange"
+                                                        class="inline w-6 h-6"
+                                                        id="{moduleValue.name}_alert"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                                                        />
+                                                    </svg>
+                                                    <ToolTip anchor="#{moduleValue.name}_alert" content="Potentially invalid data"/>
+                                                {/if}
+                                            {/if}
+                                        </div>
                                     </div>
-                                </div>
-                            </FieldSet>
-                        </div>
+                                    <div slot="footer">
+                                        <div
+                                            class="flex place-items-center justify-between"
+                                        >
+                                            <Text
+                                                type="small"
+                                                color="secondary"
+                                            >
+                                                {#if moduleValue.maxCount !== undefined}
+                                                    Max items: <Text
+                                                        blockquote
+                                                        class="mr-2"
+                                                        >{moduleValue.maxCount}</Text
+                                                    >
+                                                {/if}
+                                                {#if moduleValue.minValue !== undefined && moduleValue.maxValue !== undefined}
+                                                    Value range: <Text
+                                                        blockquote
+                                                        class="mr-2"
+                                                        >{moduleValue.minValue} -
+                                                        {moduleValue.maxValue}</Text
+                                                    >
+                                                {:else}
+                                                    {#if moduleValue.minValue !== undefined}
+                                                        Min value: <Text
+                                                            blockquote
+                                                            class="mr-2"
+                                                            >{moduleValue.minValue}</Text
+                                                        >
+                                                    {/if}
+                                                    {#if moduleValue.maxValue !== undefined}
+                                                        Max value: <Text
+                                                            blockquote
+                                                            class="mr-2"
+                                                            >{moduleValue.maxValue}</Text
+                                                        >
+                                                    {/if}
+                                                {/if}
+                                            </Text>
+                                            <Button
+                                                color="secondary-light"
+                                                size="sm"
+                                                on:click={() => {}}>Save</Button
+                                            >
+                                        </div>
+                                    </div>
+                                </FieldSet>
+                            </div>
+                        {/if}
                     {/each}
                 </div>
             </div>

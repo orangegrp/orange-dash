@@ -11,6 +11,7 @@
     export let autocapitalize: string = null;
     export let autocorrect: string = null;
     export let spellcheck: boolean = null;
+    export let disabled: boolean = null;
     export let inputmode:
         | "email"
         | "search"
@@ -45,6 +46,7 @@
     {inputmode}
     {placeholder}
     {autocomplete}
+    {disabled}
     {value}
     bind:this={inputElement}
 />

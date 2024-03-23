@@ -48,6 +48,7 @@
 			"accord.\n\nTHE DEVTOOLS WINDOW MAY CONTAIN SENSITIVE LOGIN CREDENTIALS, IT IS ADVISED THAT YOU TURN OFF ANY " +
 			"SCREEN CAPTURE OR SHARING SOFTWARE BEFORE YOU PROCEED. FOR YOUR SECURITY, DO NOT SHARE THESE WITH ANYONE.";
 
+			/*
 		// https://jsbin.com/cateqeyono/edit?html,output
 		console.log(
 			Object.defineProperties(new Error(), {
@@ -92,6 +93,7 @@
 				},
 			}),
 		);
+		*/
 	});
 </script>
 
@@ -104,7 +106,7 @@
 			transparent={true}
 		>
 			<div
-				class="flex place-items-center justify-between w-full py-0 px-4 md:py-2 sm:px-8"
+				class="flex place-items-center justify-between w-full py-1 px-4 md:py-2 sm:px-8"
 			>
 				<div class="flex flex-row gap-x-3 select-none">
 					<Icon

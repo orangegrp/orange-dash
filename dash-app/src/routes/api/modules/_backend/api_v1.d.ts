@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type ApiDiscordChannel = {
     name: string;
     id: string;
