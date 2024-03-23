@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
     fastify.get("/user/:user/", async (request: FastifyRequest<{ Params: { user: string } }>, reply) => {
         reply.send(await getUserSettings(configApi, request.params.user));
@@ -16,12 +17,31 @@
     });
 */
 
+import type { ValueEdits } from "./api_v1";
+
 const base_url: string = "http://localhost:1234";
 
 async function api_request(method: "GET" | "POST", ...args: string[]): Promise<Response> {
     const final_url = base_url + args.map(a => `/${a}`).join("") + "/";
     try {
-        return await fetch(final_url, { method: method });
+        return await fetch(final_url, { method: method});
+    } catch (e) {
+        return {
+            status: 500, json: async () => ({
+                message: `Service unavailable. Error: ${e.message}`
+            })
+        } as Response;
+    }
+}
+async function api_update(method: "GET" | "POST", data: any, ...args: string[]): Promise<Response> {
+    const final_url = base_url + args.map(a => `/${a}`).join("") + "/";
+    try {
+        const result = await fetch(final_url, { method: method, body: JSON.stringify(data), headers: { "Content-Type": "application/json" } });
+        const reply = await result.json();
+        return reply.success === true ? { status: 200, json: async () => { return reply } } as Response: { status: 400, json: async () => ({
+            message: "Invalid data",
+            raw: JSON.stringify(reply)
+        }) } as Response;
     } catch (e) {
         return {
             status: 500, json: async () => ({
@@ -37,6 +57,16 @@ async function getUserSettings(user: string): Promise<{ success: boolean, messag
         return { success: true, data: await user_settings.json() }
     else {
         const data = await user_settings.json();
+        return { success: false, message: data.message, data: data }
+    }
+}
+async function setUserSettings(user: string, module: string, edits: ValueEdits): Promise<{ success: boolean, message?: string, data: any }> {
+    const result = await api_update("POST", edits, "user", user, module);
+    if (result.status === 200)
+        return { success: true, data: await result.json() }
+    else {
+        const data = await result.json();
+        console.log(data);
         return { success: false, message: data.message, data: data }
     }
 }
@@ -59,4 +89,4 @@ async function getGuildSettings(user: string, guild: string): Promise<{ success:
     }
 }
 
-export { getUserSettings, getUserGuilds, getGuildSettings };
+export { getUserSettings, getUserGuilds, getGuildSettings, setUserSettings };
