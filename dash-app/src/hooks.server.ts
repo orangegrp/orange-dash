@@ -219,7 +219,7 @@ async function authentication({ event, resolve }: MiddlewareSequence) {
         return await discordAuthentication({ event, resolve });
     } else if (event.url.pathname === "/login/qrcode" && event.request.method === "GET") {
         event.getClientAddress()
-        let qr_login_session = crypto.randomUUID();
+        const qr_login_session = crypto.randomUUID();
         QR_MAP.set(qr_login_session, { ip: event.getClientAddress() });
         return success({ qrcode: await generateQRCode(qr_login_session) });
     } else if (event.url.pathname === "/login/password" && event.request.method === "POST") {
@@ -257,7 +257,14 @@ async function authorization({ event, resolve }: MiddlewareSequence) {
     return await resolve(event);
 }
 
-export const handle: Handle = sequence(authentication, authorization);
+async function defaultroute( { event, resolve }: MiddlewareSequence) {
+    if (event.url.pathname === "/") {
+        return redirect(303, "/app");
+    }
+    return await resolve(event);
+}
+
+export const handle: Handle = sequence(defaultroute, authentication, authorization);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handleError: HandleServerError = ({ error, event, status, message }) => {

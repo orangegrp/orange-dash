@@ -20,6 +20,7 @@
 
     let showForgotPassword: boolean = false;
     let qrLoginImage: string = "";
+    let show_form: boolean = false;
 
     onMount(() => {
         setTimeout(async () => {
@@ -28,14 +29,14 @@
                     qrLoginImage = (await res.json()).qrcode;
                 }
             });
-        }, 1000);
+        }, 100);
     });
 </script>
 
 <div
     class="flex justify-between border-gray-150
     dark:border-gray-900 py-6 border max-w-[350px] sm:max-w-[480px] w-full
-    md:max-w-[1200px] h-[28rem] px-4 sm:px-8 rounded-xl md:rounded-3xl {$mode ===
+    md:max-w-[1200px] h-fit px-4 sm:px-8 rounded-xl md:rounded-3xl {$mode ===
     'light'
         ? 'card-border-light'
         : 'card-border-black'}"
@@ -90,27 +91,36 @@
                 >
             </Text>
         </div>
-        <Spacer h={30} />
-        <Turnstile siteKey="1x00000000000000000000AA" />
-        <Spacer h={30} />
-        <Button type="submit" width="100%" color="success-light">
-            <Text size="sm">Continue</Text>
-            <Spacer w={10} />
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-                />
-            </svg>
-        </Button>
+        <Spacer h={15} />
+        <Turnstile
+            siteKey="1x00000000000000000000BB"
+            on:turnstile-callback={() => (show_form = true)}
+        />
+        <Spacer h={15} />
+        {#if show_form}
+            <Button type="submit" width="100%" color="success-light">
+                <Text size="sm">Continue</Text>
+                <Spacer w={10} />
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                    />
+                </svg>
+            </Button>
+        {:else}
+            <div class="w-full flex justify-center">
+                <Spinner />
+            </div>
+        {/if}
         <Spacer h={30} />
         <Divider label="Or continue with" />
         <Spacer h={10} />
