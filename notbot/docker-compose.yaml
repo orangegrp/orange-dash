@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  notbot-legacy:
+    container_name: notbot-legacy
+    image: a4004/notbot-legacy:latest
+    restart: unless-stopped
+    network_mode: "host"
+    env_file:
+      - .env

@@ -1,0 +1,301 @@
+body {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+div.frame {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+}
+div.servers-wrap {
+    position: absolute;
+    width: 300px;
+    float: left;
+    height: 100%;
+    overflow-y: scroll;
+    background-color: rgb(44, 44, 48);
+}
+div.servers {
+    position: absolute;
+    background-color: rgb(44, 44, 48);
+    width: 70px;
+    float: left;
+}
+div.server {
+    position: relative;
+    margin-left: 7.5px;
+    margin-top: 7.5px;
+    width: calc(100% - 15px);
+    height: 55px;
+    user-select: none;
+    display: inline-block;
+}
+img.server-icon {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+div.server-acronym {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin-left: 0;
+}
+div.server .tooltiptext {
+    opacity: 0;
+    width: fit-content;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    margin: 15px 0;
+    padding: 5px;
+    border-radius: 6px;
+    position: absolute;
+    top: -0px;
+    left: 110%;
+    box-shadow: 2px 2px 8px -2px black;
+    transition: step-end 0.1s z-index, opacity 0.1s linear;
+    z-index: -1;
+}
+div.icon-wrapper {
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    transition: border-radius 0.1s linear;
+    text-align: center;
+    line-height: 55px;
+    color: whitesmoke;
+    overflow: hidden;
+    background-color: rgb(58, 58, 58);
+}
+div.server:hover div.icon-wrapper {
+    border-radius: 35%;
+}
+div.server:hover .tooltiptext {
+    opacity: 1;
+    z-index: 1;
+    transition: opacity 0.1s linear;
+}
+div.server .tooltiptext:hover {
+    opacity: 0;
+    box-shadow: 2px 2px 8px -2px black;
+    transition: step-end 0.1s z-index, opacity 0.1s linear;
+    z-index: -1;
+}
+div.channel-wrapper {
+    position: absolute;
+    background-color:  rgb(53, 53, 59);
+    width: 220px;
+    left: 70px;
+    height: 100%;
+    float: left;
+    overflow: hidden;
+    user-select: none;
+}
+div.server-name-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    box-shadow: 0px -4px 2px 5px black;
+}
+div.server-name {
+    margin-left: 20px;
+    font-size: 20px;
+    color: white;
+}
+div.channels {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    position: absolute;
+    top: 70px;
+    overflow-y: scroll;
+}
+div.channel {
+    position: relative;
+    left: 0px;
+    padding: 5px 0px 5px 5px;
+    border-radius: 5px;
+}
+div.channel-wide {
+    margin-right: 10px;
+}
+div.channel:hover {
+    background-color: rgb(66, 66, 75);
+}
+div.channel:hover div.channel-name {
+    color: rgb(185, 185, 185);
+}
+div.channel-name {
+    font-weight: normal;
+    color: rgb(145, 145, 145);
+}
+div.category {
+    margin: 0px 10px 20px 5px;
+}
+div.category-name {
+    font-weight: bold;
+    font-variant: small-caps;
+    color: rgb(145, 145, 145);
+}
+div.chat-wrapper {
+    position: absolute;
+    left: 290px;
+    right: 300px;
+    height: 100%;
+}
+div.internal-chat-wrapper {
+    position: absolute;
+    width: 300px;
+    right: 0px;
+    height: 400px;
+    bottom: 0px;
+}
+div.channel-name-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    background-color: rgb(70, 70, 77);;
+    box-shadow: 6px -4px 2px 5px black;
+    z-index: 1;
+}
+div.channel-name-big {
+    margin-left: 20px;
+    font-size: 20px;
+    color: white;
+}
+div.black-line {
+    position: absolute;
+    width: 100%;
+    height: 60px;
+    top: 0px;
+    box-shadow: 6px -4px 2px 5px black;
+    margin: 0;
+    padding: 0;
+}
+div.chat {
+    position: absolute;
+    top: 60px;
+    bottom: 100px;
+    width: 100%;
+    background-color: rgb(70, 70, 77);
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+div.textbox-wrapper {
+    position: absolute;
+    bottom: 0px;
+    height: 100px;
+    width: 100%;
+    background-color: rgb(70, 70, 77);
+}
+div.textbox-outer {
+    position: absolute;
+    bottom: 30px;
+    height: 45px;
+    left: 20px;
+    right: 20px;
+    border-radius: 10px;
+    background-color: rgb(81, 81, 90);
+    padding-left: 20px;
+    padding-right: 20px;
+}
+input.textbox {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: calc(100% - 40px);
+    height: 100%;
+    border: none;
+    box-shadow: none;
+    border-width: 0; 
+    font-size: 22px;
+    color: white;
+    background-color: rgb(81, 81, 90);
+}
+input.textbox:focus {
+    outline:none!important;
+}
+
+div.message {
+    margin-top: 15px;
+    position: relative;
+    overflow-wrap: break-word;
+    width: calc(100% - 30px);
+    padding-left: 15px;
+    padding-right: 15px;
+    display: inline-flex;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+div.message:hover {
+    background-color: rgb(64, 64, 73);
+}
+
+img.user-icon {
+    display: block;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+div.name {
+    color: whitesmoke;
+    font-weight: 500;
+}
+div.message-wrapper {
+    max-width: calc(100% - 35px);
+    overflow-wrap: break-word;
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 10px;
+    top: -2px;
+}
+div.message-content {
+    overflow-wrap: break-word;
+    position: relative;
+    top: 3px;
+    color: whitesmoke;
+}
+button.logoutbutton {
+    position: absolute;
+    right: 20px;
+    background-color:rgb(88, 10, 88);
+    border-radius: 4px;
+    width: 60px;
+    top: 18px;
+    height: 24px;
+    border: none;
+    padding: 0;
+    outline: none!important;
+    color: whitesmoke;
+}
+button.logoutbutton:hover {
+    background-color:rgb(85, 9, 85);
+}
+button.logoutbutton:active {
+    background-color:rgb(75, 9, 75);
+}
+p.codeblock {
+    margin: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+    width: fit-content;
+    display: inline-block;
+    background-color: rgb(41, 41, 41);
+    border-radius: 3px;
+}
+div.codeblock {
+    position: relative;
+    background-color: rgb(41, 41, 41);
+    border-radius: 3px;
+    padding: 5px;
+    border: 1px solid rgb(19, 19, 19);
+}
