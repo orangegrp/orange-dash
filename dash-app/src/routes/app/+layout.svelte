@@ -58,9 +58,9 @@
     });
 </script>
 
-<main>
+<div>
     <div
-        class="flex place-items-center justify-center sticky top-0 backdrop-blur-lg dark:bg-gray-975/80 bg-gray-50/80"
+        class="{$currentPageIndex === 4 ? 'hidden' : ''} flex place-items-center justify-center sticky top-0 backdrop-blur-lg dark:bg-gray-975/80 bg-gray-50/80"
     >
         <div
             class="w-full flex-grow px-2 md:px-5 border-b dark:border-b-gray-900 border-b-gray-100"
@@ -91,12 +91,14 @@
                     >
                         Database</TabItem
                     >
+                    <!--
                     <TabItem
                         initialSelected={$currentPageIndex == 4}
                         on:clicked={() => ($currentPageIndex = 4)}
                     >
                         Dash&nbsp;Account</TabItem
                     >
+                    -->
                 </Tabs>
             </div>
         </div>
@@ -111,4 +113,4 @@
             ]}
         />
     {/key}
-</main>
+</div>

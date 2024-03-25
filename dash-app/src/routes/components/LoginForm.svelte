@@ -162,8 +162,9 @@
                     on:dragstart={() => false}
                     class="rounded-2xl select-none pointer-events-none security-image"
                     alt="Login with QR Code"
-                    style={$mode === "dark" ? "filter:invert(100%);" : ""}
+                    style={$mode === "dark" ? "filter:invert(0%);" : ""}
                 />
+                <Spacer h={10} />
             {/if}
             <Text
                 type="h2"
@@ -171,10 +172,10 @@
                 size="lg"
                 class="flex flex-row place-items-center gap-2"
                 >Login using your phone
-                <Badge size="xs" type="error" ghost>Beta</Badge>
+                <Badge size="xs" ghost>Beta</Badge>
             </Text>
             <Text type="h3" color="secondary" align="center" size="sm">
-                Use the orange Dash app on your phone to scan this QR code.
+                Use the orange Dash mobile site on your phone to scan this QR code.
             </Text>
         </Center>
     </div>

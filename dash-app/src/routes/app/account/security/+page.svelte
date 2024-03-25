@@ -20,9 +20,6 @@
     import MessageDialogue from "../../../components/dialogue/MessageDialogue.svelte";
     import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
     import OtpInput from "../../../components/OTPInput.svelte";
-    import { mode } from "mode-watcher";
-
-    import { writable } from "svelte/store";
 
     // hack workaround
     function changeBackground(elem_id: string) {
@@ -44,7 +41,7 @@
     let totpSetupPrompt = false;
     let totpClearPrompt = false;
     let verifiedPassword = "";
-    let invertAllowed = true;
+    //let invertAllowed = true;
 
     let otp_secret = "";
     let otp_qr = "";
@@ -474,10 +471,12 @@
         on:dragstart={() => false}
         class="rounded-2xl select-none pointer-events-none security-image"
         alt="OTP QR"
-        style={$mode === "dark" && invertAllowed ? "filter:invert(100%);" : ""}
     />
-    <Spacer h={10} />
-    {#if !invertAllowed}
+
+    <!--
+                    style={$mode === "dark" && invertAllowed ? "filter:invert(100%);" : ""} 
+        <Spacer h={10} />
+                    {#if !invertAllowed}
         <Spacer h={10} />
     {/if}
     <Center>
@@ -486,6 +485,7 @@
             <Toggle color="secondary" bind:checked={invertAllowed} />
         </div>
     </Center>
+    -->
     <Spacer h={20} />
     <div>
         <Details label="Can't scan the QR code?" animate>

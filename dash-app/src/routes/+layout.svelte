@@ -11,20 +11,28 @@
 		Center,
 		Text,
 		Note,
+		Avatar,
+		Divider,
+		Dropdown,
+		Spacer,
+		Button,
 	} from "geist-ui-svelte";
 	import Icon from "./components/Icon.svelte";
 	import { onMount } from "svelte";
 	import { writable } from "svelte/store";
+	import ActionDialogue from "./components/dialogue/ActionDialogue.svelte";
 
 	let diagnosticString = writable<string[]>([]);
+	let profilePopup = false;
+	let showLogoutConfirmation = false;
 
 	function changeBackground(elem_id: string) {
-        const parent = document.getElementById(elem_id);
-        const target = parent.childNodes[0];
-        (target as HTMLElement).classList.add("dark:bg-gray-975/80");
+		const parent = document.getElementById(elem_id);
+		const target = parent.childNodes[0];
+		(target as HTMLElement).classList.add("dark:bg-gray-975/80");
 		(target as HTMLElement).classList.add("backdrop-blur-lg");
-        (target as HTMLElement).classList.remove("dark:bg-gray-999");
-    }
+		(target as HTMLElement).classList.remove("dark:bg-gray-999");
+	}
 
 	onMount(async () => {
 		if ($page.url.pathname.startsWith("/app"))
@@ -48,7 +56,7 @@
 			"accord.\n\nTHE DEVTOOLS WINDOW MAY CONTAIN SENSITIVE LOGIN CREDENTIALS, IT IS ADVISED THAT YOU TURN OFF ANY " +
 			"SCREEN CAPTURE OR SHARING SOFTWARE BEFORE YOU PROCEED. FOR YOUR SECURITY, DO NOT SHARE THESE WITH ANYONE.";
 
-			/*
+		/*
 		// https://jsbin.com/cateqeyono/edit?html,output
 		console.log(
 			Object.defineProperties(new Error(), {
@@ -99,10 +107,22 @@
 
 <ModeWatcher defaultMode="dark" />
 
+<ActionDialogue
+	bind:show={showLogoutConfirmation}
+	title="Log Out"
+	message="You will be signed out of Dash on this device."
+	href="/logout"
+	actionBtnColor="secondary"
+	actionButtonText="Log Out"
+/>
+
 <body class="dark:bg-black bg-gray-50 mb-4">
-	<div id="header-parent">
+	<div
+		id="header-parent"
+		style="position: sticky !important; z-index: 2 !important;"
+	>
 		<Header
-			noBorder={$page.url.pathname.startsWith("/app") ? true : false}
+			noBorder={$page.url.pathname.startsWith("/app") && !$page.url.pathname.startsWith("/app/account") ? true : false}
 			transparent={true}
 		>
 			<div
@@ -118,6 +138,51 @@
 					/>
 					<strong translate="no">Dash</strong>
 				</div>
+
+				{#if $page.data.session}
+					<button
+						on:click={() => (profilePopup = !profilePopup)}
+						class="flex place-items-center justify-center"
+						id="avatar-button"
+					>
+						<Avatar name={$page.data.session.dash_id} />
+					</button>
+
+					<Dropdown
+						anchor="#avatar-button"
+						shadow
+						bind:visible={profilePopup}
+						placement="bottom"
+						offset={{ x: 0, y: 8 }}
+						class="w-fit"
+					>
+						<div class="flex flex-col p-4">
+							<Text size="xs" color="secondary">
+								Dash ID:
+								<Text class="font-mono">
+									{$page.data.session.dash_id}
+								</Text>
+							</Text>
+							<Spacer h={10} />
+							<Divider />
+							<Spacer h={10} />
+							<a
+								class="text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
+							hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all"
+								href="/app/account"
+								target="_blank"
+								>Account Settings</a
+							>
+							<Spacer h={10} />
+							<button
+								class="text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
+							hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all"
+								on:click={() => (showLogoutConfirmation = true)}
+								>Log Out</button
+							>
+						</div>
+					</Dropdown>
+				{/if}
 			</div>
 		</Header>
 	</div>

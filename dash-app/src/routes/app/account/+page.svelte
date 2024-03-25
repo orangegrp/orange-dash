@@ -13,7 +13,6 @@
     import DangerZone from "./danger-zone/+page.svelte";
     import ActionDialogue from "../../components/dialogue/ActionDialogue.svelte";
 
-    let showLogoutConfirmation = false;
     let currentSectionIndex = writable<number>(0);
 
     switch ($page.url.pathname) {
@@ -31,9 +30,7 @@
     }
 </script>
 
-<AppHeader Title="Dash Account">
-    <Button on:click={() => (showLogoutConfirmation = true)}>Log Out</Button>
-</AppHeader>
+<AppHeader Title="Dash Account"/>
 
 <AppContent class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48">
     <svelte:fragment slot="navigation">
@@ -73,12 +70,3 @@
         {/key}
     </svelte:fragment>
 </AppContent>
-
-<ActionDialogue
-    bind:show={showLogoutConfirmation}
-    title="Log Out"
-    message="You will be signed out of Dash on this device."
-    href="/logout"
-    actionBtnColor="secondary"
-    actionButtonText="Log Out"
-/>
