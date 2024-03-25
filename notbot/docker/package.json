@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "docker-deploy": "node scripts/docker-deploy-v2.mjs"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "node-virustotal": "^3.35.0"
+  }
+}

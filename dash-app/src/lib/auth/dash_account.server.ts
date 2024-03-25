@@ -5,6 +5,7 @@ import crypto from "node:crypto";
 import { encrypt, decrypt } from "./encryption";
 
 let pb: pocketbase;
+const DASH_CACHE = new Map<string, DashUser>();
 
 function sleep(time: number) {
     return new Promise(resolve => {
@@ -70,7 +71,13 @@ async function getDashUser(id: string): Promise<DashUser> {
     if (!pb)
         await initDb();
     try {
-        return await pb.collection("orange_bot_dash").getOne<DashUser>(id);
+        if (DASH_CACHE.has(id))
+            return DASH_CACHE.get(id);
+            
+        const dash_user = await pb.collection("orange_bot_dash").getOne<DashUser>(id);
+        DASH_CACHE.set(id, dash_user);
+        setTimeout(() => DASH_CACHE.delete(id), 30 * 1000);
+        return dash_user;
     } catch {
         return undefined;
     }
@@ -80,7 +87,11 @@ async function getDashUserOauth2(oauth2_id: string): Promise<DashUser> {
         await initDb();
     oauth2_id = oauth2_id.replace(/\D/g, "");
     try {
-        return await pb.collection("orange_bot_dash").getFirstListItem<DashUser>(`oauth2_id = "${oauth2_id}"`);
+        const dash_user = await pb.collection("orange_bot_dash").getFirstListItem<DashUser>(`oauth2_id = "${oauth2_id}"`);
+        if (!DASH_CACHE.has(dash_user.id))
+            DASH_CACHE.set(dash_user.id, dash_user);
+        setTimeout(() => DASH_CACHE.delete(dash_user.id), 30 * 1000);
+        return dash_user;
     } catch {
         return undefined;
     }
@@ -89,7 +100,11 @@ async function getDashUserUsername(username: string): Promise<DashUser> {
     if (!pb)
         await initDb();
     try {
-        return await pb.collection("orange_bot_dash").getFirstListItem<DashUser>(`username = "${username}"`);
+        const dash_user = await pb.collection("orange_bot_dash").getFirstListItem<DashUser>(`username = "${username}"`);
+        if (!DASH_CACHE.has(dash_user.id))
+            DASH_CACHE.set(dash_user.id, dash_user);
+        setTimeout(() => DASH_CACHE.delete(dash_user.id), 30 * 1000);
+        return dash_user;
     } catch {
         return undefined;
     }

@@ -8,6 +8,7 @@
     import Modules from "./modules/+page.svelte";
     import Database from "./database/+page.svelte";
     import DashAccount from "./account/+page.svelte";
+    import NotBot from "./notbot/+page.svelte";
     import { writable } from "svelte/store";
 
     let currentPageIndex = writable<number>(-1);
@@ -27,6 +28,9 @@
         case "/app/account/danger-zone":
         case "/app/account":
             $currentPageIndex = 4;
+            break;
+        case "/app/notbot":
+            $currentPageIndex = 5;
             break;
         case "/app":
         case "/app/overview":
@@ -60,7 +64,9 @@
 
 <div>
     <div
-        class="{$currentPageIndex === 4 ? 'hidden' : ''} flex place-items-center justify-center sticky top-0 backdrop-blur-lg dark:bg-gray-975/80 bg-gray-50/80"
+        class="{$currentPageIndex === 4
+            ? 'hidden'
+            : ''} flex place-items-center justify-center sticky top-0 backdrop-blur-lg dark:bg-gray-975/80 bg-gray-50/80"
     >
         <div
             class="w-full flex-grow px-2 md:px-5 border-b dark:border-b-gray-900 border-b-gray-100"
@@ -91,6 +97,12 @@
                     >
                         Database</TabItem
                     >
+                    <TabItem
+                        initialSelected={$currentPageIndex == 5}
+                        on:clicked={() => ($currentPageIndex = 5)}
+                    >
+                        NotBot™</TabItem
+                    >
                     <!--
                     <TabItem
                         initialSelected={$currentPageIndex == 4}
@@ -106,8 +118,8 @@
 
     {#key $currentPageIndex}
         <svelte:component
-            this={[Overview, Deployment, Modules, Database, DashAccount][
-                $currentPageIndex < 0 || $currentPageIndex > 4
+            this={[Overview, Deployment, Modules, Database, DashAccount, NotBot][
+                $currentPageIndex < 0 || $currentPageIndex > 5
                     ? 0
                     : $currentPageIndex
             ]}

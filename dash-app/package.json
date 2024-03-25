@@ -38,6 +38,7 @@
 		"eventsource": "^2.0.2",
 		"geist-ui-svelte": "^0.6.17",
 		"mode-watcher": "^0.2.1",
+		"node-fetch": "^3.3.2",
 		"orange-common-lib": "file:local_modules/orange-common-lib",
 		"otpauth": "^9.2.2",
 		"pocketbase": "^0.21.1",

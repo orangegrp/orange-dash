@@ -8,6 +8,7 @@ import { validateCaptcha } from "$lib/auth/captcha";
 import { getTotpSecret, newTotp, validateTotpToken } from "$lib/auth/totp";
 import { success } from "./routes/api/apilib";
 import { generateQRCode } from "$lib";
+import { NOTBOT_PROXY } from "$env/static/private";
 
 type MiddlewareSequence = { event: RequestEvent, resolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response> };
 const TOTP_MAP: Map<string, { dash_id: string, password: string }> = new Map();
@@ -241,6 +242,28 @@ function isValidSession(event: MiddlewareSequence["event"]) {
     return session_id && getSession(session_id);
 }
 
+async function isValidAdminSession(event: MiddlewareSequence["event"]): Promise<boolean> {
+    const session_id = event.cookies.get("dash_session");
+
+    if (!session_id) {
+        return false;
+    }
+
+    const session = getSession(session_id) as DashSession;
+
+    if (!session) {
+        return false;
+    }
+
+    const dash_account = await getDashUser(session.dash_id);
+
+    if (!dash_account) {
+        return false;
+    }
+
+    return dash_account.role === "Admin" || dash_account.role === "Root";
+}
+
 async function authorization({ event, resolve }: MiddlewareSequence) {
     if (event.url.pathname.startsWith("/app") && !isValidSession(event)) {
         return redirect(303, "/login");
@@ -257,14 +280,38 @@ async function authorization({ event, resolve }: MiddlewareSequence) {
     return await resolve(event);
 }
 
-async function defaultroute( { event, resolve }: MiddlewareSequence) {
+async function defaultroute({ event, resolve }: MiddlewareSequence) {
     if (event.url.pathname === "/") {
         return redirect(303, "/app");
     }
     return await resolve(event);
 }
 
-export const handle: Handle = sequence(defaultroute, authentication, authorization);
+async function notbotproxy({ event, resolve }: MiddlewareSequence) {
+    if (event.url.pathname.startsWith("/notbot-proxy")) {
+        if (!await isValidAdminSession(event)) {
+            return json({ success: false, reason: "Unauthorized" }, { status: 403 });
+        }
+
+        const urlPath = `${NOTBOT_PROXY}${event.url.pathname.replace("/notbot-proxy", "")}${event.url.search}`;
+        const proxyUri = new URL(urlPath);
+
+        console.log(proxyUri.toString());
+        event.request.headers.delete("connection");
+
+        const result = await fetch(proxyUri.toString(), {
+            method: event.request.method,
+            body: event.request.body,
+            headers: event.request.headers
+        }).catch((e) => { console.log(e); return json({ success: false, reason: `Request failed to be relayed.` }, { status: 500 }) });   
+        
+        return result;
+    }
+
+    return await resolve(event);
+}
+
+export const handle: Handle = sequence(authentication, authorization, notbotproxy, defaultroute);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handleError: HandleServerError = ({ error, event, status, message }) => {
