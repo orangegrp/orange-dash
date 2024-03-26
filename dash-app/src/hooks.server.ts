@@ -290,18 +290,18 @@ async function defaultroute({ event, resolve }: MiddlewareSequence) {
 async function notbotproxy({ event, resolve }: MiddlewareSequence) {
     if (event.url.pathname.startsWith("/notbot-proxy")) {
         if (!await isValidAdminSession(event)) {
+            console.log(event.cookies.getAll());
             return json({ success: false, reason: "Unauthorized" }, { status: 403 });
         }
 
         const urlPath = `${NOTBOT_PROXY}${event.url.pathname.replace("/notbot-proxy", "")}${event.url.search}`;
         const proxyUri = new URL(urlPath);
 
-        console.log(proxyUri.toString());
         event.request.headers.delete("connection");
 
         const result = await fetch(proxyUri.toString(), {
             method: event.request.method,
-            body: event.request.body,
+            body: event.request.body ? await event.request.text() : undefined,
             headers: event.request.headers
         }).catch((e) => { console.log(e); return json({ success: false, reason: `Request failed to be relayed.` }, { status: 500 }) });   
         

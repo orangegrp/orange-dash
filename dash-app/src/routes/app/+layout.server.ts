@@ -26,7 +26,7 @@ export const load = async (event) => {
     const dash_account = await getDashUser(session.dash_id);
 
     if (!dash_account || dash_account.locked) {
-        console.log(session, dash_account);
+        console.log("Terminated", session, dash_account);
         await terminateAllSessions(session.dash_id);
         throw redirect(303, `/redirect?target=error${encodeURIComponent("?reason=7")}`);
     }

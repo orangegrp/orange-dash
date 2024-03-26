@@ -62,8 +62,6 @@ export async function POST(request) {
     const password = request.request.headers.get("X-Dash-Pw");
     const { secret, code } = await request.request.json();
 
-    console.log(secret, code);
-
     if (!password) {
         return badRequest("Missing required headers");
     }

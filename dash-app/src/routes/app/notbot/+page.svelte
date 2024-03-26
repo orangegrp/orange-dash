@@ -30,11 +30,8 @@
                     />
                 </svg>
                 <div class="flex flex-row justify-between w-full">
-                    NotBot™ is a legacy system which may be unstable and could crash
-                    from time to time. If this happens, click the button to reload the
-                    application. Do not reload the page or your session may be terminated
-                    by the session manager.
-                    <Button class="ml-4" color="warning" ghost on:click={() => { visible = false; setTimeout(() => {visible = true}, 1000)}}>
+                    NotBot™ is a legacy system which may have bugs and stability issues. If the application freezes on the loading screen, use the Reload button to resolve the issue. Do not reload your browser as it could deauthorise your Dash session.
+                    <Button size="sm" class="ml-4" color="warning" ghost on:click={() => { visible = false; setTimeout(() => {visible = true}, 1000)}}>
                         <div class="flex flex-row gap-x-2 place-items-center">
                             <svg
                             xmlns="http://www.w3.org/2000/svg"
