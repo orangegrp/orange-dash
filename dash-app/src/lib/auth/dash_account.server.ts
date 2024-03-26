@@ -10,6 +10,7 @@ globalThis.EventSource = EventSource;
 
 let pb: pocketbase;
 const DASH_CACHE = new Map<string, DashUser>();
+const CACHE_TIMEOUT = 60 * 60 * 1000;
 
 function sleep(time: number) {
     return new Promise(resolve => {
@@ -89,7 +90,7 @@ async function getDashUser(id: string, retry: boolean = false): Promise<DashUser
 
         const dash_user = await pb.collection("orange_bot_dash").getOne<DashUser>(id);
         DASH_CACHE.set(id, dash_user);
-        setTimeout(() => DASH_CACHE.delete(id), 30 * 1000);
+        setTimeout(() => DASH_CACHE.delete(id), CACHE_TIMEOUT);
         return dash_user;
     } catch (e) {
         if (retry) 
@@ -106,7 +107,7 @@ async function getDashUserOauth2(oauth2_id: string, retry: boolean = false): Pro
         const dash_user = await pb.collection("orange_bot_dash").getFirstListItem<DashUser>(`oauth2_id = "${oauth2_id}"`);
         if (!DASH_CACHE.has(dash_user.id))
             DASH_CACHE.set(dash_user.id, dash_user);
-        setTimeout(() => DASH_CACHE.delete(dash_user.id), 30 * 1000);
+        setTimeout(() => DASH_CACHE.delete(dash_user.id), CACHE_TIMEOUT);
         return dash_user;
     } catch {
         if (retry)
@@ -122,7 +123,7 @@ async function getDashUserUsername(username: string, retry: boolean = false): Pr
         const dash_user = await pb.collection("orange_bot_dash").getFirstListItem<DashUser>(`username = "${username}"`);
         if (!DASH_CACHE.has(dash_user.id))
             DASH_CACHE.set(dash_user.id, dash_user);
-        setTimeout(() => DASH_CACHE.delete(dash_user.id), 30 * 1000);
+        setTimeout(() => DASH_CACHE.delete(dash_user.id), CACHE_TIMEOUT);
         return dash_user;
     } catch {
         if (retry)
