@@ -25,7 +25,7 @@ function getSession(session_id: string) {
     return SESSION_MAP.get(session_id);
 }
 
-function getSessionKeysForId(dash_id) {
+function getSessionKeysForId(dash_id: string) {
     const keys = [];
     for (const [key, session] of SESSION_MAP) {
         if (session.dash_id === dash_id) {

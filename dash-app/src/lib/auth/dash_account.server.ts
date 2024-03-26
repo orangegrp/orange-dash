@@ -4,6 +4,10 @@ import { POCKETBASE_SERVER, POCKETBASE_USER, POCKETBASE_PASSWORD } from "$env/st
 import crypto from "node:crypto";
 import { encrypt, decrypt } from "./encryption";
 
+// nodejs hack support for eventsource package
+import EventSource from "eventsource";
+globalThis.EventSource = EventSource;
+
 let pb: pocketbase;
 const DASH_CACHE = new Map<string, DashUser>();
 
@@ -65,6 +69,11 @@ async function initDb() {
         await sleep(1000);
         continue;
     }
+
+    pb.collection("orange_bot_dash").subscribe("*", (data) => {
+        const dash_account = data.record as DashUser;
+        DASH_CACHE.delete(dash_account.id);
+    });
 }
 
 async function getDashUser(id: string, retry: boolean = false): Promise<DashUser> {
