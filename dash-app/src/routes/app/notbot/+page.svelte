@@ -15,7 +15,7 @@
 <main>
     <div class="m-2">
         <Note label={false} color="warning">
-            <div class="flex flex-row gap-x-2">
+            <div class="flex flex-row gap-x-2 place-items-center">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -30,12 +30,8 @@
                         d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
                     />
                 </svg>
-                <div class="flex flex-row justify-between w-full">
-                    NotBot™ is a legacy system which may have bugs and
-                    stability issues. If the application freezes on the loading
-                    screen, use the Reload button to resolve the issue. Do not
-                    reload your browser as it could deauthorise your Dash
-                    session.
+                <div class="flex flex-row justify-between w-full place-items-center text-sm">
+                    NotBot™ is a legacy system. If you encounter issues, use the Reload button to restart the IFRAME application.
                     <Button
                         size="sm"
                         class="ml-4"
