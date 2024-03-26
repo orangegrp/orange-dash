@@ -206,5 +206,15 @@ function checkSession(email, useragent, session, cb) {
     cb(true)
 }
 
+async function doMsgCalls() {
+    while (msgCallbacks.length > 0) {
+        msgCallbacks.shift()()
+    }
+}
+
+bot.on('message', msg => {
+    doMsgCalls();
+});
+
 bot.login(process.env.DISCORD_TOKEN);
 app.listen(8001);

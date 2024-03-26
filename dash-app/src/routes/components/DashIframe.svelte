@@ -8,6 +8,8 @@
     let classes = "";
     export { classes as class };
 
+    export let state: "loading" | "loaded" | "error" = "loading";
+
     onMount(() => {
         //let script  = "const open = XMLHttpRequest.prototype.open; XMLHttpRequest.prototype.open = function (method, url, ...rest) { url = \"/notbot-proxy\" + url; return open.call(this, method, url, ...rest); };";
         //(iframe.contentWindow as any).eval(script);
@@ -42,5 +44,7 @@
 </script>
 
 <div>
-    <iframe class={classes} {title} bind:this={iframe} {src}></iframe>
+    <iframe on:load={async () => {
+        fetch("/notbot-proxy").then(r => r.status === 200 ? state = "loaded" : state = "error");
+    }} class={classes} {title} bind:this={iframe} {src}></iframe>
 </div>

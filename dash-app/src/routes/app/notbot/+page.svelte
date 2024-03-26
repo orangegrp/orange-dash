@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from "svelte";
     import { Button, Center, Note } from "geist-ui-svelte";
     import DashIframe from "../../components/DashIframe.svelte";
@@ -8,7 +8,8 @@
         window.history.replaceState({}, "", "/app/notbot");
     });
 
-    export let visible = true;
+    let visible = true;
+    let iframe_state: "loading" | "loaded" | "error" = "loading";
 </script>
 
 <main>
@@ -30,24 +31,40 @@
                     />
                 </svg>
                 <div class="flex flex-row justify-between w-full">
-                    NotBot™ is a legacy system which may have bugs and stability issues. If the application freezes on the loading screen, use the Reload button to resolve the issue. Do not reload your browser as it could deauthorise your Dash session.
-                    <Button size="sm" class="ml-4" color="warning" ghost on:click={() => { visible = false; setTimeout(() => {visible = true}, 1000)}}>
+                    NotBot™ is a legacy system which may have bugs and
+                    stability issues. If the application freezes on the loading
+                    screen, use the Reload button to resolve the issue. Do not
+                    reload your browser as it could deauthorise your Dash
+                    session.
+                    <Button
+                        size="sm"
+                        class="ml-4"
+                        color="warning"
+                        ghost
+                        on:click={() => {
+                            visible = false;
+                            iframe_state = "loading";
+                            setTimeout(() => {
+                                visible = true;
+                            }, 1000);
+                        }}
+                    >
                         <div class="flex flex-row gap-x-2 place-items-center">
                             <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.5"
-                            stroke="currentColor"
-                            class="w-6 h-6"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                            />
-                        </svg>
-                        Reload
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                class="w-6 h-6"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                                />
+                            </svg>
+                            Reload
                         </div>
                     </Button>
                 </div>
@@ -58,16 +75,38 @@
     <!--
             <iframe title="NotBot" class="w-screen h-[80vh]" src="/notbot-proxy" />
     -->
-    {#if visible}
-    <DashIframe
-        src="/notbot-proxy"
-        rewriteproxy="/notbot-proxy"
-        class="w-screen h-[80vh]"
-    />
-    {:else}
+    {#if iframe_state === "loading"}
     <Center class="p-16">
-        Reconnecting to NotBot™
-        <Spinner class="m-4"/>
+        Connecting to NotBot™
+        <Spinner class="m-4" />
     </Center>
+    {/if}
+    {#if visible}
+        <DashIframe
+            src="/notbot-proxy"
+            rewriteproxy="/notbot-proxy"
+            bind:state={iframe_state}
+            class="{iframe_state === 'loaded'
+                ? ''
+                : 'hidden'} w-screen h-[80vh]"
+        />
+        {#if iframe_state === "error"}
+            <Center class="p-16">
+                NotBot™ Connection Failed
+                <Button
+                    class="m-4"
+                    ghost
+                    on:click={() => {
+                        visible = false;
+                        iframe_state = "loading";
+                        setTimeout(() => {
+                            visible = true;
+                        }, 1000);
+                    }}
+                >
+                    Retry
+                </Button>
+            </Center>
+        {/if}
     {/if}
 </main>
