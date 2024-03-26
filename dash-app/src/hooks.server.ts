@@ -257,7 +257,7 @@ async function isValidAdminSession(event: MiddlewareSequence["event"]): Promise<
 
     const dash_account = await getDashUser(session.dash_id);
 
-    if (!dash_account) {
+    if (!dash_account || dash_account.locked) {
         return false;
     }
 
