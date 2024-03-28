@@ -30,7 +30,7 @@
     }
 </script>
 
-<AppHeader Title="Dash Account"/>
+<AppHeader Title="Account Manager"/>
 
 <AppContent class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48">
     <svelte:fragment slot="navigation">

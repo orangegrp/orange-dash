@@ -72,8 +72,7 @@ async function initDb() {
     }
 
     pb.collection("orange_bot_dash").subscribe("*", (data) => {
-        const dash_account = data.record as DashUser;
-        DASH_CACHE.delete(dash_account.id);
+        DASH_CACHE.delete(data.record.id);
     });
 }
 

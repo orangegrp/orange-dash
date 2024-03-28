@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { Tabs, TabItem } from "geist-ui-svelte";
+    import { Tabs, TabItem, Text, Button } from "geist-ui-svelte";
     import { page } from "$app/stores";
 
     import Overview from "./overview/+page.svelte";
@@ -10,6 +10,8 @@
     import DashAccount from "./account/+page.svelte";
     import NotBot from "./notbot/+page.svelte";
     import { writable } from "svelte/store";
+    import type { DashUser } from "$lib/auth/dash";
+    import { goto } from "$app/navigation";
 
     let currentPageIndex = writable<number>(-1);
 
@@ -57,17 +59,56 @@
         }
     }
 
+    let titles = [
+        "Overview",
+        "Deployment",
+        "Modules",
+        "Database",
+        "Account Manager",
+        "NotBot™",
+    ];
+    let accountType = "";
+
     onMount(() => {
         removeDuplicateBorder();
+
+        const dashAccount = $page.data.dash_account as DashUser;
+        accountType = dashAccount.role;
     });
 </script>
+
+<svelte:head>
+    <title>{titles[$currentPageIndex] ?? "Dash"}</title>
+</svelte:head>
 
 <div>
     <div
         class="{$currentPageIndex === 4
             ? 'hidden'
-            : ''} flex place-items-center justify-center sticky top-0 backdrop-blur-lg dark:bg-gray-975/80 bg-gray-50/80"
+            : ''} flex flex-col sticky top-0 backdrop-blur-lg dark:bg-gray-975/80 bg-gray-50/80"
     >
+        {#if accountType === "Root"}
+            <div class="px-2 md:px-5 flex flex-row gap-x-2 my-1 place-items-center">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+                    />
+                </svg>
+                You are logged in as a superuser. Be careful.
+                <Button color="success-light" size="xs" on:click={() => goto("/logout")}>
+                    Log Out
+                </Button>
+            </div>
+        {/if}
         <div
             class="w-full flex-grow px-2 md:px-5 border-b dark:border-b-gray-900 border-b-gray-100"
         >
@@ -79,30 +120,34 @@
                     >
                         Overview</TabItem
                     >
-                    <TabItem
-                        initialSelected={$currentPageIndex == 1}
-                        on:clicked={() => ($currentPageIndex = 1)}
-                    >
-                        Deployment</TabItem
-                    >
+                    {#if accountType === "Admin" || accountType === "Root"}
+                        <TabItem
+                            initialSelected={$currentPageIndex == 1}
+                            on:clicked={() => ($currentPageIndex = 1)}
+                        >
+                            Deployment</TabItem
+                        >
+                    {/if}
                     <TabItem
                         initialSelected={$currentPageIndex == 2}
                         on:clicked={() => ($currentPageIndex = 2)}
                     >
                         Modules</TabItem
                     >
-                    <TabItem
-                        initialSelected={$currentPageIndex == 3}
-                        on:clicked={() => ($currentPageIndex = 3)}
-                    >
-                        Database</TabItem
-                    >
-                    <TabItem
-                        initialSelected={$currentPageIndex == 5}
-                        on:clicked={() => ($currentPageIndex = 5)}
-                    >
-                        NotBot™</TabItem
-                    >
+                    {#if accountType === "Admin" || accountType === "Root"}
+                        <TabItem
+                            initialSelected={$currentPageIndex == 3}
+                            on:clicked={() => ($currentPageIndex = 3)}
+                        >
+                            Database</TabItem
+                        >
+                        <TabItem
+                            initialSelected={$currentPageIndex == 5}
+                            on:clicked={() => ($currentPageIndex = 5)}
+                        >
+                            NotBot™</TabItem
+                        >
+                    {/if}
                     <!--
                     <TabItem
                         initialSelected={$currentPageIndex == 4}
@@ -118,7 +163,14 @@
 
     {#key $currentPageIndex}
         <svelte:component
-            this={[Overview, Deployment, Modules, Database, DashAccount, NotBot][
+            this={[
+                Overview,
+                Deployment,
+                Modules,
+                Database,
+                DashAccount,
+                NotBot,
+            ][
                 $currentPageIndex < 0 || $currentPageIndex > 5
                     ? 0
                     : $currentPageIndex

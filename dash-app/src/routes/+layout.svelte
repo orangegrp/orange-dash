@@ -56,7 +56,6 @@
 			"accord.\n\nTHE DEVTOOLS WINDOW MAY CONTAIN SENSITIVE LOGIN CREDENTIALS, IT IS ADVISED THAT YOU TURN OFF ANY " +
 			"SCREEN CAPTURE OR SHARING SOFTWARE BEFORE YOU PROCEED. FOR YOUR SECURITY, DO NOT SHARE THESE WITH ANYONE.";
 
-		
 		// https://jsbin.com/cateqeyono/edit?html,output
 		console.log(
 			Object.defineProperties(new Error(), {
@@ -101,7 +100,6 @@
 				},
 			}),
 		);
-		
 	});
 </script>
 
@@ -117,12 +115,12 @@
 />
 
 <body class="dark:bg-black bg-gray-50 mb-4">
-	<div
-		id="header-parent"
-		style="position: sticky !important; z-index: 2 !important;"
-	>
+	<div id="header-parent" style="position: sticky !important; z-index: 100 !important;">
 		<Header
-			noBorder={$page.url.pathname.startsWith("/app") && !$page.url.pathname.startsWith("/app/account") ? true : false}
+			noBorder={$page.url.pathname.startsWith("/app") &&
+			!$page.url.pathname.startsWith("/app/account")
+				? true
+				: false}
 			transparent={true}
 		>
 			<div
@@ -147,19 +145,17 @@
 					>
 						<Avatar name={$page.data.session.dash_id} />
 					</button>
-
 					<Dropdown
 						anchor="#avatar-button"
-						shadow
 						bind:visible={profilePopup}
 						placement="bottom"
 						offset={{ x: 0, y: 8 }}
-						class="w-fit"
+						class="w-fit shadow-2xl"
 					>
-						<div class="flex flex-col p-4">
+						<div class="flex flex-col p-3">
 							<Text size="xs" color="secondary">
 								Dash ID:
-								<Text class="font-mono">
+								<Text blockquote>
 									{$page.data.session.dash_id}
 								</Text>
 							</Text>
@@ -168,15 +164,14 @@
 							<Spacer h={10} />
 							<a
 								class="text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
-							hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all"
+						hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all"
 								href="/app/account"
-								target="_blank"
-								>Account Settings</a
+								target="_self">Account Settings</a
 							>
-							<Spacer h={10} />
+							<Spacer h={5} />
 							<button
 								class="text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
-							hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all"
+						hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all"
 								on:click={() => (showLogoutConfirmation = true)}
 								>Log Out</button
 							>

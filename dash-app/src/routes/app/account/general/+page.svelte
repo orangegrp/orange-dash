@@ -14,13 +14,12 @@
         window.history.replaceState({}, "", "/app/account/general");
 
         const dashAccount = $page.data.dash_account as DashUser;
-        console.log(dashAccount);
 
         userId = dashAccount.id;
         userName = dashAccount.username ? `${dashAccount.username}` : "";
         loginMethods = dashAccount.login_methods;
         OAuth2_Id = dashAccount.oauth2_id;
-        accountType = dashAccount.account_type;
+        accountType = dashAccount.role;
     });
 </script>
 

@@ -31,7 +31,7 @@ const decrypt = (keyBuffer, dataBuffer, aadBuffer) => {
 import crypto from "crypto";
 const ALGORITHM = "aes-256-gcm";
 
-function encrypt (keyBuffer: Buffer, dataBuffer: Buffer): Buffer {
+function encrypt(keyBuffer: Buffer, dataBuffer: Buffer): Buffer {
     const iv: Buffer = crypto.randomBytes(12);
     const cipher: crypto.CipherGCM = crypto.createCipheriv(ALGORITHM, keyBuffer, iv);
     const encryptedBuffer: Buffer = Buffer.concat([cipher.update(dataBuffer), cipher.final()]);
@@ -41,7 +41,7 @@ function encrypt (keyBuffer: Buffer, dataBuffer: Buffer): Buffer {
     return Buffer.concat([bufferLength, iv, authTag, encryptedBuffer]);
 }
 
-function decrypt (keyBuffer: Buffer, dataBuffer: Buffer): Buffer {
+function decrypt(keyBuffer: Buffer, dataBuffer: Buffer): Buffer {
     const ivSize: number = dataBuffer.readUInt8(0);
     const iv: Buffer = dataBuffer.subarray(1, ivSize + 1);
     const authTag: Buffer = dataBuffer.subarray(ivSize + 1, ivSize + 17);
@@ -52,3 +52,26 @@ function decrypt (keyBuffer: Buffer, dataBuffer: Buffer): Buffer {
 
 
 export { encrypt, decrypt };
+
+
+function encrypt_str(data: string, key: string) {
+    try {
+        const keyBuffer = Buffer.from(crypto.createHash("sha1").update(key).digest("hex")).subarray(0, 32);
+        const encrypted = encrypt(keyBuffer, Buffer.from(data, "utf-8"));
+        return encrypted.toString("hex");
+    } catch {
+        return undefined;
+    }
+}
+
+function decrypt_str(cipher: string, key: string) {
+    try {
+        const keyBuffer = Buffer.from(crypto.createHash("sha1").update(key).digest("hex")).subarray(0, 32);
+        const plain = decrypt(keyBuffer, Buffer.from(cipher, "hex"));
+        return plain.toString("utf-8");
+    } catch {
+        return undefined;
+    }
+}
+
+export { encrypt_str, decrypt_str };

@@ -10,5 +10,4 @@
         <slot name="navigation" />
         <slot name="content" />
     </div>
-
 </main>
