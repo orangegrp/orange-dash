@@ -9,6 +9,7 @@
     import Database from "./database/+page.svelte";
     import DashAccount from "./account/+page.svelte";
     import NotBot from "./notbot/+page.svelte";
+    import Admin from "./admin/+page.svelte";
     import { writable } from "svelte/store";
     import type { DashUser } from "$lib/auth/dash";
     import { goto } from "$app/navigation";
@@ -33,6 +34,9 @@
             break;
         case "/app/notbot":
             $currentPageIndex = 5;
+            break;
+        case "/app/admin":
+            $currentPageIndex = 6;
             break;
         case "/app":
         case "/app/overview":
@@ -66,6 +70,7 @@
         "Database",
         "Account Manager",
         "NotBot™",
+        "Admin",
     ];
     let accountType = "";
 
@@ -88,7 +93,9 @@
             : ''} flex flex-col sticky top-0 backdrop-blur-lg dark:bg-gray-975/80 bg-gray-50/80"
     >
         {#if accountType === "Root"}
-            <div class="px-2 md:px-5 flex flex-row gap-x-2 my-1 place-items-center">
+            <div
+                class="px-2 md:px-5 flex flex-row gap-x-2 my-1 place-items-center"
+            >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -104,7 +111,11 @@
                     />
                 </svg>
                 You are logged in as a superuser. Be careful.
-                <Button color="success-light" size="xs" on:click={() => goto("/logout")}>
+                <Button
+                    color="success-light"
+                    size="xs"
+                    on:click={() => goto("/logout")}
+                >
                     Log Out
                 </Button>
             </div>
@@ -147,6 +158,12 @@
                         >
                             NotBot™</TabItem
                         >
+                        <TabItem
+                            initialSelected={$currentPageIndex == 6}
+                            on:clicked={() => ($currentPageIndex = 6)}
+                        >
+                            Admin Area</TabItem
+                        >
                     {/if}
                     <!--
                     <TabItem
@@ -170,8 +187,9 @@
                 Database,
                 DashAccount,
                 NotBot,
+                Admin,
             ][
-                $currentPageIndex < 0 || $currentPageIndex > 5
+                $currentPageIndex < 0 || $currentPageIndex > 6
                     ? 0
                     : $currentPageIndex
             ]}

@@ -3,53 +3,84 @@
     import AppHeader from "../../components/AppHeader.svelte";
     import AppContent from "../../components/AppContent.svelte";
 
-    import { Note, Text } from "geist-ui-svelte";
+    import { Button, Note, Text } from "geist-ui-svelte";
     import type { DashUser } from "$lib/auth/dash";
     import { page } from "$app/stores";
     import NavButton from "../../components/NavButton.svelte";
     import { writable } from "svelte/store";
-
+    import Table from "../../components/table/Table.svelte";
+    import Row from "../../components/table/Row.svelte";
+    import Item from "../../components/table/Item.svelte";
+    
     let currentSectionIndex = writable<number>(0);
 
     let accountType = "";
 
     onMount(() => {
-        window.history.replaceState({}, "", "/app/deployment");
+        window.history.replaceState({}, "", "/app/admin");
 
         const dashAccount = $page.data.dash_account as DashUser;
         accountType = dashAccount.role;
     });
+
+    let hover = false;
 </script>
 
 {#if accountType === "Admin" || accountType === "Root"}
-    <AppHeader Title="Deployment"></AppHeader>
+    <AppHeader Title="Admin Area"></AppHeader>
     <AppContent class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48">
         <svelte:fragment slot="navigation">
             <div
                 class="flex md:flex-col flex-row justify-start gap-y-1 gap-x-2 overflow-x-auto w-full min-w-fit max-w-[15vw]"
             >
-                <Text size="xs" class="display-none md:block ml-2"
-                    >MANAGEMENT</Text
-                >
+                <Text size="xs" class="display-none md:block ml-2">ACCOUNT MANAGEMENT</Text>
                 <NavButton
                     active={$currentSectionIndex === 0}
                     btnClicked={() => currentSectionIndex.set(0)}
-                    >Nodes
-                </NavButton>
-                <NavButton
-                    active={$currentSectionIndex === 1}
-                    btnClicked={() => currentSectionIndex.set(1)}
-                    >Configuration
-                </NavButton>
-                <NavButton
-                    active={$currentSectionIndex === 2}
-                    btnClicked={() => currentSectionIndex.set(2)}
-                    >Secrets
+                    >User Accounts
                 </NavButton>
             </div>
         </svelte:fragment>
         <svelte:fragment slot="content">
-            
+            <Table>
+                  <Row header>
+                    <Item header>Company</Item>
+                    <Item header>Contact</Item>
+                    <Item header>Country</Item>
+                  </Row>
+                  <Row>
+                    <Item>Alfreds Futterkiste</Item>
+                    <Item>Maria Anders</Item>
+                    <Item>Germany</Item>
+                  </Row>
+                  <Row>
+                    <Item>CenRowo comercial Moctezuma</Item>
+                    <Item>Francisco Chang</Item>
+                    <Item>Mexico</Item>
+                  </Row>
+                  <Row>
+                    <Item>Ernst Handel</Item>
+                    <Item>Roland Mendel</Item>
+                    <Item>AusRowia</Item>
+                  </Row>
+                  <Row  onmouseenter={() => (hover = true)} onmouseleave={() => (hover = false)}>
+                    <Item>Island Rowading
+                        <Button class="{hover ? "" : "hidden"}">Hi</Button>
+                    </Item>
+                    <Item>Helen Bennett</Item>
+                    <Item>UK</Item>
+                  </Row>
+                  <Row>
+                    <Item>Laughing Bacchus Winecellars</Item>
+                    <Item>Yoshi Tannamuri</Item>
+                    <Item>Canada</Item>
+                  </Row>
+                  <Row>
+                    <Item>Magazzini Alimentari Riuniti</Item>
+                    <Item>Giovanni Rovelli</Item>
+                    <Item>Italy</Item>
+                  </Row>
+            </Table>
         </svelte:fragment>
     </AppContent>
 {:else}
