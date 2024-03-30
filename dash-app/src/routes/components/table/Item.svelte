@@ -1,6 +1,12 @@
 <script lang="ts">
     export let header = false;
     export let headerPos: "left" | "right" | "center" = "center";
+    let classes = "";
+    let styles = "";
+    let itemId = "";
+    export { itemId as id };
+    export { classes as class };
+    export { styles as style };
 
     export let onclick = (e: Event) => {};
     export let ondblclick = (e: Event) => {};
@@ -12,14 +18,15 @@
 
 {#if header}
     <th
-        class="text-{headerPos} w-full px-1 border-gray-100 dark:border-gray-900 hover:bg-gray-50 hover:dark:bg-gray-950 transition-all"
+        id={itemId}
+        class="flex-1 text-{headerPos} w-full px-1 border-gray-100 dark:border-gray-900 hover:bg-gray-50 hover:dark:bg-gray-950 transition-all"
         on:click={onclick}
         on:dblclick={ondblclick}
         on:mouseenter={onmouseenter}
         on:mouseleave={onmouseleave}
     >
         <span
-            class="w-full text-gray-600 dark:text-gray-600 font-normal {header
+            class="flex-1 w-full {classes}  text-gray-600 dark:text-gray-600 font-normal {header
                 ? 'text-xs uppercase'
                 : 'font-light'}"
         >
@@ -28,7 +35,9 @@
     </th>
 {:else}
     <td
-        class="w-full px-2 border-gray-100 dark:border-gray-900 hover:bg-gray-50 hover:dark:bg-gray-950 transition-all"
+        id={itemId}
+        style="word-wrap: break-word !important; {styles}"
+        class="flex-1 w-full px-2 border-gray-100 dark:border-gray-900 hover:bg-gray-50 hover:dark:bg-gray-950 transition-all"
         on:click={onclick}
         on:dblclick={ondblclick}
         on:mouseenter={(e) => {
@@ -41,7 +50,8 @@
         }}
     >
         <span
-            class="w-full text-gray-600 dark:text-gray-600 font-normal {header
+            style="word-wrap: break-word !important;"
+            class="flex-1 w-full {classes} text-gray-600 dark:text-gray-600 font-normal {header
                 ? 'text-xs uppercase'
                 : 'font-light'}"
         >

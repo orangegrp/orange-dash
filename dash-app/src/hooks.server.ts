@@ -4,11 +4,12 @@ import { getAccessTokenFromCode } from "$lib/auth/oauth2_discord.server";
 import { getDashUserOauth2, createDashUser, getDashUser, getDashUserUsername, calculatePasswordHash, decryptTotpSecret } from "$lib/auth/dash_account.server";
 import type { DashSession } from "$lib/auth/dash";
 import { getSession, newSession, removeSession } from "$lib/auth/session.server";
-import { validateCaptcha } from "$lib/auth/captcha";
+import { validateCaptcha } from "$lib/captcha";
 import { getTotpSecret, newTotp, validateTotpToken } from "$lib/auth/totp";
 import { success } from "./routes/api/apilib";
 import { generateQRCode } from "$lib";
 import { NOTBOT_PROXY } from "$env/static/private";
+import { audit } from "$lib/audit/audit_api.server";
 
 type MiddlewareSequence = { event: RequestEvent, resolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response> };
 const TOTP_MAP: Map<string, { dash_id: string, password: string }> = new Map();
@@ -40,10 +41,12 @@ async function totpAuthentication({ event }: MiddlewareSequence) {
     }
 
     if (user.locked) {
+        audit("LoginFail", user.id, "Login attempt blocked because the account is locked", event);
         return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=6")}`);
     }
 
     if (!user.login_methods.includes("TOTP")) {
+        audit("LoginFail", user.id, "TOTP authentication not available for this account", event);
         return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=8")}`);
     }
 
@@ -55,6 +58,7 @@ async function totpAuthentication({ event }: MiddlewareSequence) {
     const totp_5 = body.get("totp_5") as string;
 
     if (!totp_0 || !totp_1 || !totp_2 || !totp_3 || !totp_4 || !totp_5) {
+
         return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=2")}`);
     }
 
@@ -75,6 +79,8 @@ async function totpAuthentication({ event }: MiddlewareSequence) {
 
     if (!validateTotpToken(totp, full_token)) {
         TOTP_MAP.delete(totp_session_id);
+
+        audit("LoginFail", user.id, "MFA authentication failed because invalid TOTP code was supplied", event);
         return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=2")}`);
     }
 
@@ -96,6 +102,8 @@ async function totpAuthentication({ event }: MiddlewareSequence) {
     } else {
         event.cookies.set("dash_session", session_id, { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
     }
+
+    audit("LoginOK", user.id, "Multi-factor authentication success", event);
 
     return redirect(302, "/redirect?target=app");
 }
@@ -127,11 +135,13 @@ async function passwordAuthentication({ event }: MiddlewareSequence) {
     }
 
     if (user.locked) {
+        audit("LoginFail", user.id, "Login attempt blocked because the account is locked", event);
         return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=6")}`);
     }
 
 
     if (!user.login_methods.includes("Password")) {
+        audit("LoginFail", user.id, "Password authentication not available for this account", event);
         return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=8")}`);
     }
 
@@ -139,6 +149,8 @@ async function passwordAuthentication({ event }: MiddlewareSequence) {
 
 
     if (hashed !== user.password) {
+        audit("LoginFail", user.id, "Password authentication failed due to incorrect password", event);
+
         return redirect(303, `/redirect?target=error${encodeURIComponent("?reason=1")}`);
     }
 
@@ -147,6 +159,9 @@ async function passwordAuthentication({ event }: MiddlewareSequence) {
         TOTP_MAP.set(totp_session_id, { dash_id: user.id, password: password as string });
         setTimeout(() => TOTP_MAP.delete(totp_session_id), 300000); // 5 mins
         event.cookies.set("dash_totp", totp_session_id, { path: "/login/mfa", secure: false, httpOnly: true, sameSite: "strict", maxAge: 300 });
+        
+        audit("LoginOK", user.id, "Multi-factor authentication request", event);
+
         return redirect(302, `/login/mfa`);
     }
 
@@ -166,20 +181,20 @@ async function passwordAuthentication({ event }: MiddlewareSequence) {
         event.cookies.set("dash_session", session_id, { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
     }
 
+    audit("LoginOK", user.id, "Password login success", event);
+
     return redirect(302, "/redirect?target=app");
 }
 
 async function discordAuthentication({ event }: MiddlewareSequence) {
     const code = event.url.searchParams.get("code");
     if (!code) {
-        console.warn("Missing code");
         return redirect(303, "/error?reason=4");
     }
 
     const creds = await getAccessTokenFromCode(event.url.origin + "/login/oauth2/discord", code!);
 
     if (!creds) {
-        console.warn("OAuth2 error. No credentials");
         return redirect(303, "/error?reason=4");
     }
 
@@ -194,9 +209,12 @@ async function discordAuthentication({ event }: MiddlewareSequence) {
         };
 
         user = await createDashUser(user);
+
+        audit("AccountCreation", user.id, "New account created", event);
     }
 
     if (user.locked) {
+        audit("LoginFail", user.id, "Login attempt blocked because the account is locked", event);
         return redirect(302, "/error?reason=6");
     }
 
@@ -212,6 +230,8 @@ async function discordAuthentication({ event }: MiddlewareSequence) {
     const session_id = newSession(session);
     event.cookies.set("dash_session", session_id, { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
 
+    audit("LoginOK", user.id, "Logged in using Discord OAuth2", event);
+
     return redirect(302, "/redirect?target=app");
 }
 
@@ -219,7 +239,6 @@ async function authentication({ event, resolve }: MiddlewareSequence) {
     if (event.url.pathname === "/login/oauth2/discord") {
         return await discordAuthentication({ event, resolve });
     } else if (event.url.pathname === "/login/qrcode" && event.request.method === "GET") {
-        event.getClientAddress()
         const qr_login_session = crypto.randomUUID();
         QR_MAP.set(qr_login_session, { ip: event.getClientAddress() });
         return success({ qrcode: await generateQRCode(qr_login_session) });
@@ -228,9 +247,15 @@ async function authentication({ event, resolve }: MiddlewareSequence) {
     } else if (event.url.pathname === "/login/mfa" && event.request.method === "POST") {
         return await totpAuthentication({ event, resolve });
     } else if (event.url.pathname === "/logout") {
-        removeSession(event.cookies.get("dash_session")!);
+        const session_id = event.cookies.get("dash_session");
+        const session = getSession(session_id!) as DashSession;
+        if (session && session.dash_id) {
+            audit("Logout", session.dash_id, "Log out success", event);
+        }
+        removeSession(session_id!);
         event.cookies.delete("dash_totp", { path: "/login/mfa", secure: false, httpOnly: true, sameSite: "strict", maxAge: 300 });
         event.cookies.delete("dash_session", { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
+        
         return redirect(302, "/redirect?target=login");
     }
 
@@ -273,6 +298,8 @@ async function authorization({ event, resolve }: MiddlewareSequence) {
         return redirect(303, "/login");
     } else if (event.url.pathname === "/api/diagnostics") {
         return await resolve(event);
+    } else if (event.url.pathname.startsWith("/api/admin") && !isValidAdminSession(event)) {
+        return json({ success: false, reason: "Invalid session" }, { status: 403 });
     } else if (event.url.pathname.startsWith("/api") && !isValidSession(event)) {
         return json({ success: false, reason: "Invalid session" }, { status: 403 });
     }
@@ -316,9 +343,14 @@ export const handle: Handle = sequence(authentication, authorization, notbotprox
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const handleError: HandleServerError = ({ error, event, status, message }) => {
     const errorId = crypto.randomUUID();
-    console.error(errorId, event.getClientAddress(), status, message, error);
+    const session_id = event.cookies.get("dash_session");
+    const session = getSession(session_id!) as DashSession;
+
+    console.error(errorId, event.request.headers.get("X-Forwarded-For"), event.getClientAddress(), status, message, error);
+    audit("Diagnostics", session?.dash_id ?? undefined, `Error: ${errorId} Status: ${status} Message: ${message}`, event);
+
     return {
         status: status,
-        message: `${message}<p class="text-xs">ID: <code>${errorId}</code></p>`,
+        message: message
     };
 }

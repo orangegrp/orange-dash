@@ -35,6 +35,9 @@
         case "/app/notbot":
             $currentPageIndex = 5;
             break;
+        case "/app/admin/debug":
+        case "/app/admin/audit-log":
+        case "/app/admin/user-accounts":
         case "/app/admin":
             $currentPageIndex = 6;
             break;

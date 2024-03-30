@@ -1,12 +1,16 @@
 import type { DashSession } from "./dash";
 import { pb }  from "../auth/dash_account.server";
+import { USERS_TABLE } from "$env/static/private";
 
 const SESSION_MAP: Map<string, DashSession> = new Map();
+
+import eventsource from 'eventsource';
+global.EventSource = eventsource;
 
 function removeSession(session_id: string) {
     const session = getSession(session_id);
     if (session)
-        pb.collection("orange_bot_dash").unsubscribe(session.dash_id);
+        pb.collection(USERS_TABLE).unsubscribe(session.dash_id);
     SESSION_MAP.delete(session_id);
 }
 

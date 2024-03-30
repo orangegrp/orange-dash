@@ -11,9 +11,25 @@
     import Table from "../../components/table/Table.svelte";
     import Row from "../../components/table/Row.svelte";
     import Item from "../../components/table/Item.svelte";
-    
+
+    import Audit from "./audit-log/+page.svelte";
+
     let currentSectionIndex = writable<number>(0);
 
+    switch ($page.url.pathname) {
+        case "/app/admin/debug":
+            $currentSectionIndex = 2;
+            break;
+        case "/app/admin/audit-log":
+            $currentSectionIndex = 1;
+            break;
+        case "/app/admin/user-accounts":
+        case "/app/admin":
+        default:
+            $currentSectionIndex = 0;
+            break;
+    }
+    
     let accountType = "";
 
     onMount(() => {
@@ -22,8 +38,6 @@
         const dashAccount = $page.data.dash_account as DashUser;
         accountType = dashAccount.role;
     });
-
-    let hover = false;
 </script>
 
 {#if accountType === "Admin" || accountType === "Root"}
@@ -33,54 +47,39 @@
             <div
                 class="flex md:flex-col flex-row justify-start gap-y-1 gap-x-2 overflow-x-auto w-full min-w-fit max-w-[15vw]"
             >
-                <Text size="xs" class="display-none md:block ml-2">ACCOUNT MANAGEMENT</Text>
+                <Text size="xs" class="display-none md:block ml-2"
+                    >ACCOUNT MANAGEMENT</Text
+                >
                 <NavButton
                     active={$currentSectionIndex === 0}
                     btnClicked={() => currentSectionIndex.set(0)}
                     >User Accounts
                 </NavButton>
+                <Text size="xs" class="display-none md:block mt-2 ml-2"
+                    >SYSTEM</Text
+                >
+                <NavButton
+                    active={$currentSectionIndex === 1}
+                    btnClicked={() => currentSectionIndex.set(1)}
+                    >Audit Log
+                </NavButton>
+                <NavButton
+                    active={$currentSectionIndex === 2}
+                    btnClicked={() => currentSectionIndex.set(2)}
+                    >Debug
+                </NavButton>
             </div>
         </svelte:fragment>
         <svelte:fragment slot="content">
-            <Table>
-                  <Row header>
-                    <Item header>Company</Item>
-                    <Item header>Contact</Item>
-                    <Item header>Country</Item>
-                  </Row>
-                  <Row>
-                    <Item>Alfreds Futterkiste</Item>
-                    <Item>Maria Anders</Item>
-                    <Item>Germany</Item>
-                  </Row>
-                  <Row>
-                    <Item>CenRowo comercial Moctezuma</Item>
-                    <Item>Francisco Chang</Item>
-                    <Item>Mexico</Item>
-                  </Row>
-                  <Row>
-                    <Item>Ernst Handel</Item>
-                    <Item>Roland Mendel</Item>
-                    <Item>AusRowia</Item>
-                  </Row>
-                  <Row  onmouseenter={() => (hover = true)} onmouseleave={() => (hover = false)}>
-                    <Item>Island Rowading
-                        <Button class="{hover ? "" : "hidden"}">Hi</Button>
-                    </Item>
-                    <Item>Helen Bennett</Item>
-                    <Item>UK</Item>
-                  </Row>
-                  <Row>
-                    <Item>Laughing Bacchus Winecellars</Item>
-                    <Item>Yoshi Tannamuri</Item>
-                    <Item>Canada</Item>
-                  </Row>
-                  <Row>
-                    <Item>Magazzini Alimentari Riuniti</Item>
-                    <Item>Giovanni Rovelli</Item>
-                    <Item>Italy</Item>
-                  </Row>
-            </Table>
+            {#key $currentSectionIndex}
+                <svelte:component
+                    this={[Audit, Audit, Audit][
+                        $currentSectionIndex < 0 || $currentSectionIndex > 2
+                            ? 0
+                            : $currentSectionIndex
+                    ]}
+                />
+            {/key}
         </svelte:fragment>
     </AppContent>
 {:else}

@@ -1,6 +1,6 @@
 import type { RecordModel } from "pocketbase";
 
-type DashLoginMethods = "Password" | "TOTP" | "OAuth2";
+type DashLoginMethods = "Password" | "TOTP" | "OAuth2" | "QR";
 type DashRole = "Root" | "Admin" | "User" | "OAuth2User";
 
 type DashUser = Partial<RecordModel> & {

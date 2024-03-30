@@ -1,3 +1,4 @@
+import { audit } from '$lib/audit/audit_api.server';
 import { calculatePasswordHash, decryptTotpSecret, encryptTotpSecret, getDashUser, updateDashUser } from '$lib/auth/dash_account.server.js';
 import { getSession } from '$lib/auth/session.server';
 import { generateTotpQrCodeUrl, generateTotpSecret, generateTotpUrl, getTotpSecret, newTotp, validateTotpToken } from '$lib/auth/totp.js';
@@ -22,6 +23,9 @@ export async function DELETE(request) {
 
         const login_methods = session.login_methods;
         updateDashUser(session.dash_id, { totp_secret: null, login_methods: [...new Set([...(login_methods.filter(m => m !== "TOTP"))])] });
+        
+        audit("SecurityInfoChange", session.dash_id, "Multi-factor authentication removed", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        
         return success();
     } else {
         return error("Session not found");
@@ -49,6 +53,8 @@ export async function GET(request) {
         const totp_qrcode = await generateTotpQrCodeUrl(totp_engine);
         const totp_otpurl = generateTotpUrl(totp_engine);
 
+        audit("SecurityInfoChange", session.dash_id, "Multi-factor authenticatior added", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        
         return success( { secret: totp_secret.base32, qr: totp_qrcode, algorithm: totp_engine.algorithm, url: totp_otpurl });
     } else {
         return error("Session not found");
@@ -78,7 +84,10 @@ export async function POST(request) {
 
         const login_methods = user.login_methods;
         const encrypted_secret = await encryptTotpSecret(session.dash_id, password, secret);
+
         await updateDashUser(session.dash_id, { totp_secret: encrypted_secret, login_methods: [...new Set([...login_methods, "TOTP"])] });
+
+        audit("SecurityInfoChange", session.dash_id, "Multi-factor authenticatior secret updated", request.getClientAddress(), request.request.headers.get("User-Agent"));
         
         return success();
     } else {

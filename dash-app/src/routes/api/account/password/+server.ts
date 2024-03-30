@@ -1,3 +1,4 @@
+import { audit } from '$lib/audit/audit_api.server';
 import { updateDashUser, calculatePasswordHash, getDashUser, decryptTotpSecret, encryptTotpSecret } from '$lib/auth/dash_account.server.js';
 import { getSession, getSessionKeysForId, removeSession } from '$lib/auth/session.server.js';
 import { badRequest, error, forbidden, success, verifyApiSession } from '../../apilib';
@@ -13,7 +14,7 @@ export async function GET(request) {
         if (await calculatePasswordHash(session.dash_id, password) !== user.password) {
             return forbidden("Incorrect password");
         }
-
+        
         return success();
     } else {
         return error("Session not found");
@@ -39,6 +40,10 @@ export async function POST(request) {
 
         updateDashUser(session.dash_id, { password: hashed, login_methods: [...new Set([...login_methods, "Password"])] });
 
+
+        audit("SecurityInfoChange", session.dash_id, "Password login was setup for this account", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        
+    
         return success(null, "/redirect?target=logout");
     } else {
         return error("Session not found");
@@ -75,6 +80,9 @@ export async function PUT(request) {
         } else {
             await updateDashUser(session.dash_id, { password: hashed, totp_secret: null, login_methods: [...new Set([...(user.login_methods.filter(m => m !== "TOTP")), "Password"])] });
         }
+
+        audit("SecurityInfoChange", session.dash_id, "Password changed", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        
 
         return success(null, "/redirect?target=logout");
     } else {
