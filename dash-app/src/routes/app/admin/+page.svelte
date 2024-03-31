@@ -14,6 +14,7 @@
 
     import Audit from "./audit-log/+page.svelte";
     import Debug from "./debug/+page.svelte";
+    import UserAccounts from "./user-accounts/+page.svelte";
 
     let currentSectionIndex = writable<number>(0);
 
@@ -74,7 +75,7 @@
         <svelte:fragment slot="content">
             {#key $currentSectionIndex}
                 <svelte:component
-                    this={[Audit, Audit, Debug][
+                    this={[UserAccounts, Audit, Debug][
                         $currentSectionIndex < 0 || $currentSectionIndex > 2
                             ? 0
                             : $currentSectionIndex

@@ -354,6 +354,6 @@ export const handleError: HandleServerError = ({ error, event, status, message }
 
     return {
         status: status,
-        message: message
+        message: `${message} (${errorId})`
     };
 }
