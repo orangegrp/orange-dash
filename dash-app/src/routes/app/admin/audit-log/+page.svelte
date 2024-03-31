@@ -10,6 +10,7 @@
         Text,
         ToolTip,
         Button,
+        Dropdown,
     } from "geist-ui-svelte";
     import type { DashAuditEntry, DashAuditEvent } from "$lib/audit/audit";
 
@@ -28,6 +29,11 @@
         window.history.replaceState({}, "", "/app/admin/audit-log");
 
         const dashAccount = $page.data.dash_account as DashUser;
+        const audited = $page.data.audited;
+
+        if (audited === undefined || audited === null || audited === false) {
+            window.location.href = "/app/admin/audit-log";
+        }
 
         userId = dashAccount.id;
         userName = dashAccount.username ? `${dashAccount.username}` : "";
@@ -232,20 +238,20 @@
 
     <Table>
         <Row header>
-            <Item header headerPos="left" class="max-w-[175px]">Event</Item>
-            <Item header headerPos="left" class="max-w-[120px]">Time</Item>
-            <Item header headerPos="left" class="max-w-[150px]">User</Item>
-            <Item header headerPos="left" class="">Info</Item>
-            <Item header headerPos="left" class="max-w-[135px]">IP Address</Item
+            <Item header headerPos="left" class="min-w-[100px] max-w-[175px]">Event</Item>
+            <Item header headerPos="left" class="min-w-[100px] max-w-[115px]">Time</Item>
+            <Item header headerPos="left" class="min-w-[150px] max-w-[150px]">User</Item>
+            <Item header headerPos="left">Info</Item>
+            <Item header headerPos="left" class="min-w-[100px] max-w-[150px]">IP Address</Item
             >
-            <Item header headerPos="left" class="max-w-[200px]">Location</Item>
-            <Item header headerPos="left" class="">Device Info</Item>
+            <Item header headerPos="left" class="min-w-[100px] max-w-[200px]">Location</Item>
+            <Item header headerPos="left" class="min-w-[100px]">Device Info</Item>
         </Row>
         {#if $data}
             {#each $data as entry, index}
                 <Row class="p-0">
                     <Item
-                        class="max-w-[175px] text-sm flex flex-row gap-x-1 place-items-center {getColorCodes(
+                        class="min-w-[100px] max-w-[175px] text-sm flex flex-row gap-x-1 place-items-center {getColorCodes(
                             entry.event,
                         )} "
                     >
@@ -314,33 +320,70 @@
                             {/if}
                         </div>
                     </Item>
-                    <Item
-                        class="font-mono text-xs line-clamp-none max-w-[120px]"
+                    <Item class="font-mono text-xs line-clamp-3 max-w-[115px]"
                         >{entry.created}</Item
                     >
-                    <Item class="max-w-[150px]"
-                        ><Text size="sm" blockquote
+                    <!--
+                        <Text size="xs" blockquote
                             >{entry.dash_user.length < 1
                                 ? "Anonymous"
                                 : entry.dash_user}</Text
-                        ></Item
-                    >
+                        >
+                    -->
+                    <Item class="min-w-[150px] max-w-[150px] line-clamp-1">
+                        <button
+                            on:click={() => {
+                                window.navigator.clipboard.writeText(
+                                    entry.dash_user.toString(),
+                                );
+                            }}
+                            id="item-user-{index}"
+                            class="flex flex-row gap-x-2 place-items-center line-clamp-1 dark:!text-gray-300 font-weight-inherit text-inherit dark:text-inherit !text-xs inherit bg-gray-50 border-gray-100 dark:bg-gray-950 hover:dark:bg-gray-900 active:dark:bg-gray-800 dark:border-gray-900 border pl-2 pr-1 py-1 rounded-md"
+                        >
+                            <Text size="xs"
+                                >{entry.dash_user.length < 1
+                                    ? "Anonymous"
+                                    : entry.dash_user}</Text
+                            >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                class="w-4 h-4"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z"
+                                />
+                            </svg>
+                        </button>
+                    </Item>
+
                     <Item
                         id="item-info-{index}"
-                        class="text-xs font-mono {getColorCodes(
+                        class="min-w-[100px] text-xs {getColorCodes(
                             entry.event,
-                        )} line-clamp-2">{entry.message}</Item
+                        )} line-clamp-3">{entry.message}</Item
                     >
                     <ToolTip
                         anchor="#item-info-{index}"
                         content={entry.message}
                     />
-                    <Item class="font-mono text-sm max-w-[135px]"
-                        >{entry.ip_address}</Item
+                    <Item
+                        id="item-ip-{index}"
+                        class="min-w-[100px] font-mono line-clamp-3 text-xs max-w-[150px]"
+                        >{@html entry.ip_address}</Item
                     >
+                    <ToolTip
+                        anchor="#item-ip-{index}"
+                        content={entry.ip_address.replaceAll("<br>", "— ")}
+                    />
                     <Item
                         id="item-loc-{index}"
-                        class="text-xs line-clamp-2 max-w-[200px]"
+                        class="min-w-[100px] text-xs line-clamp-3 max-w-[200px]"
                         >{entry.location}</Item
                     >
                     <ToolTip
@@ -349,7 +392,7 @@
                     />
                     <Item
                         id="item-device-{index}"
-                        class="text-xs line-clamp-2 font-mono"
+                        class="min-w-[100px] text-xs line-clamp-3 font-mono"
                     >
                         {entry.device ?? "Unknown"}
                     </Item>

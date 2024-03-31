@@ -41,8 +41,8 @@
                     <div
                         class="flex flex-row justify-between w-full place-items-center text-sm"
                     >
-                        NotBot™ is a legacy system. If you encounter issues,
-                        use the Reload button to restart the IFRAME application.
+                        NotBot™ is a legacy JavaScript applet that may not work on mobile devices. If the applet freezes,
+                        click Reload to restart NotBot™.
                         <Button
                             size="sm"
                             class="ml-4"

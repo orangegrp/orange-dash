@@ -15,14 +15,14 @@ async function getIpInfo(ip: string): Promise<IPInfo> {
     if (json) {
         return {
             ip: ip,
-            asn: `${json.traits.autonomous_system_organization} (ASN${json.traits.autonomous_system_number})`,
+            asn: `${json.traits.autonomous_system_organization} (AS${json.traits.autonomous_system_number})`,
             location: `${json.city.names.en}, ${json.postal.code}, ${json.country.names.en} (${json.location.latitude}, ${json.location.longitude})`
         }
     } else {
         return {
             ip: ip,
-            asn: "Unknown",
-            location: "Unknown"
+            asn: "",
+            location: "Unknown Location"
         }
     }
 }

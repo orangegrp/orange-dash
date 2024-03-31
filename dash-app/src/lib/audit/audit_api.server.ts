@@ -33,14 +33,15 @@ async function audit(event: DashAuditEvent, dash_user: DashUser["id"] | undefine
         await initDb();
 
     const ip_address = req_event.request.headers.get("X-Forwarded-For") || req_event.getClientAddress();
+    const ip_info = await getIpInfo(ip_address);
     const deviceInfo = req_event.request.headers.get("User-Agent");
     
     const entry = {
         event: event,
         dash_user: dash_user,
         message: encrypt_str(message, DASH_KEY),
-        ip_address: encrypt_str(ip_address, DASH_KEY),
-        location: encrypt_str((await getIpInfo(ip_address)).location, DASH_KEY),
+        ip_address: encrypt_str(`${ip_address}\n<br>${ip_info.asn}`, DASH_KEY),
+        location: encrypt_str(ip_info.location, DASH_KEY),
         device: encrypt_str(deviceInfo, DASH_KEY)
     };
 
