@@ -3,11 +3,12 @@
     import AppHeader from "../../components/AppHeader.svelte";
     import AppContent from "../../components/AppContent.svelte";
 
-    import { Note, Text } from "geist-ui-svelte";
+    import { Center, Note, Text } from "geist-ui-svelte";
     import type { DashUser } from "$lib/auth/dash";
     import { page } from "$app/stores";
     import NavButton from "../../components/NavButton.svelte";
     import { writable } from "svelte/store";
+    import Spinner from "../../components/Spinner.svelte";
 
     let currentSectionIndex = writable<number>(0);
 
@@ -21,7 +22,11 @@
     });
 </script>
 
-{#if accountType === "Admin" || accountType === "Root"}
+{#if accountType === ""}
+    <Center class="p-16">
+        <Spinner class="m-4"/>
+    </Center>
+{:else if accountType === "Admin" || accountType === "Root"}
     <AppHeader Title="Deployment"></AppHeader>
     <AppContent class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48">
         <svelte:fragment slot="navigation">

@@ -3,7 +3,7 @@
     import AppHeader from "../../components/AppHeader.svelte";
     import AppContent from "../../components/AppContent.svelte";
 
-    import { Button, Note, Text } from "geist-ui-svelte";
+    import { Button, Center, Note, Text } from "geist-ui-svelte";
     import type { DashUser } from "$lib/auth/dash";
     import { page } from "$app/stores";
     import NavButton from "../../components/NavButton.svelte";
@@ -15,6 +15,7 @@
     import Audit from "./audit-log/+page.svelte";
     import Debug from "./debug/+page.svelte";
     import UserAccounts from "./user-accounts/+page.svelte";
+    import Spinner from "../../components/Spinner.svelte";
 
     let currentSectionIndex = writable<number>(0);
 
@@ -42,7 +43,11 @@
     });
 </script>
 
-{#if accountType === "Admin" || accountType === "Root"}
+{#if accountType === ""}
+    <Center class="p-16">
+        <Spinner class="m-4"/>
+    </Center>
+{:else if accountType === "Admin" || accountType === "Root"}
     <AppHeader Title="Admin Area" />
     <AppContent class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48">
         <svelte:fragment slot="navigation">

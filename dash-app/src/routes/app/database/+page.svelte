@@ -1,8 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { Note } from "geist-ui-svelte";
+    import { Center, Note } from "geist-ui-svelte";
     import type { DashUser } from "$lib/auth/dash";
     import { page } from "$app/stores";
+    import Spinner from "../../components/Spinner.svelte";
 
     let accountType = "";
 
@@ -14,7 +15,11 @@
     });
 </script>
 
-{#if accountType === "Admin" || accountType === "Root"}
+{#if accountType === ""}
+    <Center class="p-16">
+        <Spinner class="m-4"/>
+    </Center>
+{:else if accountType === "Admin" || accountType === "Root"}
 <main>
     <iframe title="Pocketbase" class="w-screen h-[80vh]" src="https://pocketbase-aci1.vcn1.order332.com/_/"/>
 </main>

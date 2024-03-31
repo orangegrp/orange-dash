@@ -85,18 +85,19 @@
         return csv;
     }
 
-    function download(filename, text) {
-        const element = document.createElement("a");
-        element.style.visibility = "hidden";
-        element.setAttribute(
-            "href",
-            "data:text/plain;charset=utf-8," + encodeURIComponent(text),
-        );
-        element.setAttribute("download", filename);
-        element.style.display = "none";
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
+    function download(filename: string, text: string) {
+        const blob = new Blob([text], { type: "text/csv" });
+        if ((window.navigator as any).msSaveOrOpenBlob) {
+            (window.navigator as any).msSaveBlob(blob, filename);
+        } else {
+            const elem = window.document.createElement("a");
+            elem.href = window.URL.createObjectURL(blob);
+            elem.style.display = "none";
+            elem.download = filename;
+            document.body.appendChild(elem);
+            elem.click();
+            document.body.removeChild(elem);
+        }
     }
 </script>
 

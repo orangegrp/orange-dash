@@ -117,18 +117,19 @@
         return csv;
     }
 
-    function download(filename, text) {
-        const element = document.createElement("a");
-        element.style.visibility = "hidden";
-        element.setAttribute(
-            "href",
-            "data:text/plain;charset=utf-8," + encodeURIComponent(text),
-        );
-        element.setAttribute("download", filename);
-        element.style.display = "none";
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
+    function download(filename: string, text: string) {
+        const blob = new Blob([text], { type: "text/csv" });
+        if ((window.navigator as any).msSaveOrOpenBlob) {
+            (window.navigator as any).msSaveBlob(blob, filename);
+        } else {
+            const elem = window.document.createElement("a");
+            elem.href = window.URL.createObjectURL(blob);
+            elem.style.display = "none";
+            elem.download = filename;
+            document.body.appendChild(elem);
+            elem.click();
+            document.body.removeChild(elem);
+        }
     }
 </script>
 
@@ -235,7 +236,8 @@
             <Item header headerPos="left" class="max-w-[120px]">Time</Item>
             <Item header headerPos="left" class="max-w-[150px]">User</Item>
             <Item header headerPos="left" class="">Info</Item>
-            <Item header headerPos="left" class="max-w-[100px]">IP Address</Item>
+            <Item header headerPos="left" class="max-w-[135px]">IP Address</Item
+            >
             <Item header headerPos="left" class="max-w-[200px]">Location</Item>
             <Item header headerPos="left" class="">Device Info</Item>
         </Row>
@@ -312,11 +314,11 @@
                             {/if}
                         </div>
                     </Item>
-                    <Item class="font-mono text-xs line-clamp-none max-w-[120px]"
+                    <Item
+                        class="font-mono text-xs line-clamp-none max-w-[120px]"
                         >{entry.created}</Item
                     >
-                    <Item
-                        class="max-w-[150px]"
+                    <Item class="max-w-[150px]"
                         ><Text size="sm" blockquote
                             >{entry.dash_user.length < 1
                                 ? "Anonymous"
@@ -333,8 +335,12 @@
                         anchor="#item-info-{index}"
                         content={entry.message}
                     />
-                    <Item class="font-mono text-sm max-w-[100px]">{entry.ip_address}</Item>
-                    <Item id="item-loc-{index}" class="text-xs line-clamp-2 max-w-[200px]"
+                    <Item class="font-mono text-sm max-w-[135px]"
+                        >{entry.ip_address}</Item
+                    >
+                    <Item
+                        id="item-loc-{index}"
+                        class="text-xs line-clamp-2 max-w-[200px]"
                         >{entry.location}</Item
                     >
                     <ToolTip
