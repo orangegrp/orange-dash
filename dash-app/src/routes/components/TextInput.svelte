@@ -25,6 +25,8 @@
     export let placeholder: string = null;
     export let value: any = null;
 
+    export let oninput = (e: Event) => {};
+
     let inputElement: HTMLInputElement;
 
     onMount(() => {
@@ -48,6 +50,7 @@
     {autocomplete}
     {disabled}
     {value}
+    on:input={(e) => { (value = e.currentTarget.value); if (oninput) oninput(e); }}
     bind:this={inputElement}
 />
 

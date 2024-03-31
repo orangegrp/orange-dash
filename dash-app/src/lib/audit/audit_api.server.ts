@@ -6,17 +6,18 @@ import type { RequestEvent } from "@sveltejs/kit";
 import type { DashAuditEntry, DashAuditEvent } from "./audit";
 import { getIpInfo } from "./ipinfo.server";
 
-async function getAuditLogsRaw(page: number = 1, itemsPerPage: number = 50) {
+async function getAuditLogsRaw(page: number = 1, itemsPerPage: number = 50, filterBy: DashAuditEvent | "*" = "*") {
     if (!pb)
         await initDb();
 
     return await pb.collection(AUDIT_TABLE).getList<DashAuditEntry>(page, itemsPerPage, {
+        filter: `${filterBy === "*" ? "" : `event = "${filterBy.replaceAll('"', '\\"')}"`}`,
         sort: "-created"
     });
 }
 
-async function getAuditLogs(page: number = 1, itemsPerPage: number = 10) {
-    const logs = await getAuditLogsRaw(page, itemsPerPage);
+async function getAuditLogs(page: number = 1, itemsPerPage: number = 10, filterBy: DashAuditEvent | "*" = "*") {
+    const logs = await getAuditLogsRaw(page, itemsPerPage, filterBy);
     const decrypted_logs = logs.items.map(item => {
         item.message = decrypt_str(item.message, DASH_KEY);
         item.ip_address = decrypt_str(item.ip_address, DASH_KEY);

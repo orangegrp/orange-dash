@@ -10,6 +10,7 @@ import { success } from "./routes/api/apilib";
 import { generateQRCode } from "$lib";
 import { NOTBOT_PROXY } from "$env/static/private";
 import { audit } from "$lib/audit/audit_api.server";
+import { debug } from "$lib/audit/debug_api.server";
 
 type MiddlewareSequence = { event: RequestEvent, resolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response> };
 const TOTP_MAP: Map<string, { dash_id: string, password: string }> = new Map();
@@ -347,6 +348,8 @@ export const handleError: HandleServerError = ({ error, event, status, message }
     const session = getSession(session_id!) as DashSession;
 
     console.error(errorId, event.request.headers.get("X-Forwarded-For"), event.getClientAddress(), status, message, error);
+    
+    debug(errorId, session?.dash_id ?? undefined, error);
     audit("Diagnostics", session?.dash_id ?? undefined, `Error: ${errorId} Status: ${status} Message: ${message}`, event);
 
     return {

@@ -13,6 +13,7 @@
     import Item from "../../components/table/Item.svelte";
 
     import Audit from "./audit-log/+page.svelte";
+    import Debug from "./debug/+page.svelte";
 
     let currentSectionIndex = writable<number>(0);
 
@@ -29,7 +30,7 @@
             $currentSectionIndex = 0;
             break;
     }
-    
+
     let accountType = "";
 
     onMount(() => {
@@ -41,7 +42,7 @@
 </script>
 
 {#if accountType === "Admin" || accountType === "Root"}
-    <AppHeader Title="Admin Area"></AppHeader>
+    <AppHeader Title="Admin Area" />
     <AppContent class="py-8 px-6 sm:px-8 md:px-10 lg:px-16 xl:px-36 2xl:px-48">
         <svelte:fragment slot="navigation">
             <div
@@ -73,7 +74,7 @@
         <svelte:fragment slot="content">
             {#key $currentSectionIndex}
                 <svelte:component
-                    this={[Audit, Audit, Audit][
+                    this={[Audit, Audit, Debug][
                         $currentSectionIndex < 0 || $currentSectionIndex > 2
                             ? 0
                             : $currentSectionIndex

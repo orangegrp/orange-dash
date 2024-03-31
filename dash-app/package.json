@@ -36,6 +36,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-node": "^5.0.1",
+		"ansi-to-html": "^0.7.2",
 		"eventsource": "^2.0.2",
 		"geist-ui-svelte": "^0.6.17",
 		"mode-watcher": "^0.2.1",

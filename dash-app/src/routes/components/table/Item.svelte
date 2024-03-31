@@ -19,14 +19,15 @@
 {#if header}
     <th
         id={itemId}
-        class="flex-1 text-{headerPos} w-full px-1 border-gray-100 dark:border-gray-900 hover:bg-gray-50 hover:dark:bg-gray-950 transition-all"
+        style="{styles}"
+        class="text-{headerPos} w-full px-1 border-gray-100 dark:border-gray-900 hover:bg-gray-50 hover:dark:bg-gray-950 transition-all {classes}"
         on:click={onclick}
         on:dblclick={ondblclick}
         on:mouseenter={onmouseenter}
         on:mouseleave={onmouseleave}
     >
         <span
-            class="flex-1 w-full {classes}  text-gray-600 dark:text-gray-600 font-normal {header
+            class="w-full {classes} text-gray-600 dark:text-gray-600 font-normal {header
                 ? 'text-xs uppercase'
                 : 'font-light'}"
         >
@@ -37,7 +38,7 @@
     <td
         id={itemId}
         style="word-wrap: break-word !important; {styles}"
-        class="flex-1 w-full px-2 border-gray-100 dark:border-gray-900 hover:bg-gray-50 hover:dark:bg-gray-950 transition-all"
+        class="w-full px-2 border-gray-100 dark:border-gray-900 hover:bg-gray-50 hover:dark:bg-gray-950 transition-all {classes}"
         on:click={onclick}
         on:dblclick={ondblclick}
         on:mouseenter={(e) => {

@@ -24,7 +24,7 @@ export async function DELETE(request) {
         const login_methods = session.login_methods;
         updateDashUser(session.dash_id, { totp_secret: null, login_methods: [...new Set([...(login_methods.filter(m => m !== "TOTP"))])] });
         
-        audit("SecurityInfoChange", session.dash_id, "Multi-factor authentication removed", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        audit("SecurityInfoChange", session.dash_id, "Multi-factor authentication removed", request);
         
         return success();
     } else {
@@ -53,7 +53,7 @@ export async function GET(request) {
         const totp_qrcode = await generateTotpQrCodeUrl(totp_engine);
         const totp_otpurl = generateTotpUrl(totp_engine);
 
-        audit("SecurityInfoChange", session.dash_id, "Multi-factor authenticatior added", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        await audit("SecurityInfoChange", session.dash_id, "Multi-factor authenticatior secret shown", request);
         
         return success( { secret: totp_secret.base32, qr: totp_qrcode, algorithm: totp_engine.algorithm, url: totp_otpurl });
     } else {
@@ -87,7 +87,7 @@ export async function POST(request) {
 
         await updateDashUser(session.dash_id, { totp_secret: encrypted_secret, login_methods: [...new Set([...login_methods, "TOTP"])] });
 
-        audit("SecurityInfoChange", session.dash_id, "Multi-factor authenticatior secret updated", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        await audit("SecurityInfoChange", session.dash_id, "Multi-factor authenticatior secret updated", request);
         
         return success();
     } else {

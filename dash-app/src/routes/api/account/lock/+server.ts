@@ -11,7 +11,7 @@ export async function POST(request) {
         getSessionKeysForId(session.dash_id).forEach(s => removeSession(s));
         updateDashUser(session.dash_id, { locked: true });
 
-        audit("SecurityInfoChange", session.dash_id, "Account was locked by the user", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        audit("SecurityInfoChange", session.dash_id, "Account was locked by the user", request);
         
         return success(null, "/redirect?target=logout");
     } else {

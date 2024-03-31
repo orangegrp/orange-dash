@@ -41,7 +41,7 @@ export async function POST(request) {
         updateDashUser(session.dash_id, { password: hashed, login_methods: [...new Set([...login_methods, "Password"])] });
 
 
-        audit("SecurityInfoChange", session.dash_id, "Password login was setup for this account", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        audit("SecurityInfoChange", session.dash_id, "Password login was setup for this account", request);
         
     
         return success(null, "/redirect?target=logout");
@@ -81,7 +81,7 @@ export async function PUT(request) {
             await updateDashUser(session.dash_id, { password: hashed, totp_secret: null, login_methods: [...new Set([...(user.login_methods.filter(m => m !== "TOTP")), "Password"])] });
         }
 
-        audit("SecurityInfoChange", session.dash_id, "Password changed", request.getClientAddress(), request.request.headers.get("User-Agent"));
+        audit("SecurityInfoChange", session.dash_id, "Password changed", request);
         
 
         return success(null, "/redirect?target=logout");
