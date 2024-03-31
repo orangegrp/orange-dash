@@ -189,7 +189,7 @@
             >
             <Item header headerPos="left" class="w-fit max-w-[150px]">User</Item
             >
-            <Item header headerPos="left">Trace</Item>
+            <Item header headerPos="left" >Trace</Item>
         </Row>
         {#if $data}
             {#each $data as entry, index}
@@ -205,8 +205,10 @@
                                 : entry.dash_user}</Text
                         ></Item
                     >
-                    <Item class="font-mono text-xs line-clamp-none">
-                        {@html entry.trace}
+                    <Item class="font-mono text-xs">
+                        <pre class="line-clamp-none inline" style="line-height: 100% !important;">
+                            {@html entry.trace.trim()}
+                        </pre>
                     </Item>
                 </Row>
             {/each}
