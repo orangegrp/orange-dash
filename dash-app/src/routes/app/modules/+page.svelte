@@ -5,25 +5,16 @@
     import { page } from "$app/stores";
     import MessageDialogue from "../../components/dialogue/MessageDialogue.svelte";
     import NavButton from "../../components/NavButton.svelte";
-    import {
-        FieldSet,
-        Text,
-        Button,
-        Input,
-        Select,
-        Option,
-        Spacer,
-        Note,
-        ToolTip,
-    } from "geist-ui-svelte";
+    import { FieldSet, Text, Button, Spacer, ToolTip, Skeleton } from "geist-ui-svelte";
     import TextInput from "../../components/TextInput.svelte";
     import { writable } from "svelte/store";
     import ProcessDialogue from "../../components/dialogue/ProcessDialogue.svelte";
     import Spinner from "../../components/Spinner.svelte";
-    import { invalidate } from "$app/navigation";
     import Table from "../../components/table/Table.svelte";
     import Row from "../../components/table/Row.svelte";
     import Item from "../../components/table/Item.svelte";
+    import SingleValueField from "./components/SingleValueField.svelte";
+    import ArrayValueField from "./components/ArrayValueField.svelte";
 
     let currentModuleIndex = writable<number>(0);
     let showProcessMessage = false;
@@ -55,22 +46,6 @@
         }
     }
     */
-
-    async function updateData(
-        module: string,
-        property: string,
-        new_value: string,
-        is_string: boolean,
-    ) {
-        return await fetch(`/api/modules/${module}`, {
-            method: "POST",
-            headers: {
-                "X-Dash-SessionId": sessionId,
-                "Content-Type": "application/json",
-            },
-            body: `{ "${property}": ${is_string ? `"${new_value}"` : new_value} }`,
-        });
-    }
 
     onMount(() => {
         window.history.replaceState({}, "", "/app/modules");
@@ -107,7 +82,7 @@
     buttonText="OK"
 />
 
-<ProcessDialogue bind:show={showProcessMessage} message="Processing request">
+<ProcessDialogue bind:show={showProcessMessage} message="Saving changes">
     <Spacer h={10} />
     <Spinner />
 </ProcessDialogue>
@@ -146,7 +121,31 @@
                                 class="mt-4 shadow-2xl w-full"
                                 id={`itemcard-${index}`}
                             >
-                                <FieldSet>
+                                {#if moduleValue.array}
+                                    <ArrayValueField
+                                        bind:moduleValue
+                                        bind:moduleInfo
+                                        bind:currentModuleIndex
+                                        bind:showProcessMessage
+                                        bind:showMessage
+                                        bind:messageTitle
+                                        bind:messageContent
+                                        {sessionId}
+                                    />
+                                {:else}
+                                    <SingleValueField
+                                        bind:moduleValue
+                                        bind:moduleInfo
+                                        bind:currentModuleIndex
+                                        bind:showProcessMessage
+                                        bind:showMessage
+                                        bind:messageTitle
+                                        bind:messageContent
+                                        {sessionId}
+                                    />
+                                {/if}
+                                <!--
+                                                                    <FieldSet>
                                     <div
                                         class="p-2 max-w-full min-w-full md:min-w-[500px]"
                                         slot="default"
@@ -507,24 +506,32 @@
                                         </div>
                                     </div>
                                 </FieldSet>
+                                -->
                             </div>
                         {/if}
                     {/each}
                 </div>
-
-                <div class="mt-8 w-full flex flex-row">
-                    <Button
-                        color="secondary"
-                        size="md"
-                        on:click={() => {
-                            showProcessMessage = true;
-                        }}>Save all</Button
-                    >
-                </div>
+            </div>
+        {:else}
+            <div class="flex flex-col gap-4">
+                {#each [0, 0, 0, 0, 0] as tmp}
+                <FieldSet>
+                    <div class="p-2 max-w-full min-w-full md:min-w-[500px]" slot="default">
+                        <Skeleton class="w-3/4 h-8 rounded-lg" />
+                        <div class="mt-4 my-2 flex flex-col gap-y-2">
+                            <Skeleton class="w-2/4 h-4 rounded-md" />
+                            <Skeleton class="w-4/5 h-6 rounded-md" />
+                        </div>
+                    </div>
+                    <div slot="footer">
+                        <div class="flex place-items-center justify-between">
+                            <Skeleton class="w-1/2 h-5 rounded-lg" />
+                            <Skeleton class="w-16 h-7 rounded-lg" />
+                        </div>
+                    </div>
+                </FieldSet>
+                {/each}
             </div>
         {/if}
     </svelte:fragment>
 </AppContent>
-
-<style>
-</style>
