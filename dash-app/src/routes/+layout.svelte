@@ -16,6 +16,8 @@
 		Dropdown,
 		Spacer,
 		Button,
+		CommandIcon,
+		Key,
 	} from "geist-ui-svelte";
 	import Icon from "./components/Icon.svelte";
 	import { onMount } from "svelte";
@@ -101,9 +103,120 @@
 			}),
 		);
 	});
+
+	import CommandPalette, {
+		defineActions,
+		createStoreMethods,
+	} from "svelte-command-palette";
+
+	const paletteMethods = createStoreMethods();
+	const actions = defineActions([
+		{
+			title: "Log Out",
+			subTitle:
+				"Terminate the current Dash session and return to the login page.",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/logout";
+			},
+			shortcut: "Space L",
+		},
+		{
+			title: "Overview",
+			subTitle: "System overview",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/overview";
+			},
+			shortcut: "Space 1",
+		},
+		{
+			title: "Deployment",
+			subTitle: "Deployment configuration",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/deployment";
+			},
+			shortcut: "Space 2",
+		},
+		{
+			title: "Modules",
+			subTitle: "Configure modules",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/modules";
+			},
+			shortcut: "Space 3",
+		},
+		{
+			title: "NotBot™",
+			subTitle: "Access the NotBot™ applet",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/notbot";
+			},
+			shortcut: "Space 5",
+		},
+		{
+			title: "Audit Log",
+			subTitle: "View & manage the audit log",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/admin/audit-log";
+			},
+			shortcut: "Space A L",
+		},
+		{
+			title: "Debug",
+			subTitle: "View debug information",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/admin/debug";
+			},
+			shortcut: "Space D",
+		},
+		{
+			title: "Account",
+			subTitle: "View general info about your account",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/account";
+			},
+			shortcut: "Space A",
+		},
+		{
+			title: "Account Security",
+			subTitle:
+				"View and manage security info about relating to your account",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/account/security";
+			},
+			shortcut: "Space A S",
+		},
+		{
+			title: "Danger Zone",
+			subTitle:
+				"Lock your account in case it gets compromised or delete it if you no longer want to use it again",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/account/danger-zone";
+			},
+			shortcut: "Space D Z",
+		},
+	]);
 </script>
 
 <ModeWatcher defaultMode="dark" />
+
+{#if $page.url.pathname.startsWith("/app")}
+	<CommandPalette
+		unstyled={true}
+		placeholder="Type a command"
+		overlayStyle={{ zIndex: "999" }}
+		overlayClass="absolute top-2 w-full bg-transparent"
+		paletteWrapperInnerClass="bg-black p-2 w-full border border-gray-900 rounded-lg"
+		inputClass="text-gray-900 dark:text-gray-100 border border-gray-900 rounded-lg bg-transparent p-2 h-10 w-full outline-none focus:border-gray-700 focus:shadow-outline-gray"
+		resultContainerClass="border border-gray-900 rounded-xl px-4 py-3"
+		resultsContainerClass="mt-2 flex flex-col gap-y-2 max-h-[500px] overflow-y-auto pr-4"
+		optionSelectedClass="bg-gray-950 text-gray-100"
+		titleClass="text-gray-900 text-lg dark:text-gray-100"
+		subtitleClass="text-gray-900 mb-1 text-sm dark:text-gray-300"
+		descriptionClass="text-gray-900 mb-2 text-xs dark:text-gray-300"
+		keyboardButtonClass="bg-gray-950 border rounded-md px-2 py-0 h-8 border-gray-200 border-gray-900"
+		commands={actions}
+	/>
+{/if}
 
 <ActionDialogue
 	bind:show={showLogoutConfirmation}
@@ -115,7 +228,10 @@
 />
 
 <body class="dark:bg-black bg-gray-50 mb-4">
-	<div id="header-parent" style="position: sticky !important; z-index: 100 !important;">
+	<div
+		id="header-parent"
+		style="position: sticky !important; z-index: 100 !important;"
+	>
 		<Header
 			noBorder={$page.url.pathname.startsWith("/app") &&
 			!$page.url.pathname.startsWith("/app/account")
@@ -124,7 +240,7 @@
 			transparent={true}
 		>
 			<div
-				class="flex place-items-center justify-between w-full py-1 px-4 md:py-2 sm:px-8"
+				class="flex place-items-center justify-between w-full py-1 px-4 md:py-2 {$page.url.pathname.startsWith("/app/account") || $page.url.pathname.startsWith('/login') ? "" : "lg:py-0"} sm:px-8"
 			>
 				<div class="flex flex-row gap-x-3 select-none">
 					<Icon
@@ -138,6 +254,27 @@
 				</div>
 
 				{#if $page.data.session}
+					<div
+						class="pr-16 py-0 my-0 hidden xl:flex flex-row gap-x-2 place-items-center"
+					>
+						<button
+							on:click={() => paletteMethods.openPalette()}
+							class="w-[30rem] my-0 flex justify-center line-clamp-1 dark:!text-gray-600 font-weight-inherit text-inherit dark:text-inherit inherit bg-gray-50 border-gray-100 dark:bg-gray-950 hover:dark:bg-gray-900 active:dark:bg-gray-800 dark:border-gray-900 border px-2 py-1 rounded-md"
+						>
+							<div
+								class="text-sm flex flex-row gap-x-2 py-0.5 place-items-center"
+							>
+								Click here or press
+								<div
+									class="bg-gray-900 rounded-md px-2 flex flex-row gap-x-1.5 place-items-center"
+								>
+									<CommandIcon size={16} />
+									<span class="font-mono font-bold">K</span>
+								</div>
+								to open command palette
+							</div>
+						</button>
+					</div>
 					<button
 						on:click={() => (profilePopup = !profilePopup)}
 						class="flex place-items-center justify-center"
@@ -188,7 +325,7 @@
 	<Details label="Diagnostic Information">
 		<ul class="mb-10">
 			{#each $diagnosticString as diagnostic}
-				<li class="list-disc ml-10">
+				<li class="list-none">
 					<Text type="small">{@html diagnostic}</Text>
 				</li>
 			{/each}
@@ -197,7 +334,7 @@
 </Center>
 
 <style>
-	body {
-		font-family: "Circular Std", "Inter", sans-serif;
+	:root {
+		font-family: "Geist", "Circular Std", "Inter", sans-serif;
 	}
 </style>

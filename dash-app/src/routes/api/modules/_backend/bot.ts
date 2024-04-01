@@ -70,6 +70,16 @@ async function setUserSettings(user: string, module: string, edits: ValueEdits):
         return { success: false, message: data.message, data: data }
     }
 }
+async function setGuildSettings(user: string, guild: string, module: string, edits: ValueEdits): Promise<{ success: boolean, message?: string, data: any }> {
+    const result = await api_update("POST", edits, "user", user, "guild", guild, module);
+    if (result.status === 200)
+        return { success: true, data: await result.json() }
+    else {
+        const data = await result.json();
+        console.log(data);
+        return { success: false, message: data.message, data: data }
+    }
+}
 async function getUserGuilds(user: string): Promise<{ success: boolean, message?: string, data: any }> {
     const user_guilds = await api_request("GET", "user", user, "guilds");
     if (user_guilds.status === 200)
@@ -89,4 +99,4 @@ async function getGuildSettings(user: string, guild: string): Promise<{ success:
     }
 }
 
-export { getUserSettings, getUserGuilds, getGuildSettings, setUserSettings };
+export { getUserSettings, getUserGuilds, getGuildSettings, setUserSettings, setGuildSettings };

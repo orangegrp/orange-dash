@@ -11,6 +11,7 @@
         Snippet,
         Note,
         Badge,
+        Spacer,
     } from "geist-ui-svelte";
 
     import Table from "../../../components/table/Table.svelte";
@@ -19,6 +20,9 @@
     import { writable } from "svelte/store";
     import TextInput from "../../../components/TextInput.svelte";
     import type { DashDebugEntry } from "$lib/audit/debug";
+    import ProcessDialogue from "../../../components/dialogue/ProcessDialogue.svelte";
+    import Spinner from "../../../components/Spinner.svelte";
+    import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
 
     let userId = "";
     let userName = "";
@@ -99,6 +103,18 @@
             elem.click();
             document.body.removeChild(elem);
         }
+    }
+
+    let showPurgeMessage = false;
+    let showProcessMessage = false;
+
+    async function purgeAll() {
+        return await fetch("/api/admin/debug", {
+            method: "DELETE",
+            headers: {
+                "X-Dash-SessionId": $page.data.session_id
+            },
+        });
     }
 </script>
 
@@ -291,4 +307,37 @@
             </svg>
         </div>
     </Button>
+    {#if accountType === "Root"}
+    <ActionDialogue
+        bind:show={showPurgeMessage}
+        title="Purge all debug data?"
+        actionBtnColor="error"
+        actionButtonText="Purge All"
+        buttonText="Do not purge"
+        message="All debug events matched by the filter (including those not on this page) will be deleted."
+        action={async () => {
+            showProcessMessage = true;
+            await purgeAll();
+            showProcessMessage = false;
+            window.location.reload();
+        }}
+    />
+    <Button
+        class="float-right mr-2 mt-8"
+        color="error"
+        size="sm"
+        on:click={() => (showPurgeMessage = true)}
+    >
+        Purge All
+    </Button>
+{/if}
 </div>
+
+<ProcessDialogue
+    bind:show={showProcessMessage}
+    message="Purging debug data"
+>
+    <Text size="sm" color="secondary">This can take a few minutes. <Text color="dark" b>Do not reload the page.</Text></Text>
+    <Spacer h={15} />
+    <Spinner />
+</ProcessDialogue>

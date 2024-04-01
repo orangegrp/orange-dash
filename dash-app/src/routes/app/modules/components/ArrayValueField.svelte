@@ -14,6 +14,7 @@
     export let messageContent;
     export let showProcessMessage;
     export let sessionId;
+    export let moduleTarget;
 
     let newDataInput: any;
     let inputIndex = -1;
@@ -29,6 +30,7 @@
         return await fetch(`/api/modules/${module}`, {
             method: "POST",
             headers: {
+                "X-User-Snowflake": moduleTarget,
                 "X-Dash-SessionId": sessionId,
                 "Content-Type": "application/json",
             },

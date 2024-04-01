@@ -45,6 +45,7 @@
 		"otpauth": "^9.2.2",
 		"pocketbase": "^0.21.1",
 		"qrcode": "^1.5.3",
+		"svelte-command-palette": "^1.2.1",
 		"zxcvbn": "^4.4.2"
 	}
 }

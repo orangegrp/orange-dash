@@ -6,6 +6,34 @@ import Convert from "ansi-to-html";
 const convert = new Convert();
 import type { DashDebugEntry } from "./debug";
 import util from "util";
+import { sleep } from "$lib/sleep";
+
+async function deleteDebugLogs() {
+    if (!pb)
+        await initDb();
+
+    let count = 0;
+    let items = await getDebugLogsRaw(1, 100, "*");
+
+    while (items.items.length > 0) {
+        try {
+            items.items.forEach(async item => {
+                await sleep(500);
+                try {
+                    await pb.collection(DEBUG_TABLE).delete(item.id);
+                    count += 1;
+                } catch (e) {
+                    console.log(e);
+                }
+            });
+        } finally {
+            await sleep(500);
+            items = await getDebugLogsRaw(1, 100, "*");
+        }
+    }
+
+    return count;
+}
 
 async function getDebugLogsRaw(page: number = 1, itemsPerPage: number = 50, filterBy: string | "*" = "*") {
     if (!pb)
@@ -40,4 +68,4 @@ async function debug(error_id: string, dash_user: DashUser["id"] | undefined, er
     await pb.collection(DEBUG_TABLE).create<DashDebugEntry>(entry);
 }
 
-export { getDebugLogs, getDebugLogsRaw, debug };
+export { getDebugLogs, getDebugLogsRaw, debug, deleteDebugLogs };

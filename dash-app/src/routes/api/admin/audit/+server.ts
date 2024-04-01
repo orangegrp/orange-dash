@@ -1,7 +1,8 @@
 import { getSession } from "$lib/auth/session.server";
 import { error, success, verifyApiSession } from "../../apilib";
-import { getAuditLogs } from "$lib/audit/audit_api.server";
+import { audit, deleteAuditLogs, getAuditLogs } from "$lib/audit/audit_api.server";
 import type { DashAuditEvent } from "$lib/audit/audit";
+import { getDashUser } from "$lib/auth/dash_account.server";
 
 export async function GET(request) {
     const session_id = verifyApiSession(request);
@@ -24,6 +25,30 @@ export async function GET(request) {
             } else {
                 return success({ data: await getAuditLogs(1, 10, filterBy)});
             }
+        } else {
+            return error("Session not found");
+        }
+    } catch (e) {
+        return error(e);
+    }
+}
+
+export async function DELETE(request) {
+    const session_id = verifyApiSession(request);
+    const session = getSession(session_id);
+
+    try {
+        if (session) {
+            const user = await getDashUser(session.dash_id);
+            if (user.role !== "Root")
+                return error("Permission denied");
+
+            const filterBy = (request.request.headers.get("X-Dash-Filter") ?? "*") as DashAuditEvent | "*";
+            const count = await deleteAuditLogs(filterBy);
+
+            audit("AuditAccess", session.dash_id, `User has deleted ${count} entries that match the filter "${filterBy}"`, request);
+
+            return success();
         } else {
             return error("Session not found");
         }

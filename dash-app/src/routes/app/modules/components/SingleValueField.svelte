@@ -9,6 +9,7 @@
     export let messageContent;
     export let showProcessMessage;
     export let sessionId;
+    export let moduleTarget;
 
     async function updateData(
         module: string,
@@ -19,6 +20,7 @@
         return await fetch(`/api/modules/${module}`, {
             method: "POST",
             headers: {
+                "X-User-Snowflake": moduleTarget,
                 "X-Dash-SessionId": sessionId,
                 "Content-Type": "application/json",
             },

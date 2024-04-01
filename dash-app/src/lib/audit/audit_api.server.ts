@@ -5,6 +5,33 @@ import { decrypt_str, encrypt_str } from "$lib/encryption";
 import type { RequestEvent } from "@sveltejs/kit";
 import type { DashAuditEntry, DashAuditEvent } from "./audit";
 import { getIpInfo } from "./ipinfo.server";
+import { sleep } from "$lib/sleep";
+
+async function deleteAuditLogs(filterBy: DashAuditEvent | "*" = "*") {
+    if (!pb)
+        await initDb();
+
+    let count = 0;
+    let items = await getAuditLogsRaw(1, 100, filterBy);
+    while (items.items.length > 0) {
+        try {
+            items.items.forEach(async item => {
+                await sleep(500);
+                try {
+                    await pb.collection(AUDIT_TABLE).delete(item.id);
+                    count += 1;
+                } catch (e) {
+                    console.log(e);
+                }
+            });    
+        } finally {
+            await sleep(500);
+            items = await getAuditLogsRaw(1, 100, filterBy);
+        }
+    }
+
+    return count;
+}
 
 async function getAuditLogsRaw(page: number = 1, itemsPerPage: number = 50, filterBy: DashAuditEvent | "*" = "*") {
     if (!pb)
@@ -48,4 +75,4 @@ async function audit(event: DashAuditEvent, dash_user: DashUser["id"] | undefine
     await pb.collection(AUDIT_TABLE).create<DashAuditEntry>(entry);
 }
 
-export { getAuditLogsRaw, getAuditLogs, audit };
+export { getAuditLogsRaw, getAuditLogs, audit, deleteAuditLogs };

@@ -9,8 +9,12 @@ export async function GET(request) {
 
     if (session) {
         const dash_user = await getDashUser(session.dash_id);
-        const id = dash_user.oauth2_id ?? dash_user.role;
+        const id = request.request.headers.get("X-User-Snowflake");
 
+        if (id !== dash_user.id && dash_user.role !== "Admin" && dash_user.role !== "Root") {
+            return error("Permission denied");
+        }
+        
         const guild = request.request.headers.get("X-Guild-Snowflake");
         
         if (id && guild) {

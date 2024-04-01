@@ -12,6 +12,7 @@
         Button,
         Dropdown,
         Badge,
+        Spacer,
     } from "geist-ui-svelte";
     import type { DashAuditEntry, DashAuditEvent } from "$lib/audit/audit";
 
@@ -19,6 +20,9 @@
     import Row from "../../../components/table/Row.svelte";
     import Item from "../../../components/table/Item.svelte";
     import { writable } from "svelte/store";
+    import ActionDialogue from "../../../components/dialogue/ActionDialogue.svelte";
+    import ProcessDialogue from "../../../components/dialogue/ProcessDialogue.svelte";
+    import Spinner from "../../../components/Spinner.svelte";
 
     let userId = "";
     let userName = "";
@@ -118,7 +122,10 @@
         let csv = "Event,Time,User,Info,IP Address,Location,Device Info\n";
 
         $data.forEach((entry) => {
-            let nohtml = entry.ip_address.replace(/<style([\s\S]*?)<\/style>/gi, "");
+            let nohtml = entry.ip_address.replace(
+                /<style([\s\S]*?)<\/style>/gi,
+                "",
+            );
             nohtml = nohtml.replace(/<script([\s\S]*?)<\/script>/gi, "");
             nohtml = nohtml.replace(/<\/div>/gi, "\n");
             nohtml = nohtml.replace(/<\/li>/gi, "\n");
@@ -147,6 +154,19 @@
             elem.click();
             document.body.removeChild(elem);
         }
+    }
+
+    let showPurgeMessage = false;
+    let showProcessMessage = false;
+
+    async function purgeAll() {
+        return await fetch("/api/admin/audit", {
+            method: "DELETE",
+            headers: {
+                "X-Dash-SessionId": $page.data.session_id,
+                "X-Dash-Filter": $filterBy.toString(),
+            },
+        });
     }
 </script>
 
@@ -474,4 +494,38 @@
             </svg>
         </div>
     </Button>
+    {#if accountType === "Root"}
+        <ActionDialogue
+            bind:show={showPurgeMessage}
+            title="Purge all audit data?"
+            actionBtnColor="error"
+            actionButtonText="Purge All"
+            buttonText="Do not purge"
+            message="All events matched by the filter (including those not on this page) will be deleted."
+            action={async () => {
+                showProcessMessage = true;
+                await purgeAll();
+                showProcessMessage = false;
+                window.location.reload();
+            }}
+        />
+        <Button
+            class="float-right mr-2 mt-8"
+            color="error"
+            size="sm"
+            on:click={() => (showPurgeMessage = true)}
+        >
+            Purge All
+        </Button>
+    {/if}
 </div>
+
+<ProcessDialogue
+    bind:show={showProcessMessage}
+    message="Purging audit logs"
+>
+    <Text size="sm" color="secondary">This can take a few minutes. <Text color="dark" b>Do not reload the page.</Text></Text>
+    <Spacer h={15} />
+    <Spinner />
+</ProcessDialogue>
+
