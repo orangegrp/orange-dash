@@ -22,6 +22,7 @@
             headers: {
                 "X-User-Snowflake": moduleTarget,
                 "X-Dash-SessionId": sessionId,
+                "X-Old-Value": JSON.stringify(moduleValue.value),
                 "Content-Type": "application/json",
             },
             body: `{ "${property}": ${is_string ? `"${new_value}"` : new_value} }`,
@@ -30,20 +31,13 @@
 </script>
 
 <FieldSet>
-    <div
-        class="p-2 max-w-full min-w-full md:min-w-[500px]"
-        slot="default"
-    >
+    <div class="p-2 max-w-full min-w-full md:min-w-[500px]" slot="default">
         <Text
             type="h4"
             class="font-normal flex flex-row place-items-center gap-x-2"
         >
             {moduleValue.displayName}
-            <Text
-                size="xs"
-                blockquote
-                color="secondary"
-            >
+            <Text size="xs" blockquote color="secondary">
                 {#if moduleValue.type === 0}
                     string
                 {:else if moduleValue.type === 1}
@@ -65,41 +59,28 @@
                 {/if}
             </Text>
         </Text>
-        <Text
-            size="sm"
-            class="dark:text-gray-200"
-        >
+        <Text size="sm" class="dark:text-gray-200">
             {moduleValue.description}
         </Text>
         <div class="my-2">
             {#if !moduleValue.array}
                 {@const invalid_data =
-                    (moduleValue.minValue !==
-                        undefined &&
-                        moduleValue.minValue >
-                            moduleValue.value) ||
-                    (moduleValue.maxValue !==
-                        undefined &&
-                        moduleValue.maxValue <
-                            moduleValue.value) ||
-                    ((moduleValue.type === 1 ||
-                        moduleValue.type ===
-                            2) &&
-                        isNaN(
-                            moduleValue.value,
-                        ))}
-                {#if (moduleValue.type < 1 || moduleValue.type > 2) && moduleValue.type < 7 }
+                    (moduleValue.minValue !== undefined &&
+                        moduleValue.minValue > moduleValue.value) ||
+                    (moduleValue.maxValue !== undefined &&
+                        moduleValue.maxValue < moduleValue.value) ||
+                    ((moduleValue.type === 1 || moduleValue.type === 2) &&
+                        isNaN(moduleValue.value))}
+                {#if (moduleValue.type < 1 || moduleValue.type > 2) && moduleValue.type < 7}
                     <TextInput
                         type="text"
-                        disabled={moduleValue.uiVisibility ===
-                            "readonly"}
+                        disabled={moduleValue.uiVisibility === "readonly"}
                         bind:value={moduleValue.value}
                     />
                 {:else if moduleValue.type === 1 || moduleValue.type === 2}
                     <TextInput
                         type="number"
-                        disabled={moduleValue.uiVisibility ===
-                            "readonly"}
+                        disabled={moduleValue.uiVisibility === "readonly"}
                         bind:value={moduleValue.value}
                     />
                 {/if}
@@ -130,39 +111,36 @@
         </div>
     </div>
     <div slot="footer">
-        <div
-            class="flex place-items-center justify-between"
-        >
-            <Text
-                type="small"
-                color="secondary"
-            >
+        <div class="flex place-items-center justify-between">
+            <Text type="small" color="secondary">
                 {#if moduleValue.maxCount !== undefined}
-                    Max items: <Text
-                        blockquote
-                        class="mr-2"
+                    Max items: <Text blockquote class="mr-2"
                         >{moduleValue.maxCount}</Text
                     >
                 {/if}
+                {#if moduleValue.maxLength !== undefined}
+                    Max length: <Text blockquote class="mr-2"
+                        >{moduleValue.maxLength}</Text
+                    >
+                {/if}
+                {#if moduleValue.minLength !== undefined}
+                    Min length: <Text blockquote class="mr-2"
+                        >{moduleValue.minLength}</Text
+                    >
+                {/if}
                 {#if moduleValue.minValue !== undefined && moduleValue.maxValue !== undefined}
-                    Value range: <Text
-                        blockquote
-                        class="mr-2"
+                    Value range: <Text blockquote class="mr-2"
                         >{moduleValue.minValue} -
                         {moduleValue.maxValue}</Text
                     >
                 {:else}
                     {#if moduleValue.minValue !== undefined}
-                        Min value: <Text
-                            blockquote
-                            class="mr-2"
+                        Min value: <Text blockquote class="mr-2"
                             >{moduleValue.minValue}</Text
                         >
                     {/if}
                     {#if moduleValue.maxValue !== undefined}
-                        Max value: <Text
-                            blockquote
-                            class="mr-2"
+                        Max value: <Text blockquote class="mr-2"
                             >{moduleValue.maxValue}</Text
                         >
                     {/if}
@@ -171,30 +149,24 @@
             <Button
                 color="secondary-light"
                 size="sm"
-                disabled={moduleValue.uiVisibility ===
-                    "readonly"}
+                disabled={moduleValue.uiVisibility === "readonly"}
                 on:click={() => {
                     showProcessMessage = true;
                     console.log(
-                        moduleInfo.data[
-                            $currentModuleIndex
-                        ].module,
+                        moduleInfo.data[$currentModuleIndex].module,
                         moduleValue.name,
                         moduleValue.value,
                         moduleValue.type,
                     );
                     setTimeout(async () => {
-                        const r =
-                            await updateData(
-                                moduleInfo.data[
-                                    $currentModuleIndex
-                                ].module,
-                                moduleValue.name,
-                                moduleValue.value,
-                                (moduleValue.type < 1 || moduleValue.type > 2) && moduleValue.type < 7,
-                            );
-                        const res =
-                            await r.json();
+                        const r = await updateData(
+                            moduleInfo.data[$currentModuleIndex].module,
+                            moduleValue.name,
+                            moduleValue.value,
+                            (moduleValue.type < 1 || moduleValue.type > 2) &&
+                                moduleValue.type < 7,
+                        );
+                        const res = await r.json();
                         showProcessMessage = false;
                         if (r.status === 200) {
                             //messageTitle =
@@ -205,16 +177,10 @@
                             //    );
                             //showMessage = true;
 
-                            setTimeout(
-                                () =>
-                                    location.reload(),
-                                100,
-                            );
+                            setTimeout(() => location.reload(), 100);
                         } else {
-                            messageTitle =
-                                "Request failed";
-                            messageContent =
-                                res.reason;
+                            messageTitle = "Request failed";
+                            messageContent = res.reason;
                             showMessage = true;
                         }
                     }, 1000);

@@ -139,7 +139,7 @@
                 </Select>
             </div>
             <div class="flex flex-row place-items-center gap-x-2 min-w-[300px]">
-                <Text>Filter by error ID:</Text>
+                <Text>Filter by event ID:</Text>
                 <TextInput
                     oninput={async () => await getDebugData()}
                     bind:value={$filterBy}
@@ -202,7 +202,7 @@
     <Table>
         <Row header>
             <Item header headerPos="left" class="min-w-[100px] w-fit max-w-[175px]"
-                >Error ID</Item
+                >Event ID</Item
             >
             <Item header headerPos="left" class="min-w-[100px] w-fit max-w-[150px]">User</Item
             >

@@ -16,7 +16,7 @@
     export let sessionId;
     export let moduleTarget;
 
-    let newDataInput: any;
+    let newDataInput: any = "";
     let inputIndex = -1;
     let showInput: boolean = false;
     let addNew = false;
@@ -24,7 +24,7 @@
     async function updateData(
         module: string,
         property: string,
-        new_value: string,
+        new_value: string | string[],
         is_string: boolean,
     ) {
         return await fetch(`/api/modules/${module}`, {
@@ -32,9 +32,10 @@
             headers: {
                 "X-User-Snowflake": moduleTarget,
                 "X-Dash-SessionId": sessionId,
+                "X-Old-Value": JSON.stringify(moduleValue.value),
                 "Content-Type": "application/json",
             },
-            body: `{ "${property}": [${is_string ? `"${new_value}"` : new_value}] }`,
+            body: `{ "${property}": [${is_string ? `"${typeof new_value === "string" ? new_value : new_value.join('","')}"` : new_value}] }`,
         });
     }
 </script>
@@ -251,6 +252,16 @@
                         >{moduleValue.maxCount}</Text
                     >
                 {/if}
+                {#if moduleValue.maxLength !== undefined}
+                    Max length: <Text blockquote class="mr-2"
+                        >{moduleValue.maxLength}</Text
+                    >
+                {/if}
+                {#if moduleValue.minLength !== undefined}
+                    Min length: <Text blockquote class="mr-2"
+                        >{moduleValue.minLength}</Text
+                    >
+                {/if}
                 {#if moduleValue.minValue !== undefined && moduleValue.maxValue !== undefined}
                     Value range: <Text blockquote class="mr-2"
                         >{moduleValue.minValue} -
@@ -315,7 +326,7 @@
 
 <ActionDialogue
     bind:show={showInput}
-    actionButtonText="{addNew ? "Add Item" : "Confirm"}"
+    actionButtonText={addNew ? "Add Item" : "Confirm"}
     actionBtnColor="success"
     action={() => {
         if (addNew) {
@@ -356,6 +367,16 @@
                     >{moduleValue.maxCount}</Text
                 >
             {/if}
+            {#if moduleValue.maxLength !== undefined}
+                Max length: <Text blockquote class="mr-2"
+                    >{moduleValue.maxLength}</Text
+                >
+            {/if}
+            {#if moduleValue.minLength !== undefined}
+                Min length: <Text blockquote class="mr-2"
+                    >{moduleValue.minLength}</Text
+                >
+            {/if}
             {#if moduleValue.minValue !== undefined && moduleValue.maxValue !== undefined}
                 Value range: <Text blockquote class="mr-2"
                     >{moduleValue.minValue} -
@@ -378,6 +399,10 @@
     <div class="flex flex-row place-items-center mt-4 gap-x-2">
         {#if moduleValue.array}
             {@const invalid_data =
+                (moduleValue.minLength !== undefined &&
+                    moduleValue.minLength > newDataInput.length) ||
+                (moduleValue.maxLength !== undefined &&
+                    moduleValue.maxLength < newDataInput.length) ||
                 (moduleValue.minValue !== undefined &&
                     moduleValue.minValue > newDataInput) ||
                 (moduleValue.maxValue !== undefined &&
