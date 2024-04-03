@@ -38,7 +38,7 @@
 		"@sveltejs/adapter-node": "^5.0.1",
 		"ansi-to-html": "^0.7.2",
 		"eventsource": "^2.0.2",
-		"geist-ui-svelte": "^0.6.17",
+		"geist-ui-svelte": "^0.7.2",
 		"mode-watcher": "^0.2.1",
 		"node-fetch": "^3.3.2",
 		"orange-common-lib": "file:local_modules/orange-common-lib",
