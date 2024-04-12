@@ -10,6 +10,8 @@
     import DashAccount from "./account/+page.svelte";
     import NotBot from "./notbot/+page.svelte";
     import Admin from "./admin/+page.svelte";
+    import StudyBot from "./studybot/+page.svelte";
+
     import { writable } from "svelte/store";
     import type { DashUser } from "$lib/auth/dash";
     import { goto } from "$app/navigation";
@@ -40,6 +42,11 @@
         case "/app/admin/user-accounts":
         case "/app/admin":
             $currentPageIndex = 6;
+            break;
+        case "/app/studybot":
+        case "/app/studybot/questions":
+        case "/app/studybot/studycontent":
+            $currentPageIndex = 7;
             break;
         case "/app":
         case "/app/overview":
@@ -76,12 +83,14 @@
         "Admin",
     ];
     let accountType = "";
+    let abac_str = "";
 
     onMount(() => {
         removeDuplicateBorder();
 
         const dashAccount = $page.data.dash_account as DashUser;
         accountType = dashAccount.role;
+        abac_str = dashAccount.abac_str;
     });
 </script>
 
@@ -168,6 +177,14 @@
                             Admin Area</TabItem
                         >
                     {/if}
+                    {#if abac_str.includes("studybot")}
+                        <TabItem
+                            initialSelected={$currentPageIndex == 7}
+                            on:clicked={() => ($currentPageIndex = 7)}
+                        >
+                            StudyBot™</TabItem
+                        >
+                    {/if}
                     <!--
                     <TabItem
                         initialSelected={$currentPageIndex == 4}
@@ -191,8 +208,9 @@
                 DashAccount,
                 NotBot,
                 Admin,
+                StudyBot,
             ][
-                $currentPageIndex < 0 || $currentPageIndex > 6
+                $currentPageIndex < 0 || $currentPageIndex > 7
                     ? 0
                     : $currentPageIndex
             ]}

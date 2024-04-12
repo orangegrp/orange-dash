@@ -35,6 +35,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@friendofsvelte/tipex": "^0.0.1-prev.0.2",
 		"@sveltejs/adapter-node": "^5.0.1",
 		"ansi-to-html": "^0.7.2",
 		"eventsource": "^2.0.2",

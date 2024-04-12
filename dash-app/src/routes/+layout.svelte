@@ -118,7 +118,7 @@
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/logout";
 			},
-			shortcut: "Space L",
+			shortcut: "$mod+L",
 		},
 		{
 			title: "Overview",
@@ -126,7 +126,7 @@
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/overview";
 			},
-			shortcut: "Space 1",
+			shortcut: "$mod+1",
 		},
 		{
 			title: "Deployment",
@@ -134,7 +134,7 @@
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/deployment";
 			},
-			shortcut: "Space 2",
+			shortcut: "$mod+2",
 		},
 		{
 			title: "Modules",
@@ -142,7 +142,7 @@
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/modules";
 			},
-			shortcut: "Space 3",
+			shortcut: "$mod+3",
 		},
 		{
 			title: "NotBot™",
@@ -150,15 +150,14 @@
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/notbot";
 			},
-			shortcut: "Space 5",
+			shortcut: "$mod+5",
 		},
 		{
 			title: "Audit Log",
 			subTitle: "View & manage the audit log",
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/admin/audit-log";
-			},
-			shortcut: "Space A L",
+			}
 		},
 		{
 			title: "Debug",
@@ -166,7 +165,7 @@
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/admin/debug";
 			},
-			shortcut: "Space D",
+			shortcut: "$mod+D",
 		},
 		{
 			title: "Account",
@@ -174,7 +173,7 @@
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/account";
 			},
-			shortcut: "Space A",
+			shortcut: "$mod+A",
 		},
 		{
 			title: "Account Security",
@@ -182,8 +181,7 @@
 				"View and manage security info about relating to your account",
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/account/security";
-			},
-			shortcut: "Space A S",
+			}
 		},
 		{
 			title: "Danger Zone",
@@ -191,8 +189,16 @@
 				"Lock your account in case it gets compromised or delete it if you no longer want to use it again",
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/account/danger-zone";
+			}
+		},
+		{
+			title: "StudyBot™",
+			subTitle:
+				"Access the StudyBot™ applet.",
+			onRun: ({ action, storeProps, storeMethods }) => {
+				window.location.href = "/app/studybot";
 			},
-			shortcut: "Space D Z",
+			shortcut: "$mod+7",
 		},
 	]);
 </script>

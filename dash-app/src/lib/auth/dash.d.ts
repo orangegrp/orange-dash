@@ -12,6 +12,7 @@ type DashUser = Partial<RecordModel> & {
     locked: boolean,
     role: DashRole,
     oauth2_id?: string,
+    abac_str?: string
 }
 
 type DashSession = Omit<DashUser, "password" | "salt" | "totp_secret" | "locked" | "created" | "updated"> & { dash_id: string, guilds?: string[] };
