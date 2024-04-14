@@ -1,7 +1,7 @@
 import type { DashUser } from "$lib/auth/dash";
 import type { RecordModel } from "pocketbase";
 
-type DashAuditEvent = "LoginOK" | "LoginFail" | "Logout" | "AuditAccess" | "SecurityInfoChange"  | "AccountCreation" | "AccountDeletion" | "Diagnostics";
+type DashAuditEvent = "Activity" | "LoginOK" | "LoginFail" | "Logout" | "AuditAccess" | "SecurityInfoChange"  | "AccountCreation" | "AccountDeletion" | "Diagnostics";
 
 type DashAuditEntry = Partial<RecordModel> & {
     event: DashAuditEvent

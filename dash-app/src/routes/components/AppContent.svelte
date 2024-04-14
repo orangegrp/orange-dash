@@ -11,3 +11,9 @@
         <slot name="content" />
     </div>
 </main>
+
+<style>
+    :root, *, main {
+		font-family: "Geist", "Circular Std", "Inter", sans-serif !important;
+	}
+</style>

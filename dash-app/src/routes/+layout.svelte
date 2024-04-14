@@ -63,7 +63,7 @@
 			Object.defineProperties(new Error(), {
 				toString: {
 					value() {
-						console.clear();
+						//console.clear();
 						console.log(
 							`%c${dev_message}`,
 							"background: red; color: yellow; font-size: x-large",
@@ -83,7 +83,7 @@
 				},
 				message: {
 					get() {
-						console.clear();
+						//console.clear();
 						console.log(
 							`%c${dev_message}`,
 							"background: red; color: yellow; font-size: x-large",
@@ -173,7 +173,7 @@
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/account";
 			},
-			shortcut: "$mod+A",
+			shortcut: "$mod+Alt+A",
 		},
 		{
 			title: "Account Security",
@@ -205,7 +205,7 @@
 
 <ModeWatcher defaultMode="dark" />
 
-{#if $page.url.pathname.startsWith("/app")}
+{#if $page.url.pathname.startsWith("/app") && !$page.url.pathname.startsWith("/applets")}
 	<CommandPalette
 		unstyled={true}
 		placeholder="Type a command"
@@ -234,6 +234,7 @@
 />
 
 <body class="dark:bg-black bg-gray-50 mb-4">
+	{#if !$page.url.pathname.startsWith("/applets")}
 	<div
 		id="header-parent"
 		style="position: sticky !important; z-index: 100 !important;"
@@ -324,6 +325,8 @@
 			</div>
 		</Header>
 	</div>
+	{/if}
+
 	<slot />
 </body>
 
@@ -340,7 +343,7 @@
 </Center>
 
 <style>
-	:root {
-		font-family: "Geist", "Circular Std", "Inter", sans-serif;
+	:root, *, body {
+		font-family: "Geist", "Circular Std", "Inter", sans-serif !important;
 	}
 </style>

@@ -44,8 +44,7 @@
             $currentPageIndex = 6;
             break;
         case "/app/studybot":
-        case "/app/studybot/questions":
-        case "/app/studybot/studycontent":
+        case "/app/studybot/contentmgr":
             $currentPageIndex = 7;
             break;
         case "/app":

@@ -45,6 +45,6 @@
 
 <div>
     <iframe on:load={async () => {
-        fetch("/notbot-proxy").then(r => r.status === 200 ? state = "loaded" : state = "error");
+        fetch(src).then(r => r.status === 200 ? state = "loaded" : state = "error");
     }} class={classes} {title} bind:this={iframe} {src}></iframe>
 </div>

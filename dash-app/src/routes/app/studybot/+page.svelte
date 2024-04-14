@@ -10,17 +10,11 @@
     import NavButton from "../../components/NavButton.svelte";
     import { writable } from "svelte/store";
 
-    import Questions from "./questions/+page.svelte";
-    import StudyContent from "./studycontent/+page.svelte";
-
     let allowed = false;
     let currentSectionIndex = writable<number>(0);
 
     switch ($page.url.pathname) {
-        case "/app/studybot/studycontent":
-            $currentSectionIndex = 1;
-            break;
-        case "/app/studybot/questions":
+        case "/app/studybot/contentmgr":
         case "/app/studybot":
         default:
             $currentSectionIndex = 0;
@@ -48,25 +42,19 @@
                 <NavButton
                     active={$currentSectionIndex === 0}
                     btnClicked={() => currentSectionIndex.set(0)}
-                    >Quiz Manager
-                </NavButton>
-                <NavButton
-                    active={$currentSectionIndex === 1}
-                    btnClicked={() => currentSectionIndex.set(1)}
                     >Content Manager
                 </NavButton>
             </div>
         </svelte:fragment>
         <svelte:fragment slot="content">
-            {#key $currentSectionIndex}
-                <svelte:component
-                    this={[Questions, StudyContent][
-                        $currentSectionIndex < 0 || $currentSectionIndex > 1
-                            ? 0
-                            : $currentSectionIndex
-                    ]}
-                />
-            {/key}
+            {#if $currentSectionIndex === 0}
+                <DashIframe
+                    title="StudyBot Content Manager Applet"
+                    src="/applets/studybot/contentmgr"
+                    class="w-full overflow-x-hidden md:w-[calc(80vw-4rem)] h-[80vh]"
+                    
+                ></DashIframe>
+            {/if}
         </svelte:fragment>
     </AppContent>
 {:else}

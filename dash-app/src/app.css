@@ -47,5 +47,5 @@
 }
 
 .font-mono {
-    font-family: "Geist Mono";
+    font-family: "Geist Mono" !important;
 }

@@ -1,8 +1,8 @@
 //import { audit } from "$lib/audit/audit_api.server";
 import { getDashUser } from "$lib/auth/dash_account.server";
 import { getSession } from "$lib/auth/session.server";
-import {  error, success, unauthorized, verifyApiSession } from "../../apilib";
-import { pb }  from "$lib/backend";
+import { error, success, unauthorized, verifyApiSession } from "../../apilib";
+import { pb } from "$lib/backend";
 import { audit } from "$lib/audit/audit_api.server";
 import { debug } from "$lib/audit/debug_api.server";
 
@@ -14,7 +14,7 @@ export async function POST(request) {
 
     if (session) {
         const user = await getDashUser(session.dash_id);
-        
+
         if (!user.abac_str.includes("studybot")) {
             return unauthorized("Unauthorized");
         }
@@ -29,9 +29,11 @@ export async function POST(request) {
                 sequence: Number(sequence),
                 content: content
             });
-    
-            if (result.id)
-                return success({ id: result.id});
+
+            if (result.id) {
+                audit("Activity", user.id, `[Studybot content manager] New slide created by user. Record ID: ${result.id}`, request);
+                return success({ id: result.id });
+            }
         } catch (e) {
             const error_id = crypto.randomUUID();
             debug(error_id, user.id, e);

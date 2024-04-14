@@ -78,6 +78,8 @@
 
     function getFriendlyEventName(event: DashAuditEvent) {
         switch (event) {
+            case "Activity":
+                return "Activity";
             case "AccountCreation":
                 return "Account Creation";
             case "LoginOK":
@@ -107,6 +109,7 @@
             case "LoginFail":
                 return "!text-red-700 dark:!text-red-500";
             case "Logout":
+            case "Activity":
                 return "!text-blue-700 dark:!text-blue-500";
             case "AccountDeletion":
             case "SecurityInfoChange":
@@ -201,6 +204,7 @@
                     bind:value={$filterBy}
                 >
                     <Option value="*">All Events</Option>
+                    <Option value="Activity">Activity</Option>
                     <Option value="AccountCreation">Account Creation</Option>
                     <Option value="LoginOK">Successful Login</Option>
                     <Option value="LoginFail">Failed Login</Option>

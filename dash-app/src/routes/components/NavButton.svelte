@@ -15,3 +15,9 @@
 >
     <slot />
 </button>
+
+<style>
+    :root, *, button {
+		font-family: "Geist", "Circular Std", "Inter", sans-serif !important;
+	}
+</style>

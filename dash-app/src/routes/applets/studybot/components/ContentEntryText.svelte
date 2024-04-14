@@ -7,12 +7,12 @@
     export let value = "";
 </script>
 
-<div class="flex flex-col sm:flex-row gap-x-4 gap-y-2 place-items-start justify-between">
-    <div class="flex flex-row place-items-center gap-x-2 w-full">
+<div class="flex flex-col sm:flex-row gap-x-4 gap-y-2 place-items-start w-full justify-between">
+    <div class="flex flex-row place-items-center gap-x-2 w-full justify-between text-nowrap max-w-96">
         <Text>{name}:</Text>
-        <TextInput bind:value={value} class="w-full" />
+        <TextInput bind:value={value} class="w-fit" />
     </div>
-    <Card class="flex flex-col p-2 md:max-w-sm w-full">
+    <Card class="flex flex-col p-2 w-[30rem]">
         <div class="flex flex-row place-items-center gap-x-1 w-full">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
