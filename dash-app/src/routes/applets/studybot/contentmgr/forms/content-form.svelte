@@ -11,6 +11,12 @@
     let showProcessMessage = false;
     let sessionId = "";
 
+    import { page } from "$app/stores";
+
+    onMount(() => {
+        sessionId = $page.data.session_id;
+    });
+
     import { tipexEditor, Tipex } from "@friendofsvelte/tipex";
          
     export let showMessage = false;
@@ -36,6 +42,7 @@
     let sequence = "";
 
     import TurndownService from "turndown";
+    import { onMount } from "svelte";
     const turndownservice = new TurndownService();
 
     $: embed = {

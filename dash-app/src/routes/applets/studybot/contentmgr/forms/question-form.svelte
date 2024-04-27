@@ -4,6 +4,12 @@
     let showProcessMessage = false;
     let sessionId = "";
 
+    import { page } from "$app/stores";
+
+    onMount(() => {
+        sessionId = $page.data.session_id;
+    });
+
     import { tipexEditor, Tipex } from "@friendofsvelte/tipex";
 
     export let showMessage = false;
@@ -31,6 +37,7 @@
     let choices = "";
 
     import TurndownService from "turndown";
+    import { onMount } from "svelte";
     const turndownservice = new TurndownService();
 
     $: embed1 = {
@@ -181,16 +188,17 @@
                                     <Text size="xs" b>GUIDANCE</Text>
                                 </div>
                                 <Text size="xs" color="secondary">
-                                    The main content of the question should go here. Images
-                                    linked here will not be embedded by Discord.
-                                    Avoid using special formatting as this field is
-                                    interpreted as RICH TEXT and then converted to
-                                    markdown when rendering to Discord.
+                                    The main content of the question should go
+                                    here. Images linked here will not be
+                                    embedded by Discord. Avoid using special
+                                    formatting as this field is interpreted as
+                                    RICH TEXT and then converted to markdown
+                                    when rendering to Discord.
                                 </Text>
                             </Card>
                             <Tipex
                                 onEditorUpdate={(e) => {
-                                     htmlContent1 = e.editor.getHTML();
+                                    htmlContent1 = e.editor.getHTML();
                                 }}
                                 displayDefaultControls
                                 floatingMenu
@@ -199,10 +207,11 @@
                             <div class="flex flex-col my-2 gap-y-2 p-0">
                                 <Text>Preview the question:</Text>
                                 <Text size="xs" color="secondary"
-                                    >Please note the renderer uses the old Discord
-                                    markdown spec which does not inlclude headings,
-                                    links, etc. Rest assured they will appear on
-                                    Discord, just not in this preview window.</Text
+                                    >Please note the renderer uses the old
+                                    Discord markdown spec which does not
+                                    inlclude headings, links, etc. Rest assured
+                                    they will appear on Discord, just not in
+                                    this preview window.</Text
                                 >
                                 <EmbedPreviewer bind:embedObject={embed1} />
                             </div>
@@ -230,12 +239,13 @@
                                     <Text size="xs" b>GUIDANCE</Text>
                                 </div>
                                 <Text size="xs" color="secondary">
-                                    The content of the explanations slide should go here. This
-                                    will be shown if the user gets the question wrong. Images
-                                    linked here will not be embedded by Discord.
-                                    Avoid using special formatting as this field is
-                                    interpreted as RICH TEXT and then converted to
-                                    markdown when rendering to Discord.
+                                    The content of the explanations slide should
+                                    go here. This will be shown if the user gets
+                                    the question wrong. Images linked here will
+                                    not be embedded by Discord. Avoid using
+                                    special formatting as this field is
+                                    interpreted as RICH TEXT and then converted
+                                    to markdown when rendering to Discord.
                                 </Text>
                             </Card>
                             <Tipex
@@ -249,15 +259,16 @@
                             <div class="flex flex-col my-2 gap-y-2 p-0">
                                 <Text>Preview the explanation slide:</Text>
                                 <Text size="xs" color="secondary"
-                                    >Please note the renderer uses the old Discord
-                                    markdown spec which does not inlclude headings,
-                                    links, etc. Rest assured they will appear on
-                                    Discord, just not in this preview window.</Text
+                                    >Please note the renderer uses the old
+                                    Discord markdown spec which does not
+                                    inlclude headings, links, etc. Rest assured
+                                    they will appear on Discord, just not in
+                                    this preview window.</Text
                                 >
                                 <EmbedPreviewer bind:embedObject={embed2} />
                             </div>
                         </div>
-                    </div>                
+                    </div>
                 </div>
             </div>
             <div class="flex flex-row gap-x-2 mt-4 justify-between">
@@ -286,7 +297,7 @@
                                 answer,
                                 choices,
                                 content: htmlContent1,
-                                explanation: htmlContent2
+                                explanation: htmlContent2,
                             }),
                         }).then(async (r) => {
                             const res = await r.json();
