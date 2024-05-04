@@ -31,8 +31,8 @@
         position: absolute;
         top: 6.5px;
         left: 8.5px;
-        width: 2.5px;
-        height: 6.5px;
+        width: 2px;
+        height: 6px;
         background-color: #8e8e93;
         border-radius: 1.25px;
         animation: darwin-spinnerBlade 1s linear infinite;
