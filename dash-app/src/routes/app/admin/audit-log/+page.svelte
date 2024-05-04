@@ -419,10 +419,10 @@
                             </button>
                         {/if}
                     </Item>
-
+                    
                     <Item
                         id="item-info-{index}"
-                        class="min-w-[100px] text-xs {getColorCodes(
+                        class="min-w-[100px] max-w-[400px] text-xs {getColorCodes(
                             entry.event,
                         )} line-clamp-3">{entry.message}</Item
                     >
@@ -450,7 +450,7 @@
                     />
                     <Item
                         id="item-device-{index}"
-                        class="min-w-[100px] text-xs line-clamp-3 font-mono"
+                        class="min-w-[100px] max-w-[300px] text-xs line-clamp-3 font-mono"
                     >
                         {entry.device ?? "Unknown"}
                     </Item>

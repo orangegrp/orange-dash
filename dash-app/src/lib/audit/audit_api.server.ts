@@ -46,10 +46,10 @@ async function getAuditLogsRaw(page: number = 1, itemsPerPage: number = 50, filt
 async function getAuditLogs(page: number = 1, itemsPerPage: number = 10, filterBy: DashAuditEvent | "*" = "*") {
     const logs = await getAuditLogsRaw(page, itemsPerPage, filterBy);
     const decrypted_logs = logs.items.map(item => {
-        item.message = decrypt_str(item.message, DASH_KEY);
-        item.ip_address = decrypt_str(item.ip_address, DASH_KEY);
-        item.location = decrypt_str(item.location, DASH_KEY);
-        item.device = decrypt_str(item.device, DASH_KEY);
+        item.message = decrypt_str(item.message, DASH_KEY) ?? item.message;
+        item.ip_address = decrypt_str(item.ip_address, DASH_KEY) ?? item.ip_address;
+        item.location = decrypt_str(item.location, DASH_KEY) ?? item.location;
+        item.device = decrypt_str(item.device, DASH_KEY) ?? item.device;
         return item;
     });
     return decrypted_logs;

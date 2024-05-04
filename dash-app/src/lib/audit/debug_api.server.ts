@@ -48,7 +48,7 @@ async function getDebugLogsRaw(page: number = 1, itemsPerPage: number = 50, filt
 async function getDebugLogs(page: number = 1, itemsPerPage: number = 10, filterBy: string | "*" = "*") {
     const logs = await getDebugLogsRaw(page, itemsPerPage, filterBy);
     const decrypted_logs = logs.items.map(item => {
-        item.trace = decrypt_str(item.trace, DASH_KEY);
+        item.trace = decrypt_str(item.trace, DASH_KEY) ?? item.trace;
         return item;
     });
     return decrypted_logs;

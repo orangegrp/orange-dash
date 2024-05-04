@@ -112,7 +112,7 @@
         return await fetch("/api/admin/debug", {
             method: "DELETE",
             headers: {
-                "X-Dash-SessionId": $page.data.session_id
+                "X-Dash-SessionId": $page.data.session_id,
             },
         });
     }
@@ -201,10 +201,15 @@
 
     <Table>
         <Row header>
-            <Item header headerPos="left" class="min-w-[100px] w-fit max-w-[175px]"
-                >Event ID</Item
+            <Item
+                header
+                headerPos="left"
+                class="min-w-[100px] w-fit max-w-[175px]">Event ID</Item
             >
-            <Item header headerPos="left" class="min-w-[100px] w-fit max-w-[150px]">User</Item
+            <Item
+                header
+                headerPos="left"
+                class="min-w-[100px] w-fit max-w-[150px]">User</Item
             >
             <Item header headerPos="left" class="min-w-[100px]">Trace</Item>
         </Row>
@@ -265,10 +270,20 @@
                             </button>
                         {/if}
                     </Item>
-                    <Item class="min-w-[100px] w-fit overflow-auto mr-8 font-mono text-xs">
-                        <pre class="line-clamp-none" style="line-height: 100% !important;">
-                            {@html entry.trace.trim()}
-                        </pre>
+                    <Item
+                        class="min-w-[100px] max-w-[600px] w-fit overflow-auto mr-8 font-mono text-xs"
+                    >
+                        {#if entry.trace}
+                            <pre
+                                class="line-clamp-none"
+                                style="line-height: 100% !important;">
+                                {@html entry.trace.trim()}
+                            </pre>
+                        {:else}
+                            <p>
+                                N/A
+                            </p>
+                        {/if}
                     </Item>
                 </Row>
             {/each}
@@ -308,36 +323,37 @@
         </div>
     </Button>
     {#if accountType === "Root"}
-    <ActionDialogue
-        bind:show={showPurgeMessage}
-        title="Purge all debug data?"
-        actionBtnColor="error"
-        actionButtonText="Purge All"
-        buttonText="Do not purge"
-        message="All debug events matched by the filter (including those not on this page) will be deleted."
-        action={async () => {
-            showProcessMessage = true;
-            await purgeAll();
-            showProcessMessage = false;
-            window.location.reload();
-        }}
-    />
-    <Button
-        class="float-right mr-2 mt-8"
-        color="error"
-        size="sm"
-        on:click={() => (showPurgeMessage = true)}
-    >
-        Purge All
-    </Button>
-{/if}
+        <ActionDialogue
+            bind:show={showPurgeMessage}
+            title="Purge all debug data?"
+            actionBtnColor="error"
+            actionButtonText="Purge All"
+            buttonText="Do not purge"
+            message="All debug events matched by the filter (including those not on this page) will be deleted."
+            action={async () => {
+                showProcessMessage = true;
+                await purgeAll();
+                showProcessMessage = false;
+                window.location.reload();
+            }}
+        />
+        <Button
+            class="float-right mr-2 mt-8"
+            color="error"
+            size="sm"
+            on:click={() => (showPurgeMessage = true)}
+        >
+            Purge All
+        </Button>
+    {/if}
 </div>
 
-<ProcessDialogue
-    bind:show={showProcessMessage}
-    message="Purging debug data"
->
-    <Text size="sm" color="secondary">This can take a few minutes. <Text color="dark" b>Do not reload the page.</Text></Text>
+<ProcessDialogue bind:show={showProcessMessage} message="Purging debug data">
+    <Text size="sm" color="secondary"
+        >This can take a few minutes. <Text color="dark" b
+            >Do not reload the page.</Text
+        ></Text
+    >
     <Spacer h={15} />
     <Spinner />
 </ProcessDialogue>

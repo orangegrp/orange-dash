@@ -8,7 +8,10 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"gen-secret": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
+        "gen-token": "node -e \"console.log(require('jsonwebtoken').sign({id: process.argv[2]}, process.argv[1], {expiresIn:'1y'}))\"",
+        "verify-token": "node -e \"console.log(require('jsonwebtoken').verify(process.argv[1], process.argv[2]))\""
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
