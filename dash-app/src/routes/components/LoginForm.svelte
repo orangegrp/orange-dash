@@ -129,7 +129,7 @@
                 width="100%"
                 on:click={async () => {
                     const oauth2_url =
-                        "https://discord.com/oauth2/authorize?client_id=1210923470620463164&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Flogin%2Foauth2%2Fdiscord&scope=identify+guilds";
+                        `https://discord.com/oauth2/authorize?client_id=1210923470620463164&response_type=code&redirect_uri=${encodeURIComponent(window.location.origin)}%2Flogin%2Foauth2%2Fdiscord&scope=identify+guilds`;
                     window.location.href = oauth2_url;
                 }}
             >

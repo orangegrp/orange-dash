@@ -45,6 +45,8 @@ async function getAccessTokenFromCode(redirect_url: string, code: string): Promi
         scope: "identify guilds"
     });
 
+    console.log(redirect_url);
+
     try {
         const response = await fetch("https://discord.com/api/v10/oauth2/token", {
             method: "POST",
