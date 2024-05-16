@@ -33,7 +33,7 @@
         method="post"
         class="flex-grow flex w-full flex-col place-items-start justify-center"
     >
-        <div class="flex flex-row gap-x-2 mb-2">
+        <div class="flex flex-row gap-x-2 mb-1">
             <Icon
                 dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"
                 light="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-b-icon.svg"
@@ -43,12 +43,11 @@
             />
             <strong translate="no"> orange Dash Account </strong>
         </div>
-
-        {#if show_form}
-            <Text type="small" color="secondary" class="mb-2"
+        <div class={show_form ? "display" : "hidden"}>
+            <Text type="small" color="secondary"
                 >One-Time Passcode</Text
             >
-
+            <Spacer h={3} />
             <div class="otp-container w-full space-x-2 h-10">
                 <OtpInput bind:mfa_form bind:buttonLoading />
             </div>
@@ -67,8 +66,9 @@
                     >
                 </Text>
             </div>
-        {:else}
-            <Spacer h={15} />
+        </div>
+        {#if !show_form}
+            <Spacer h={20} />
             <div class="w-full flex justify-center">
                 <Spinner />
             </div>
