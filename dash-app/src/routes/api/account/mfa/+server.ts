@@ -21,7 +21,8 @@ export async function DELETE(request) {
             return unauthorized("Wrong password");
         }
 
-        const login_methods = session.login_methods;
+        const login_methods: string[] = session.login_methods;
+        console.log(login_methods);
         updateDashUser(session.dash_id, { totp_secret: null, login_methods: [...new Set([...(login_methods.filter(m => m !== "TOTP"))])] });
         
         audit("SecurityInfoChange", session.dash_id, "Multi-factor authentication removed", request);

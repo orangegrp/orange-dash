@@ -105,14 +105,22 @@ async function createDashUser(user: DashUser): Promise<DashUser> {
     return await pb.collection(USERS_TABLE).create<DashUser>(user);
 }
 async function removeDashUser(id: string) {
-    if (!pb)
-        await initDb();
-    return await pb.collection(USERS_TABLE).delete(id);
+    try {
+        if (!pb)
+            await initDb();
+        return await pb.collection(USERS_TABLE).delete(id);
+    } finally {
+        DASH_CACHE.delete(id);
+    }
 }
 async function updateDashUser(id: string, new_data: Partial<DashUser>) {
-    if (!pb)
-        await initDb();
-    return await pb.collection(USERS_TABLE).update<DashUser>(id, new_data);
+    try {
+        if (!pb)
+            await initDb();
+        return await pb.collection(USERS_TABLE).update<DashUser>(id, new_data);
+    } finally {
+        DASH_CACHE.delete(id);
+    }
 }
 
 export { initDb, getDashUser, getDashUserOauth2, getDashUserUsername, createDashUser, removeDashUser, updateDashUser, pb, encryptTotpSecret, decryptTotpSecret, calculatePasswordHash };

@@ -19,7 +19,7 @@
 
 import type { ValueEdits } from "./api_v1";
 
-const base_url: string = "http://localhost:1234";
+const base_url: string = "http://localhost:3000";
 
 async function api_request(method: "GET" | "POST", ...args: string[]): Promise<Response> {
     const final_url = base_url + args.map(a => `/${a}`).join("") + "/";
