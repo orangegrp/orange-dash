@@ -47,7 +47,7 @@
     }
 </script>
 
-<div class="flex gap-x-2">
+<div class="flex gap-x-2 w-full">
     {#each otp as digit, index}
         <input
             autocapitalize="off"

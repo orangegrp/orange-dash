@@ -1,0 +1,59 @@
+
+
+@font-face {
+    font-family: "Orange Sans";
+    font-weight: 100 200;
+    font-style: normal;
+    src: url("Orange-Sans-Light.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Orange Sans";
+    font-weight: 300 400;
+    font-style: normal;
+    src: url("Orange-Sans-Regular.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Orange Sans";
+    font-weight: 500;
+    font-style: normal;
+    src: url("Orange-Sans-Medium.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Orange Sans";
+    font-weight: 600;
+    font-style: normal;
+    src: url("Orange-Sans-Bold.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Orange Sans";
+    font-weight: 700;
+    font-style: normal;
+    src: url("Orange-Sans-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Orange Sans";
+    font-weight: 800;
+    font-style: normal;
+    src: url("Orange-Sans-Bold.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Orange Sans";
+    font-weight: 900;
+    font-style: normal;
+    src: url("Orange-Sans-ExtraBold.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "Orange Mono";
+    font-weight: 100 200 300 400 500 600 700 800 900;
+    font-style: normal;
+    src: url("Orange-Mono-Regular.woff2") format("woff2");
+}
+
+

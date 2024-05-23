@@ -236,6 +236,7 @@
 <body class="dark:bg-black bg-gray-50 mb-4">
 	{#if !$page.url.pathname.startsWith("/applets")}
 	<div
+		class="{$page.url.pathname.startsWith("/app") ? "" : "headerparent"}"
 		id="header-parent"
 		style="position: sticky !important; z-index: 100 !important;"
 	>
@@ -257,7 +258,14 @@
 						height="48"
 						alt="Logo"
 					/>
-					<strong translate="no">Dash</strong>
+					<span class="inline font-extrabold">
+						orange
+						<span class="ml-[-2.5px] mr-1" style="color:#ff6723;">
+							bot
+						</span>
+						<span translate="no" class="font-bold">Dash</span>
+					</span>
+
 				</div>
 
 				{#if $page.data.session}
@@ -269,7 +277,7 @@
 							class="w-[30rem] my-0 flex justify-center line-clamp-1 dark:!text-gray-600 font-weight-inherit text-inherit dark:text-inherit inherit bg-gray-50 border-gray-100 dark:bg-gray-950 hover:dark:bg-gray-900 active:dark:bg-gray-800 dark:border-gray-900 border px-2 py-1 rounded-md"
 						>
 							<div
-								class="text-sm flex flex-row gap-x-2 py-0.5 place-items-center"
+								class="text-sm flex flex-row gap-x-2 py-0.5 place-items-center pb-1"
 							>
 								Click here or press
 								<div
@@ -344,6 +352,10 @@
 
 <style>
 	:root, *, body {
-		font-family: "Geist", "Circular Std", "Inter", sans-serif !important;
+		font-family: "Orange Sans", "Geist", "Circular Std", "Inter", sans-serif;
+	}
+	.headerparent:first-child {
+		opacity: 0.9;
+		backdrop-filter: blur(10px);
 	}
 </style>

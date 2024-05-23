@@ -163,7 +163,8 @@ async function passwordAuthentication({ event }: MiddlewareSequence) {
         
         audit("LoginOK", user.id, "Multi-factor authentication request", event);
 
-        return redirect(302, `/login/mfa`);
+        return redirect(302, `/redirect?target=${encodeURIComponent("login/mfa")}`);
+        //return redirect(302, `/login/mfa`);
     }
 
     const session = {

@@ -54,7 +54,7 @@
                 height="32"
                 alt="Logo"
             />
-            <strong translate="no"> orange Dash Account </strong>
+            <strong translate="no"> Dash Account </strong>
         </div>
         <Spacer h={10} />
         <TextInput
@@ -175,7 +175,7 @@
                 <Badge size="xs" ghost>Beta</Badge>
             </Text>
             <Text type="h3" color="secondary" align="center" size="sm">
-                Use the orange Dash mobile site on your phone to scan this QR code.
+                Use the Dash mobile site on your phone to scan this QR code.
             </Text>
         </Center>
     </div>

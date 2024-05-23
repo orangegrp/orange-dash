@@ -121,7 +121,7 @@
         {/if}
         <Text size="sm" class="dark:text-gray-200">
             {#if OAuth2_Id}
-                Your Dash account is linked to your Discord account.
+                Your Dash account is linked to your Discord account. You can use this as an alternative to your password, if set.
             {:else}
                 Your Dash account is not linked to a Discord account.
             {/if}
@@ -135,7 +135,7 @@
                 <Text size="xs">
                     <p>
                         If you need to link your Dash account to a different
-                        Discord account, please contact a Dash administrator.
+                        Discord account, please contact support and we will help you out.
                         <Text b>
                             If you have accidentally created a new Dash account
                             by logging in using OAuth2 with your new Discord

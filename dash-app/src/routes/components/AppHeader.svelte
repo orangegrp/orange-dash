@@ -19,9 +19,7 @@
 </header>
 
 <style>
-	:root, *, header {
-		font-family: "Geist", "Circular Std", "Inter", sans-serif !important;
-	}
+
     
     /*
 

@@ -37,7 +37,7 @@
 </script>
 
 <input
-    class="text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg {classes}"
+    class="text-gray-900 dark:text-gray-100 border dark:border-gray-900 rounded-lg {classes} text-sm"
     {type}
     {id}
     {name}

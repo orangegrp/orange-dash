@@ -22,7 +22,7 @@
 
 <div
     class="flex justify-between border-gray-150
-    dark:border-gray-900 py-6 border max-w-[350px] sm:max-w-[480px] w-full h-fit px-4 sm:px-8 rounded-xl md:rounded-3xl {$mode ===
+    dark:border-gray-900 py-6 border max-w-[350px] min-w-[300px] w-full h-fit px-4 sm:px-8 rounded-xl md:rounded-3xl {$mode ===
     'light'
         ? 'card-border-light'
         : 'card-border-black'}"
@@ -31,7 +31,7 @@
         bind:this={mfa_form}
         action="/login/mfa"
         method="post"
-        class="flex-grow flex w-full flex-col place-items-start justify-center"
+        class="flex-grow flex w-fit flex-col place-items-start justify-center"
     >
         <div class="flex flex-row gap-x-2 mb-1">
             <Icon
@@ -41,9 +41,9 @@
                 height="32"
                 alt="Logo"
             />
-            <strong translate="no"> orange Dash Account </strong>
+            <strong translate="no">Dash Account</strong>
         </div>
-        <div class={show_form ? "display" : "hidden"}>
+        <div class={show_form ? "display w-full" : "hidden"}>
             <Text type="small" color="secondary"
                 >One-Time Passcode</Text
             >
