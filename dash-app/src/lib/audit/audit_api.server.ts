@@ -52,7 +52,7 @@ async function getAuditLogs(page: number = 1, itemsPerPage: number = 10, filterB
         item.device = decrypt_str(item.device, DASH_KEY) ?? item.device;
         return item;
     });
-    return decrypted_logs;
+    return { logs: decrypted_logs, page: logs.page, pages: logs.totalPages };
 }
 
 async function audit(event: DashAuditEvent, dash_user: DashUser["id"] | undefined, message: string, req_event: RequestEvent) {

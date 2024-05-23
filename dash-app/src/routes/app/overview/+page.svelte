@@ -52,28 +52,32 @@
     async function getLogData() {
         bufferingLogs = true;
 
-        const result = await fetch("/api/admin/overview/logs", {
-            method: "GET",
-            headers: {
-                "X-Dash-SessionId": $page.data.session_id,
-                "X-Dash-PageNr": $pageNr.toString(),
-                "X-Dash-IPP": $itemsPerPage.toString(),
-                "X-Dash-Filter": $filterBy.toString(),
-            },
-        });
-
-        function sleep(time: number) {
-            return new Promise((resolve) => {
-                setTimeout(resolve, time);
+        try {
+            const result = await fetch("/api/admin/overview/logs", {
+                method: "GET",
+                headers: {
+                    "X-Dash-SessionId": $page.data.session_id,
+                    "X-Dash-PageNr": $pageNr.toString(),
+                    "X-Dash-IPP": $itemsPerPage.toString(),
+                    "X-Dash-Filter": $filterBy.toString(),
+                },
             });
-        }
 
-        if (result.status === 200) {
-            let data_obj = await result.json();
-            $logs = data_obj.data.items as DashServiceLogEntry[];
-            $maxPage = $logs.length === 0 ? $pageNr : 0;
+            function sleep(time: number) {
+                return new Promise((resolve) => {
+                    setTimeout(resolve, time);
+                });
+            }
 
-            await sleep(3000);
+            if (result.status === 200) {
+                let data_obj = await result.json();
+                $logs = data_obj.data.items as DashServiceLogEntry[];
+                $maxPage = $logs.length === 0 ? $pageNr : 0;
+
+                await sleep(3000);
+                bufferingLogs = false;
+            }
+        } catch (e) {
             bufferingLogs = false;
         }
     }
@@ -291,17 +295,46 @@
                                                 `${l.host} ${l.created} ${l.details}`,
                                             ),
                                         );
-                                        let nohtml = text.join("\n").replace(/<style([\s\S]*?)<\/style>/gi, "");
-                                        nohtml = nohtml.replace(/<script([\s\S]*?)<\/script>/gi, "");
-                                        nohtml = nohtml.replace(/<\/div>/gi, "\n");
-                                        nohtml = nohtml.replace(/<\/li>/gi, "\n");
-                                        nohtml = nohtml.replace(/<li>/gi, "  *  ");
-                                        nohtml = nohtml.replace(/<\/ul>/gi, "\n");
-                                        nohtml = nohtml.replace(/<\/p>/gi, "\n");
-                                        nohtml = nohtml.replace(/<br\s*[\/]?>/gi, "\n");
-                                        nohtml = nohtml.replace(/<[^>]+>/gi, "");
+                                        let nohtml = text
+                                            .join("\n")
+                                            .replace(
+                                                /<style([\s\S]*?)<\/style>/gi,
+                                                "",
+                                            );
+                                        nohtml = nohtml.replace(
+                                            /<script([\s\S]*?)<\/script>/gi,
+                                            "",
+                                        );
+                                        nohtml = nohtml.replace(
+                                            /<\/div>/gi,
+                                            "\n",
+                                        );
+                                        nohtml = nohtml.replace(
+                                            /<\/li>/gi,
+                                            "\n",
+                                        );
+                                        nohtml = nohtml.replace(
+                                            /<li>/gi,
+                                            "  *  ",
+                                        );
+                                        nohtml = nohtml.replace(
+                                            /<\/ul>/gi,
+                                            "\n",
+                                        );
+                                        nohtml = nohtml.replace(
+                                            /<\/p>/gi,
+                                            "\n",
+                                        );
+                                        nohtml = nohtml.replace(
+                                            /<br\s*[\/]?>/gi,
+                                            "\n",
+                                        );
+                                        nohtml = nohtml.replace(
+                                            /<[^>]+>/gi,
+                                            "",
+                                        );
                                         window.navigator.clipboard.writeText(
-                                            nohtml
+                                            nohtml,
                                         );
                                     }}
                                 >
@@ -327,101 +360,104 @@
                                 />
                             </div>
                             <div class="bg-gray-975">
-                                <Table>
-                                    {#each $logs as log}
-                                        <Row
-                                            class="border-none font-mono !m-0 !p-0 overflow-x-auto"
-                                        >
-                                            <Item
-                                                id="log-item-{log.id}"
-                                                class="!text-white text-sm flex flex-row place-items-center justify-between"
+                                {#if $logs}
+                                    <Table>
+                                        {#each $logs as log}
+                                            <Row
+                                                class="border-none font-mono !m-0 !p-0 overflow-x-auto"
                                             >
-                                                <div>
-                                                    <span class="text-cyan-600"
-                                                        >{log.host}</span
-                                                    >&nbsp;
-                                                    <!--
+                                                <Item
+                                                    id="log-item-{log.id}"
+                                                    class="!text-white text-sm flex flex-row place-items-center justify-between"
+                                                >
+                                                    <div>
+                                                        <span
+                                                            class="text-cyan-600"
+                                                            >{log.host}</span
+                                                        >&nbsp;
+                                                        <!--
                                                                                                             <Text color="secondary"
                                                         >{log.created}</Text
                                                     >&nbsp;&nbsp;
                                                     -->
-                                                    {@html log.details.trim()}&nbsp;
-                                                </div>
-                                                <div>
-                                                    {#if log.level === "Error"}
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke-width="1.5"
-                                                            stroke={colors[2]}
-                                                            class="w-5 h-5"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                                                            />
-                                                        </svg>
-                                                    {/if}
-                                                    {#if log.level === "Warning"}
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke-width="1.5"
-                                                            stroke={colors[1]}
-                                                            class="w-5 h-5"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-                                                            />
-                                                        </svg>
-                                                    {/if}
-                                                    {#if log.level === "Log"}
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke-width="1.5"
-                                                            stroke={colors[3]}
-                                                            class="w-5 h-5"
-                                                        >
-                                                            <path
-                                                                stroke-linecap="round"
-                                                                stroke-linejoin="round"
-                                                                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-                                                            />
-                                                        </svg>
-                                                    {/if}
-                                                    {#if log.level === "Verbose"}
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            fill="none"
-                                                            viewBox="0 0 24 24"
-                                                            stroke-width="1.5"
-                                                            stroke={colors[4]}
-                                                            class="w-5 h-5"
-                                                        >
-                                                            &nbsp;
-                                                        </svg>
-                                                    {/if}
-                                                </div>
-                                            </Item>
-                                            <ToolTip
-                                                anchor="#log-item-{log.id}"
-                                                placement="bottom-end"
-                                                content={log.created}
-                                            />
-                                        </Row>
-                                    {/each}
-                                </Table>
+                                                        {@html log.details.trim()}&nbsp;
+                                                    </div>
+                                                    <div>
+                                                        {#if log.level === "Error"}
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke-width="1.5"
+                                                                stroke={colors[2]}
+                                                                class="w-5 h-5"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
+                                                                />
+                                                            </svg>
+                                                        {/if}
+                                                        {#if log.level === "Warning"}
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke-width="1.5"
+                                                                stroke={colors[1]}
+                                                                class="w-5 h-5"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                                                                />
+                                                            </svg>
+                                                        {/if}
+                                                        {#if log.level === "Log"}
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke-width="1.5"
+                                                                stroke={colors[3]}
+                                                                class="w-5 h-5"
+                                                            >
+                                                                <path
+                                                                    stroke-linecap="round"
+                                                                    stroke-linejoin="round"
+                                                                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+                                                                />
+                                                            </svg>
+                                                        {/if}
+                                                        {#if log.level === "Verbose"}
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke-width="1.5"
+                                                                stroke={colors[4]}
+                                                                class="w-5 h-5"
+                                                            >
+                                                                &nbsp;
+                                                            </svg>
+                                                        {/if}
+                                                    </div>
+                                                </Item>
+                                                <ToolTip
+                                                    anchor="#log-item-{log.id}"
+                                                    placement="bottom-end"
+                                                    content={log.created}
+                                                />
+                                            </Row>
+                                        {/each}
+                                    </Table>
+                                {/if}
                                 {#if bufferingLogs}
                                     <div class="p-4">
                                         <Center>
-                                            <Loading size="md" />
+                                            <Loading size="sm" />
                                         </Center>
                                     </div>
                                 {/if}

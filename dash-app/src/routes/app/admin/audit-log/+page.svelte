@@ -71,8 +71,8 @@
         if (result.status === 200) {
             let data_obj = await result.json();
             //data.set(data_obj.data as DashAuditEntry[]);
-            $data = data_obj.data as DashAuditEntry[];
-            $maxPage = $data.length === 0 ? $pageNr : 0;
+            $data = data_obj.data.logs as DashAuditEntry[];
+            $maxPage = data_obj.data.pages;
         }
     }
 
@@ -178,11 +178,12 @@
     <div class="mb-8 flex flex-col lg:flex-row justify-between gap-y-4">
         <div class="flex flex-col sm:flex-row gap-x-4 gap-y-4">
             <div class="flex flex-row place-items-center gap-x-2 min-w-[100px]">
-                <Text>Items per page:</Text>
+                <Text size="sm">Items per page:</Text>
                 <Select
                     width="100px"
                     on:change={async (e) => {
                         $itemsPerPage = e.detail.value;
+                        $pageNr = 1;
                         await getAuditData();
                     }}
                     bind:value={$itemsPerPage}
@@ -194,11 +195,12 @@
                 </Select>
             </div>
             <div class="flex flex-row place-items-center gap-x-2 min-w-[300px]">
-                <Text>Filter by event:</Text>
+                <Text size="sm">Filter by event:</Text>
                 <Select
                     width="225px"
                     on:change={async (e) => {
                         $filterBy = e.detail.value;
+                        $pageNr = 1;
                         await getAuditData();
                     }}
                     bind:value={$filterBy}
@@ -219,9 +221,15 @@
             </div>
         </div>
         <div class="flex flex-row place-items-center gap-x-2">
-            <Text class="mr-2">
-                Viewing page: {$pageNr}
-            </Text>
+            {#if $maxPage === 0}
+                <Text size="sm" class="mr-2">
+                    No data available for this selection
+                </Text>
+            {:else}
+                <Text size="sm" class="mr-2">
+                    Viewing page: {$pageNr}
+                </Text>
+            {/if}
             {#if $pageNr > 1}
                 <Button
                     on:click={async () => {
@@ -245,7 +253,7 @@
                     </svg>
                 </Button>
             {/if}
-            {#if $maxPage === 0 || $pageNr < $maxPage}
+            {#if $pageNr < $maxPage}
                 <Button
                     on:click={async () => {
                         $pageNr = $pageNr + 1;
@@ -419,7 +427,7 @@
                             </button>
                         {/if}
                     </Item>
-                    
+
                     <Item
                         id="item-info-{index}"
                         class="min-w-[100px] max-w-[400px] text-xs {getColorCodes(
@@ -524,12 +532,12 @@
     {/if}
 </div>
 
-<ProcessDialogue
-    bind:show={showProcessMessage}
-    message="Purging audit logs"
->
-    <Text size="sm" color="secondary">This can take a few minutes. <Text color="dark" b>Do not reload the page.</Text></Text>
+<ProcessDialogue bind:show={showProcessMessage} message="Purging audit logs">
+    <Text size="sm" color="secondary"
+        >This can take a few minutes. <Text color="dark" b
+            >Do not reload the page.</Text
+        ></Text
+    >
     <Spacer h={15} />
     <Spinner />
 </ProcessDialogue>
-
