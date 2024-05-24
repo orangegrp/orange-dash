@@ -36,7 +36,7 @@
         "All systems operational",
         "Degraded service - possible issues",
         "Major service outage - all systems down",
-        "Information unavailable",
+        "Information unavailable - development mode",
     ];
     let statusCode = 3;
 
@@ -92,12 +92,28 @@
                         >Status</Text
                     >
                     <div class="flex flex-row place-items-center gap-x-2">
-                        <span class="flex animate-pulse">
-                            <Dot size={8} color={colors[statusCode]} />
-                        </span>
-                        <Text size="sm" class="!font-normal"
-                            >{messages[statusCode]}</Text
+                        <span
+                            class="flex animate-pulse justify-center items-center"
                         >
+                            <Dot size={8} color={colors[statusCode]} />
+                            <div
+                                class="absolute w-0 h-0 bg-transparent rounded-full"
+                                style="box-shadow: 0px 0px 12px 3px {colors[
+                                    statusCode
+                                ]}"
+                            ></div>
+                            <div
+                                class="absolute w-0 h-0 bg-transparent rounded-full"
+                                style="box-shadow: 0px 0px 64px 10px {colors[
+                                    statusCode
+                                ]}"
+                            ></div>
+                        </span>
+                        <div class="flex animate-pulse-text">
+                            <Text size="sm" class="!font-normal"
+                                >{messages[statusCode]}</Text
+                            >
+                        </div>
                     </div>
                 </div>
             </div>
@@ -469,3 +485,17 @@
         </svelte:fragment>
     </AppContent>
 </main>
+
+<style>
+    @keyframes pulse-text {
+        90% {
+            opacity: 1;
+        }
+        95% {
+            opacity: 0.5;
+        }
+    }
+    .animate-pulse-text {
+        animation: pulse-text 16s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>

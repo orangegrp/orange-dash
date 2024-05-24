@@ -18,6 +18,7 @@
 		Button,
 		CommandIcon,
 		Key,
+        BreadCrumbs,
 	} from "geist-ui-svelte";
 	import Icon from "./components/Icon.svelte";
 	import { onMount } from "svelte";
@@ -157,7 +158,7 @@
 			subTitle: "View & manage the audit log",
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/admin/audit-log";
-			}
+			},
 		},
 		{
 			title: "Debug",
@@ -181,7 +182,7 @@
 				"View and manage security info about relating to your account",
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/account/security";
-			}
+			},
 		},
 		{
 			title: "Danger Zone",
@@ -189,12 +190,11 @@
 				"Lock your account in case it gets compromised or delete it if you no longer want to use it again",
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/account/danger-zone";
-			}
+			},
 		},
 		{
 			title: "StudyBot™",
-			subTitle:
-				"Access the StudyBot™ applet.",
+			subTitle: "Access the StudyBot™ applet.",
 			onRun: ({ action, storeProps, storeMethods }) => {
 				window.location.href = "/app/studybot";
 			},
@@ -235,104 +235,201 @@
 
 <body class="dark:bg-black bg-gray-50 mb-4">
 	{#if !$page.url.pathname.startsWith("/applets")}
-	<div
-		class="{$page.url.pathname.startsWith("/app") ? "" : "headerparent"}"
-		id="header-parent"
-		style="position: sticky !important; z-index: 100 !important;"
-	>
-		<Header
-			noBorder={$page.url.pathname.startsWith("/app") &&
-			!$page.url.pathname.startsWith("/app/account")
-				? true
-				: false}
-			transparent={true}
+		<div
+			class={$page.url.pathname.startsWith("/app") ? "" : "headerparent"}
+			id="header-parent"
+			style="position: sticky !important; z-index: 100 !important;"
 		>
-			<div
-				class="flex place-items-center justify-between w-full py-1 px-4 md:py-2 {$page.url.pathname.startsWith("/app/account") || $page.url.pathname.startsWith('/login') ? "" : "lg:py-0"} sm:px-8"
+			<Header
+				noBorder={$page.url.pathname.startsWith("/app") &&
+				!$page.url.pathname.startsWith("/app/account")
+					? true
+					: false}
+				transparent={true}
 			>
-				<div class="flex flex-row gap-x-3 select-none">
-					<Icon
-						dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"
-						light="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-b-icon.svg"
-						width="48"
-						height="48"
-						alt="Logo"
-					/>
-					<span class="inline font-extrabold">
-						orange
-						<span class="ml-[-2.5px] mr-1" style="color:#ff6723;">
-							bot
+				<div
+					class="flex place-items-center justify-between w-full py-1 px-4 md:py-2 {$page.url.pathname.startsWith(
+						'/app/account',
+					) || $page.url.pathname.startsWith('/login')
+						? ''
+						: 'lg:py-0'} sm:px-8"
+				>
+					<div class="flex flex-row gap-x-3 select-none items-center justify-between">
+						<Icon
+							dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"
+							light="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-b-icon.svg"
+							width="48"
+							height="48"
+							alt="Logo"
+						/>
+						<span class="ml-[-2.5px] inline font-extrabold">
+							orange
+							<span
+								class="ml-[-2.5px] mr-1"
+								style="color:#ff6723;"
+							>
+								bot
+							</span>
+							<span translate="no" class="font-bold">Dash</span>
 						</span>
-						<span translate="no" class="font-bold">Dash</span>
-					</span>
-
-				</div>
-
-				{#if $page.data.session}
-					<div
-						class="pr-16 py-0 my-0 hidden xl:flex flex-row gap-x-2 place-items-center"
-					>
-						<button
-							on:click={() => paletteMethods.openPalette()}
-							class="w-[30rem] my-0 flex justify-center line-clamp-1 dark:!text-gray-600 font-weight-inherit text-inherit dark:text-inherit inherit bg-gray-50 border-gray-100 dark:bg-gray-950 hover:dark:bg-gray-900 active:dark:bg-gray-800 dark:border-gray-900 border px-2 py-1 rounded-md"
-						>
-							<div
-								class="text-sm flex flex-row gap-x-2 py-0.5 place-items-center pb-1"
-							>
-								Click here or press
-								<div
-									class="bg-gray-900 rounded-md px-2 flex flex-row gap-x-1.5 place-items-center"
-								>
-									<CommandIcon size={16} />
-									<span class="font-mono font-bold">K</span>
-								</div>
-								to open command palette
-							</div>
-						</button>
 					</div>
-					<button
-						on:click={() => (profilePopup = !profilePopup)}
-						class="flex place-items-center justify-center"
-						id="avatar-button"
-					>
-						<Avatar name={$page.data.session.dash_id} />
-					</button>
-					<Dropdown
-						anchor="#avatar-button"
-						bind:visible={profilePopup}
-						placement="bottom"
-						offset={{ x: 0, y: 8 }}
-						class="w-fit shadow-2xl"
-					>
-						<div class="flex flex-col p-3">
-							<Text size="xs" color="secondary">
-								Dash ID:
-								<Text blockquote>
-									{$page.data.session.dash_id}
-								</Text>
-							</Text>
-							<Spacer h={10} />
-							<Divider />
-							<Spacer h={10} />
-							<a
-								class="text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
-						hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all"
-								href="/app/account"
-								target="_self">Account Settings</a
-							>
-							<Spacer h={5} />
+
+					{#if $page.data.session}
+						<div
+							class="pr-16 py-0 my-0 hidden xl:flex flex-row gap-x-2 place-items-center"
+						>
 							<button
-								class="text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
-						hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all"
-								on:click={() => (showLogoutConfirmation = true)}
-								>Log Out</button
+								on:click={() => paletteMethods.openPalette()}
+								class="w-[30rem] my-0 flex justify-center line-clamp-1 dark:!text-gray-600 font-weight-inherit text-inherit dark:text-inherit inherit bg-gray-50 border-gray-100 dark:bg-gray-950 hover:dark:bg-gray-900 active:dark:bg-gray-800 dark:border-gray-900 border px-2 py-1 rounded-md"
 							>
+								<div
+									class="text-sm flex flex-row gap-x-2 py-0.5 place-items-center pb-1"
+								>
+									Click here or press
+									<div
+										class="bg-gray-900 rounded-md px-2 flex flex-row gap-x-1.5 place-items-center"
+									>
+										<CommandIcon size={16} />
+										<span class="font-mono font-bold"
+											>K</span
+										>
+									</div>
+									to open command palette
+								</div>
+							</button>
 						</div>
-					</Dropdown>
-				{/if}
-			</div>
-		</Header>
-	</div>
+						<button
+							on:click={() => (profilePopup = !profilePopup)}
+							class="flex place-items-center justify-center"
+							id="avatar-button"
+						>
+							<Avatar name={$page.data.session.dash_id} />
+						</button>
+						<Dropdown
+							anchor="#avatar-button"
+							bind:visible={profilePopup}
+							placement="bottom"
+							offset={{ x: 0, y: 8 }}
+							class="w-fit shadow-2xl"
+						>
+							<div class="flex flex-col p-3">
+								<Text size="xs" color="secondary">
+									Dash ID:
+									<Text blockquote>
+										{$page.data.session.dash_id}
+									</Text>
+								</Text>
+								<Spacer h={10} />
+								<Divider />
+								<Spacer h={10} />
+
+								<a
+									class="ml-[-2px] text-sm text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
+				hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all flex flex-row gap-x-4 justify-between items-center"
+									href="/app"
+									target="_self"
+									>Dashboard
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="currentColor"
+										class="size-5"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z"
+										/>
+									</svg>
+								</a>
+								<Spacer h={5} />
+								<a
+									class="ml-[-2px] text-sm text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
+						hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all flex flex-row gap-x-4 justify-between items-center"
+									href="/app/account"
+									target="_self"
+									>Account Settings
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="currentColor"
+										class="size-5"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+										/>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+										/>
+									</svg>
+								</a>
+								<Spacer h={5} />
+								<button
+									class="ml-[-2px] text-sm text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
+					hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all flex flex-row gap-x-6 justify-between items-center"
+									on:click={() => {
+										paletteMethods.openPalette();
+										profilePopup = false;
+									}}
+									>Command Palette
+									<div
+										class="border border-gray-900 rounded-md px-2 py-0.5 flex flex-row gap-x-1.5 place-items-center"
+									>
+										<CommandIcon size={12} />
+										<span
+											class="font-mono text-xs font-bold"
+											>K</span
+										>
+									</div>
+								</button>
+								<Spacer h={10} />
+								<Divider />
+								<Spacer h={8} />
+								<a
+									class="ml-[-2px] text-sm text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
+					hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all flex flex-row gap-x-4 justify-between items-center"
+									href="https://orange.order332.com"
+									target="_blank"
+									>orange🟠 Website
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke-width="1.5"
+										stroke="currentColor"
+										class="size-5"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+										/>
+									</svg>
+								</a>
+								<Spacer h={5} />
+								<button
+									class="ml-[-2px] text-sm text-left rounded-md pl-2 p-1 text-gray-500 hover:text-gray-999
+						hover:dark:text-gray-0 hover:bg-gray-50 dark:hover:bg-gray-950 transition-all flex flex-row gap-x-6 justify-between items-center"
+									on:click={() => {
+										showLogoutConfirmation = true;
+										profilePopup = false;
+									}}
+									>Log Out
+								</button>
+							</div>
+						</Dropdown>
+					{/if}
+				</div>
+			</Header>
+		</div>
 	{/if}
 
 	<slot />
@@ -351,7 +448,9 @@
 </Center>
 
 <style>
-	:root, *, body {
+	:root,
+	*,
+	body {
 		font-family: "Orange Sans", "Geist", "Circular Std", "Inter", sans-serif;
 	}
 	.headerparent:first-child {

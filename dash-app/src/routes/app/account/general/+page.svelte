@@ -3,6 +3,7 @@
     import { page } from "$app/stores";
     import { onMount } from "svelte";
     import { Card, Text, Spacer, Snippet, Details } from "geist-ui-svelte";
+    import { replaceState } from "$app/navigation";
 
     let userId = "";
     let userName = "";
@@ -12,7 +13,7 @@
 
     onMount(() => {
         window.history.replaceState({}, "", "/app/account/general");
-
+        //replaceState("/app/account/general", { });
         const dashAccount = $page.data.dash_account as DashUser;
 
         userId = dashAccount.id;

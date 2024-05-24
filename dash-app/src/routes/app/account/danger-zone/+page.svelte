@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { goto, replaceState } from "$app/navigation";
     import { page } from "$app/stores";
     import type { DashUser } from "$lib/auth/dash";
     import {
@@ -36,7 +36,8 @@
 
     onMount(() => {
         window.history.replaceState({}, "", "/app/account/danger-zone");
-
+        
+        //replaceState("/app/account/danger-zone", { });
         //changeBackground("delete-action-card");
         //changeBackground("lock-action-card");
 

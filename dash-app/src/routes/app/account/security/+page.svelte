@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { goto, replaceState } from "$app/navigation";
     import { page } from "$app/stores";
     import type { DashUser } from "$lib/auth/dash";
     import {
@@ -57,7 +57,7 @@
 
     onMount(() => {
         window.history.replaceState({}, "", "/app/account/security");
-
+        //replaceState("/app/account/security", { });
         //changeBackground("password-action-card");
         //changeBackground("totp-action-card");
 
