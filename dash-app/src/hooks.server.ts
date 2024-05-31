@@ -1,24 +1,77 @@
 import { sequence } from "@sveltejs/kit/hooks";
-import { redirect, type Handle, type HandleServerError, json } from "@sveltejs/kit";
+import { redirect, type Handle, type HandleServerError, json, error } from "@sveltejs/kit";
 import { getDashUser } from "$lib/auth/dash_account.server";
 import type { DashSession } from "$lib/auth/dash";
-import { getSession, removeSession } from "$lib/auth/session.server";
+import { getSession, newSession, removeSession } from "$lib/auth/session.server";
 import { success } from "./routes/api/apilib";
-import { generateQRCode } from "$lib";
+import { generateQRCodeFixed } from "$lib";
 import { NOTBOT_PROXY } from "$env/static/private";
 import { audit } from "$lib/audit/audit_api.server";
 import { debug } from "$lib/audit/debug_api.server";
 import { discordAuthentication, passwordAuthentication, totpAuthentication } from "./middleware/authentication";
 import type { MiddlewareSequence } from "./middleware/middleware";
 
+const LOGIN_MAP: Map<string, { ip: string, qr_ids: string[], dash_id?: string }> = new Map();
+
 async function authentication({ event, resolve }: MiddlewareSequence) {
     if (event.url.pathname === "/login/oauth2/discord") {
         return await discordAuthentication({ event, resolve });
     } else if (event.url.pathname === "/login/qrcode" && event.request.method === "GET") {
+        const login_id = event.cookies.get("login_id");
+        if (!login_id) {
+            return error(400, "Login session expired");
+        }
         const qr_login_session = crypto.randomUUID();
-        //QR_MAP.set(qr_login_session, { ip: event.getClientAddress() });
-        return success({ qrcode: await generateQRCode(qr_login_session) });
-    } else if (event.url.pathname === "/login/password" && event.request.method === "POST") {
+        const login_data = LOGIN_MAP.get(login_id);
+        login_data.qr_ids.push(qr_login_session);
+        if (login_data.qr_ids.length > 5) {
+            login_data.qr_ids.splice(0, 1);
+        }
+        LOGIN_MAP.set(login_id, login_data);
+        if (login_data.dash_id) {
+            const user = await getDashUser(login_data.dash_id);
+            const session = {
+                username: user.username,
+                login_methods: user.login_methods,
+                role: user.role,
+                oauth2_id: user.oauth2_id,
+                dash_id: user.id
+            } as DashSession
+        
+            const session_id = newSession(session);
+            console.log("session id", session_id);
+            event.cookies.set("dash_session", session_id, { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
+        
+            audit("LoginOK", session.dash_id, "Log in success using QR code", event);
+
+            return new Response(JSON.stringify({ qrcode: "", goto: "/redirect?target=app"}), {
+                status: 200,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Set-Cookie": `dash_session=${session_id}; Path=/; Secure; HttpOnly; SameSite=strict`,
+                }
+            });
+            //return success({ qrcode: "", goto: "/redirect?target=app"});
+        }
+        return success({ qrcode: await generateQRCodeFixed(`${login_id},${qr_login_session}`, 8) });
+    } else if (event.url.pathname === "/login/qrcode" && event.request.method === "POST") {
+        const session_id = event.cookies.get("dash_session");
+        const session = getSession(session_id!) as DashSession;
+        if (session && session.dash_id) {
+            const qr_id = event.request.headers.get("X-Dash-QrCode");
+            const login_id = event.request.headers.get("X-Dash-LoginId");
+            const login_data = LOGIN_MAP.get(login_id!);
+            if (login_data && login_data.qr_ids.includes(qr_id!)) {
+                login_data.dash_id = session.dash_id;
+                LOGIN_MAP.set(login_id!, login_data);
+                return success();
+            } else {
+                return error(400, "Invalid QR code");
+            }
+        } 
+        return error(401, "Unauthorized");
+    } 
+    else if (event.url.pathname === "/login/password" && event.request.method === "POST") {
         return await passwordAuthentication({ event, resolve });
     } else if (event.url.pathname === "/login/mfa" && event.request.method === "POST") {
         return await totpAuthentication({ event, resolve });
@@ -31,8 +84,12 @@ async function authentication({ event, resolve }: MiddlewareSequence) {
         removeSession(session_id!);
         event.cookies.delete("dash_totp", { path: "/login/mfa", secure: false, httpOnly: true, sameSite: "strict", maxAge: 300 });
         event.cookies.delete("dash_session", { path: "/", secure: false, httpOnly: true, sameSite: "strict" });
-        
+
         return redirect(302, "/redirect?target=login");
+    } else if (event.url.pathname === "/login") {
+        const login_id = crypto.randomUUID();
+        LOGIN_MAP.set(login_id, { ip: event.getClientAddress(), qr_ids: [], dash_id: undefined });
+        event.cookies.set("login_id", login_id, { path: "/", secure: false, httpOnly: true, sameSite: "strict", maxAge: 300 });
     }
 
     return await resolve(event);
@@ -106,8 +163,8 @@ async function notbotproxy({ event, resolve }: MiddlewareSequence) {
             method: event.request.method,
             body: event.request.body ? await event.request.text() : undefined,
             headers: event.request.headers
-        }).catch((e) => { console.log(e); return json({ success: false, reason: `Request failed to be relayed.` }, { status: 500 }) });   
-        
+        }).catch((e) => { console.log(e); return json({ success: false, reason: `Request failed to be relayed.` }, { status: 500 }) });
+
         return result;
     }
 
@@ -123,10 +180,10 @@ export const handleError: HandleServerError = ({ error, event, status, message }
     const session = getSession(session_id!) as DashSession;
 
     console.error(errorId, event.request.headers.get("X-Forwarded-For"), event.getClientAddress(), status, message, error);
-    
+
     if (status !== 404) {
         debug(errorId, session?.dash_id ?? undefined, error);
-        audit("Diagnostics", session?.dash_id ?? undefined, `Error: ${errorId} Status: ${status} Message: ${message}`, event);    
+        audit("Diagnostics", session?.dash_id ?? undefined, `Error: ${errorId} Status: ${status} Message: ${message}`, event);
     }
 
     return {

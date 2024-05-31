@@ -13,6 +13,9 @@ const DASH_CACHE = new Map<string, DashUser>();
 const CACHE_TIMEOUT = 60 * 60 * 1000;
 
 async function initDb() {
+    if (pb && pb.authStore.isValid)
+        return;
+    
     pb = new pocketbase(POCKETBASE_SERVER);
     pb.autoCancellation(false);
     pb.collection("users").authWithPassword(POCKETBASE_USER, POCKETBASE_PASSWORD).then(() => {
@@ -23,7 +26,7 @@ async function initDb() {
         setTimeout(initDb, 5000);
     });
 
-    while (!pb.authStore.isValid) {
+    while (!pb || !pb.authStore.isValid) {
         await sleep(1000);
         continue;
     }

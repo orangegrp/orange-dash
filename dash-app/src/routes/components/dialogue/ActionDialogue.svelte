@@ -43,6 +43,7 @@
     export let action: (e: MouseEvent) => void = () => {};
     export let nonaction: (e: MouseEvent) => void = () => {};
     export let href = "";
+    export let showActionButton = true;
 </script>
 
 <div>
@@ -69,17 +70,19 @@
             <Spacer h={20} />
 
             <div class="w-full flex flex-row justify-between gap-x-4">
-                <Button
-                    width="100%"
-                    color={actionBtnColor}
-                    {href}
-                    on:click={(e) => {
-                        show = false;
-                        if (action) action(e);
-                    }}
-                >
-                    {actionButtonText}
-                </Button>
+                {#if showActionButton}
+                    <Button
+                        width="100%"
+                        color={actionBtnColor}
+                        {href}
+                        on:click={(e) => {
+                            show = false;
+                            if (action) action(e);
+                        }}
+                    >
+                        {actionButtonText}
+                    </Button>
+                {/if}
                 <Button
                     width="100%"
                     color={btnColor}

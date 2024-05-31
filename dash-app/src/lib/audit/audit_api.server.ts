@@ -8,7 +8,7 @@ import { getIpInfo } from "./ipinfo.server";
 import { sleep } from "$lib/sleep";
 
 async function deleteAuditLogs(filterBy: DashAuditEvent | "*" = "*") {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
 
     let count = 0;
@@ -34,7 +34,7 @@ async function deleteAuditLogs(filterBy: DashAuditEvent | "*" = "*") {
 }
 
 async function getAuditLogsRaw(page: number = 1, itemsPerPage: number = 50, filterBy: DashAuditEvent | "*" = "*") {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
 
     return await pb.collection(AUDIT_TABLE).getList<DashAuditEntry>(page, itemsPerPage, {
@@ -56,7 +56,7 @@ async function getAuditLogs(page: number = 1, itemsPerPage: number = 10, filterB
 }
 
 async function audit(event: DashAuditEvent, dash_user: DashUser["id"] | undefined, message: string, req_event: RequestEvent) {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
 
     const ip_address = req_event.request.headers.get("X-Forwarded-For") || req_event.getClientAddress();

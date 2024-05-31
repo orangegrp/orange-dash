@@ -44,9 +44,7 @@
             <strong translate="no">Dash Account</strong>
         </div>
         <div class={show_form ? "display w-full" : "hidden"}>
-            <Text type="small" color="secondary"
-                >One-Time Passcode</Text
-            >
+            <Text type="small" color="secondary">One-Time Passcode</Text>
             <Spacer h={3} />
             <div class="otp-container w-full space-x-2 h-10">
                 <OtpInput bind:mfa_form bind:buttonLoading />
@@ -81,6 +79,7 @@
         {#if show_form}
             <Spacer h={15} />
             <Button
+                class="shadow-blue-950 shadow-lg"
                 type="submit"
                 width="100%"
                 color="success-light"
@@ -107,6 +106,7 @@
                     />
                 </svg>
             </Button>
+            <Spacer h={5} />
         {/if}
     </form>
 </div>

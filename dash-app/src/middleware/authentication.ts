@@ -10,7 +10,6 @@ import { getAccessTokenFromCode } from "$lib/auth/oauth2_discord.server";
 
 const TOTP_MAP: Map<string, { dash_id: string, password: string }> = new Map();
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const QR_MAP: Map<string, { dash_id?: string, ip: string }> = new Map();
 
 async function totpAuthentication({ event }: MiddlewareSequence) {
     const body = await event.request.formData();

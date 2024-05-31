@@ -10,8 +10,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "eslint .",
 		"gen-secret": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"",
-        "gen-token": "node -e \"console.log(require('jsonwebtoken').sign({id: process.argv[2]}, process.argv[1], {expiresIn:'1y'}))\"",
-        "verify-token": "node -e \"console.log(require('jsonwebtoken').verify(process.argv[1], process.argv[2]))\""
+		"gen-token": "node -e \"console.log(require('jsonwebtoken').sign({id: process.argv[2]}, process.argv[1], {expiresIn:'1y'}))\"",
+		"verify-token": "node -e \"console.log(require('jsonwebtoken').verify(process.argv[1], process.argv[2]))\""
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
@@ -44,6 +44,7 @@
 		"embed-visualizer": "^1.4.0",
 		"eventsource": "^2.0.2",
 		"geist-ui-svelte": "^0.7.2",
+		"html5-qrcode": "^2.3.8",
 		"mode-watcher": "^0.2.1",
 		"node-fetch": "^3.3.2",
 		"node-html-markdown": "^1.3.0",

@@ -7,4 +7,10 @@ async function generateQRCode(data: any) {
     return image.toString("base64");
 }   
 
-export { generateQRCode };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function generateQRCodeFixed(data: any, size: number) {
+    const image = await QRCode.toBuffer(data, { errorCorrectionLevel: "high", version: size });
+    return image.toString("base64");
+}   
+
+export { generateQRCode, generateQRCodeFixed };

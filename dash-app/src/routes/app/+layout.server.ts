@@ -19,7 +19,7 @@ function omit<T extends object, K extends keyof T>(obj: T, ...keys: K[]): Omit<T
 }
 
 export const load = async (event) => {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
 
     const { session, session_id } = await event.parent();

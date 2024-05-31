@@ -9,7 +9,7 @@ import util from "util";
 import { sleep } from "$lib/sleep";
 
 async function deleteDebugLogs() {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
 
     let count = 0;
@@ -36,7 +36,7 @@ async function deleteDebugLogs() {
 }
 
 async function getDebugLogsRaw(page: number = 1, itemsPerPage: number = 50, filterBy: string | "*" = "*") {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
 
     return await pb.collection(DEBUG_TABLE).getList<DashDebugEntry>(page, itemsPerPage, {
@@ -56,7 +56,7 @@ async function getDebugLogs(page: number = 1, itemsPerPage: number = 10, filterB
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function debug(error_id: string, dash_user: DashUser["id"] | undefined, error: any) {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
 
     const entry = {

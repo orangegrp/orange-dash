@@ -43,7 +43,7 @@ function generateRandomSalt(length) {
 
 
 async function getDashUser(id: string, retry: boolean = false): Promise<DashUser> {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
     try {
         if (DASH_CACHE.has(id)) {
@@ -65,7 +65,7 @@ async function getDashUser(id: string, retry: boolean = false): Promise<DashUser
     }
 }
 async function getDashUserOauth2(oauth2_id: string, retry: boolean = false): Promise<DashUser> {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
     oauth2_id = oauth2_id.replace(/\D/g, "");
     try {
@@ -82,7 +82,7 @@ async function getDashUserOauth2(oauth2_id: string, retry: boolean = false): Pro
     }
 }
 async function getDashUserUsername(username: string, retry: boolean = false): Promise<DashUser> {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
     try {
         const dash_user = await pb.collection(USERS_TABLE).getFirstListItem<DashUser>(`username = "${username}"`);
@@ -99,14 +99,14 @@ async function getDashUserUsername(username: string, retry: boolean = false): Pr
 }
 
 async function createDashUser(user: DashUser): Promise<DashUser> {
-    if (!pb)
+    if (!pb || !pb.authStore.isValid)
         await initDb();
     user.salt = generateRandomSalt(64);
     return await pb.collection(USERS_TABLE).create<DashUser>(user);
 }
 async function removeDashUser(id: string) {
     try {
-        if (!pb)
+        if (!pb || !pb.authStore.isValid)
             await initDb();
         return await pb.collection(USERS_TABLE).delete(id);
     } finally {
@@ -115,7 +115,7 @@ async function removeDashUser(id: string) {
 }
 async function updateDashUser(id: string, new_data: Partial<DashUser>) {
     try {
-        if (!pb)
+        if (!pb || !pb.authStore.isValid)
             await initDb();
         return await pb.collection(USERS_TABLE).update<DashUser>(id, new_data);
     } finally {

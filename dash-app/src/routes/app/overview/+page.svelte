@@ -103,7 +103,7 @@
                                 ]}"
                             ></div>
                             <div
-                                class="absolute w-0 h-0 bg-transparent rounded-full"
+                                class="absolute w-0 h-0 bg-transparent rounded-full animate-pulse-bg"
                                 style="box-shadow: 0px 0px 64px 10px {colors[
                                     statusCode
                                 ]}"
@@ -487,6 +487,18 @@
 </main>
 
 <style>
+    @keyframes pulse-bg {
+        0% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(2);
+        }
+    }
+    .animate-pulse-bg {
+        animation: pulse-bg 16s linear infinite alternate;
+    }
+    /*
     @keyframes pulse-text {
         90% {
             opacity: 1;
@@ -495,7 +507,29 @@
             opacity: 0.5;
         }
     }
-    .animate-pulse-text {
-        animation: pulse-text 16s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    */
+    @keyframes text-animation {
+        97.9999999999% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        98% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
+    .animate-pulse-text {
+        /*animation: pulse-text 16s cubic-bezier(0.4, 0, 0.6, 1) infinite;*/
+        height: auto;
+        margin: 0px 0px;
+        overflow: hidden;
+
+        white-space: nowrap;
+        animation: text-animation 16s linear infinite;
+    }
+    
 </style>

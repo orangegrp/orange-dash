@@ -23,12 +23,31 @@
     let show_form: boolean = false;
 
     onMount(() => {
+        function getQrCode() {
+            fetch("/login/qrcode")
+                .then(async (res) => {
+                    if (res.status === 200) {
+                        let data = await res.json();
+                        qrLoginImage = data.qrcode;
+                        console.log(res.headers.get("Set-Cookie"));
+                        if (data.goto) {
+                            //alert("login");
+                            setTimeout(() => {
+                                window.location.href = data.goto;
+                            }, 500); // give server time to update
+                        } else {
+                            setTimeout(() => getQrCode(), 100);
+                        }
+                    } else if (res.status === 400) {
+                        qrLoginImage = "";
+                    }
+                })
+                .catch((e) => {
+                    qrLoginImage = "";
+                });
+        }
         setTimeout(async () => {
-            fetch("/login/qrcode").then(async (res) => {
-                if (res.status === 200) {
-                    qrLoginImage = (await res.json()).qrcode;
-                }
-            });
+            getQrCode();
         }, 100);
     });
 </script>
@@ -98,7 +117,12 @@
         />
         <Spacer h={15} />
         {#if show_form}
-            <Button type="submit" width="100%" color="success-light">
+            <Button
+                class="shadow-blue-950 shadow-lg"
+                type="submit"
+                width="100%"
+                color="success-light"
+            >
                 <Text size="sm">Continue</Text>
                 <Spacer w={10} />
                 <svg
@@ -128,8 +152,7 @@
             <Button
                 width="100%"
                 on:click={async () => {
-                    const oauth2_url =
-                        `https://discord.com/oauth2/authorize?client_id=1210923470620463164&response_type=code&redirect_uri=${encodeURIComponent(window.location.origin)}%2Flogin%2Foauth2%2Fdiscord&scope=identify+guilds`;
+                    const oauth2_url = `https://discord.com/oauth2/authorize?client_id=1210923470620463164&response_type=code&redirect_uri=${encodeURIComponent(window.location.origin)}%2Flogin%2Foauth2%2Fdiscord&scope=identify+guilds`;
                     window.location.href = oauth2_url;
                 }}
             >
@@ -156,11 +179,12 @@
                 <Spinner />
                 <Spacer h={70} />
             {:else}
+                <div class="qr-shadow rounded-2xl animate-pulse" />
                 <img
                     src="data:image/png;base64,{qrLoginImage}"
                     draggable="false"
                     on:dragstart={() => false}
-                    class="rounded-2xl select-none pointer-events-none security-image"
+                    class="rounded-2xl select-none pointer-events-none security-image w-44 h-44"
                     alt="Login with QR Code"
                     style={$mode === "dark" ? "filter:invert(0%);" : ""}
                 />
@@ -202,5 +226,13 @@
         -webkit-user-drag: none;
         -webkit-user-select: none;
         -ms-user-select: none;
+        box-shadow: 0px 0px 60px -20px white;
+    }
+    .qr-shadow {
+        width: 1px;
+        height: 1px;
+        position: absolute;
+        transform: translate(0, -45px);
+        box-shadow: 0px 0px 120px 40px white;
     }
 </style>
