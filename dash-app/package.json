@@ -38,7 +38,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"vite": "^5.0.3",
 		"@friendofsvelte/tipex": "^0.0.1-prev.0.2",
 		"@sveltejs/adapter-node": "^5.0.1",
 		"ansi-to-html": "^0.7.2",
