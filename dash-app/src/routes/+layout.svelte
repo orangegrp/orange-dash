@@ -18,7 +18,7 @@
 		Button,
 		CommandIcon,
 		Key,
-        BreadCrumbs,
+		BreadCrumbs,
 	} from "geist-ui-svelte";
 	import Icon from "./components/Icon.svelte";
 	import { onMount } from "svelte";
@@ -234,6 +234,49 @@
 />
 
 <body class="dark:bg-black bg-gray-50 mb-4">
+	<div
+		class="flex flex-col gap-y-1 w-full bg-orange-700 min-h-8 animate-pulse"
+	>
+		<div class="flex flex-row gap-x-2">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke-width="1.5"
+				stroke="currentColor"
+				class="size-8"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+				/>
+			</svg>
+
+			<span class="font-black text-white text-xl"
+				>DEMO INSTANCE / DEMO-ESTEMINEN / INSTANCIA DE DEMOSTRACIÓN /
+				INSTANCE DE DÉMO / DEMO INSTANCIJA / ДЕМО ЭКЗЕМПЛЯР / 演示实例 /
+				مثيل تجريبي
+			</span>
+		</div>
+		<span class="font-black text-white text-xs"
+			>This web application is for testing purposes only. Any account and
+			its settings you set will not be kept. / Tämä verkkosovellus on
+			tarkoitettu vain testaustarkoituksiin. Mitään määrittämiäsi tilejä
+			ja sen asetuksia ei säilytetä. / Cette application Web est
+			uniquement destinée à des fins de test. Tout compte et ses
+			paramètres que vous définissez ne seront pas conservés. / Esta
+			aplicación web es sólo para fines de prueba. Ninguna cuenta y su
+			configuración que establezca no se conservarán. / Ši žiniatinklio
+			programa skirta tik testavimo tikslams. Jokia paskyra ir jos
+			nustatymai nebus išsaugoti. / Это веб-приложение предназначено
+			только для тестирования. Любая учетная запись и ее настройки,
+			которые вы установили, не будут сохранены. / 此 Web
+			应用程序仅用于测试目的。您设置的任何帐户及其设置均不会被保留。/
+			تطبيق الويب هذا مخصص لأغراض الاختبار فقط. لن يتم الاحتفاظ بأي حساب
+			وإعداداته التي قمت بتعيينها.</span
+		>
+	</div>
 	{#if !$page.url.pathname.startsWith("/applets")}
 		<div
 			class={$page.url.pathname.startsWith("/app") ? "" : "headerparent"}
@@ -254,7 +297,9 @@
 						? ''
 						: 'lg:py-0'} sm:px-8"
 				>
-					<div class="flex flex-row gap-x-3 select-none items-center justify-between">
+					<div
+						class="flex flex-row gap-x-3 select-none items-center justify-between"
+					>
 						<Icon
 							dark="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-w-icon.svg"
 							light="https://raw.githubusercontent.com/orangegrp/orange-website/main/orange/src/lib/images/orange-logo-b-icon.svg"
